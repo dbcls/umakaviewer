@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% set title = 'ログイン' %}
+{% set page_class = 'layout-login' %}
+
+{% block header %}
+<h1>umakaviewer　ログイン</h1>
+{% endblock %}
+
+{% block contents %}
+<section class="loginform-Col">
+  <form action="{{ url_for('login') }}" class="loginform" method="post">
+    <label>メールアドレス</label>
+    <input type="email" name="email" class="{% if error %}has_error{% endif %}">
+    <label>パスワード</label>
+    <input type="password" name="password" class="{% if error %}has_error{% endif %}">
+    {% if error %}
+    <p class="loginform__errormessage">{{ error }}</p>
+    {% endif %}
+    <p class="loginform__createaccount"><a href="{{ url_for('create_account') }}">アカウントを作成</a></p>
+    <p class="loginform__forgerpass"><a href="{{ url_for('reset_password') }}">パスワードを忘れた方はこちら</a></p>
+    <button type="submit">ログイン</button>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-auth.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyB3GMmRd9JWGVvDlEtgpemtYZPo-WRkNpc",
+    authDomain: "fabled-alchemy-246207.firebaseapp.com",
+    databaseURL: "https://fabled-alchemy-246207.firebaseio.com",
+    projectId: "fabled-alchemy-246207",
+    storageBucket: "",
+    messagingSenderId: "873301119866",
+    appId: "1:873301119866:web:ac99be26e7597ff1"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+              integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+              crossorigin="anonymous"></script>
+<script>
+  $(function() {
+    $('form').on('submit', function(e) {
+      e.preventDefault();
+      var email = $('input[name="email"]').val();
+      var password = $('input[name="password"]').val();
+      firebase.auth().signInWithEmailAndPassword(email, password).then(function(data) {
+        var url = $('form').attr('action');
+        $.post(url, {firebase_uid: data.user.uid}).done(function(data) {
+          location.href = '/'
+        })
+      }).catch(function(error) {
+        console.error(error)
+      })
+    })
+  });
+</script>
+{% endblock %}

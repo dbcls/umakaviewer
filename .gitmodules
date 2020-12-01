@@ -1,0 +1,3 @@
+[submodule "server/ConvRDF"]
+	path = server/ConvRDF
+	url = git@github.com:dbcls/ConvRDF.git

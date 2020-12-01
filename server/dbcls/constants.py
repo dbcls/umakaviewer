@@ -1,0 +1,1 @@
+TASK_PROPERTIES_EXPIRE = 60 * 60 * 24 * 7  # 1week

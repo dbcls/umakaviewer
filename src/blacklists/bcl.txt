@@ -1,0 +1,5 @@
+http://www.w3.org/2002/07/owl#Class
+http://www.w3.org/2002/07/owl#ObjectProperty
+http://www.w3.org/2002/07/owl#Ontology
+http://www.w3.org/2002/07/owl#Thing
+http://www.w3.org/2002/07/owl#NamedIndividual

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% set title = 'ユーザリスト' %}
+
+{% block header %}
+<h1>{{ title }}</h1>
+{% endblock %}
+
+{% block contents %}
+<style>
+  table {
+    width: 100%;
+    border: solid 1px #CCC;
+    border-collapse: collapse;
+  }
+  .layout-datalist__deletbtn {
+    color: red;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  hr {
+    margin: 48px 0;
+  }
+</style>
+<table>
+  <tr>
+    <th>id</th>
+    <th>name</th>
+    <th>email</th
+  </tr>
+{% for user in users %}
+<tr>
+  <td><a href="{{ url_for('user_detail', user_id=user.id) }}">{{ user.id }}</a></td>
+  <td><a href="{{ url_for('user_detail', user_id=user.id) }}">{{ user.name }}</a></td>
+  <td><a href="{{ url_for('user_detail', user_id=user.id) }}">{{ user.email }}</a></td>
+</tr>
+{% endfor %}
+</table>
+<a href="{{ url_for('user_create') }}">create user</a>
+
+<hr>
+
+<table>
+  <tr>
+    <th>ユーザー/メールアドレス</th>
+    <th>タイトル</th>
+    <th>URL</th>
+    <th>日付</th>
+    <th>削除</th>
+  </tr>
+  {% for d in data_sets %}
+  <tr>
+    <td>{{ d.id }}/{{ d.user.email }}</td>
+    <td>{{ d.title }}</td>
+    <td><a href="{{ d.visualization_url }}" target="_blank">{{ d.visualization_url }}</a></td>
+    <td>{{ d.upload_at | datetimeformat('%y.%m.%d&nbsp;%H:%M') }}</td>
+    <td>
+      <a class="layout-datalist__deletbtn" data-delete-url="{{ url_for('data_set_delete', data_set_id=d.id) }}">削除</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+			  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+			  crossorigin="anonymous"></script>
+<script>
+  $(function() {
+    $('.layout-datalist__deletbtn').on('click', function() {
+      var delete_url = $(this).data('delete-url');
+      var $tr = $(this).parents('tr');
+      var rv = confirm('削除します');
+      if(!rv) {
+        return false;
+      }
+      $.ajax({
+        url: delete_url,
+        type: 'DELETE',
+        success: function() {
+          $tr.remove()
+          $('.overlayCol-wall, .setting-account').hide();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

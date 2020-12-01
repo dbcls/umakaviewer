@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% set title = 'DataSet 選択' %}
+
+{% block header %}
+<h1>{{ title }}</h1>
+{% endblock %}
+
+{% block contents %}
+    <ul class="top-datasetlist">
+    {% for asset in assets %}
+        <li>
+          <a href="{{asset.name}}" class="top-datasetlist__link">
+            <h2>{{asset.name}}</h2>
+            <dl>
+              <dt>トリプル数</dt>
+              <dd>{{ asset.triples }}</dd>
+              <dt>クラス数</dt>
+              <dd>{{ asset.classes }}</dd>
+              <dt>プロパティ数</dt>
+              <dd>{{ asset.properties }}</dd>
+              <dt>クロール日時</dt>
+              <dd>{{ asset.crawl_date }}</dd>
+            </dl>
+            {#
+            <h3>概要</h3>
+            <p class="top-datasetlist__detailed">
+            テキストテキストテキストテキストテキストテキストテキステキストテキストテキスト2</p>
+            <p class="top-datasetlist__updata">
+              2015/12/31/14:18:17
+            </p>
+            #}
+          </a>
+          <p class="top-datasetlist__uri">
+            <a href="{{ asset.endpoint }}" target="_blank">{{ asset.endpoint }}</a>
+          </p>
+
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}

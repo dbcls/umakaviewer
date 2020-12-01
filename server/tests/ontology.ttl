@@ -1,0 +1,193 @@
+@prefix : <http://purl.org/allie/ontology/201108#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix mesh: <http://www.nlm.nih.gov/mesh/2011#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix owl2xml: <http://www.w3.org/2006/12/owl2-xml#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix terms: <http://purl.org/dc/terms/> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://purl.org/allie/ontology/201108> a owl:Ontology ;
+    dc:creator <http://dbcls.rois.ac.jp/>,
+        "Database Center for Life Science"@en,
+        "ライフサイエンス統合データベースセンター"@ja ;
+    dc:publisher <http://dbcls.rois.ac.jp/> ;
+    terms:license <http://creativecommons.org/licenses/by/2.1/jp/> ;
+    rdfs:comment "This is the ontology to be used by an RDFized Allie database of abbreviations and their corresponding long forms extracted from the entire MEDLINE database using ALICE. Allie is licensed under a Creative Commons BY 2.1 (Japan). Copyright: Database Center for Life Science (DBCLS), http://www.dbcls.rois.ac.jp/en"@en,
+        """本ファイルは、Allieサービスで利用している略語とその展開形のデータベースのRDF形式版において語彙を定義するオントロジーです。全MEDLINEから略語と対応する展開形のペアをツールALICEを用いて抽出して加工したものです。ライセンスについてはAllieに準ずるもの (CC BY 2.1 日本) とし、著作権はライフサイエンス統合デ
+ータベースセンターに帰属します。http://www.dbcls.rois.ac.jp/"""@ja ;
+    owl:imports terms: ;
+    owl:versionInfo "2011-08-08" .
+
+:MeSHTerm a owl:Class ;
+    rdfs:label "MeSHTerm"@en ;
+    rdfs:subClassOf :ExternalResource .
+
+:PubMedID a owl:Class ;
+    rdfs:label "PubMedID"@en ;
+    rdfs:subClassOf :ExternalResource ;
+    owl:equivalentClass [ a owl:Restriction ;
+            owl:onProperty :isaMemberOf ;
+            owl:someValuesFrom :PubMedIDList ] .
+
+:appearsIn a owl:ObjectProperty ;
+    rdfs:label "appearsIn"@en ;
+    rdfs:domain :Pair ;
+    rdfs:range :PubMedIDList .
+
+:belongsTo a owl:ObjectProperty ;
+    rdfs:domain :PairList ;
+    rdfs:range :PairCluster ;
+    owl:inverseOf :contains .
+
+:cooccursWith a owl:ObjectProperty ;
+    rdfs:label "cooccursWith"@en ;
+    rdfs:domain :Pair ;
+    rdfs:range :CooccurringShortFormList .
+
+:frequency a owl:DatatypeProperty .
+
+:hasLongFormRepresentationOf a owl:ObjectProperty ;
+    rdfs:label "hasLongFormRepresentationOf"@en ;
+    rdfs:domain :PairCluster ;
+    rdfs:range :LongForm .
+
+:hasShortFormRepresentationOf a owl:ObjectProperty ;
+    rdfs:label "hasShortFormRepresentationOf"@en ;
+    rdfs:domain :PairCluster ;
+    rdfs:range :ShortForm .
+
+:inResearchAreaOf a owl:ObjectProperty ;
+    rdfs:label "inResearchAreaOf"@en ;
+    rdfs:domain :Pair ;
+    rdfs:range :ResearchArea .
+
+:CooccurringShortFormList a owl:Class ;
+    rdfs:label "CooccurringShortFormList"@en ;
+    rdfs:subClassOf :ShortFormList .
+
+:ExternalResource a owl:Class ;
+    rdfs:label "ExternalResource"@en ;
+    owl:equivalentClass [ a owl:Restriction ;
+            owl:onClass :ShortForm ;
+            owl:onProperty :hasShortFormOf ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onClass :LongForm ;
+            owl:onProperty :hasLongFormOf ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] .
+
+:ResearchArea a owl:Class ;
+    rdfs:label "ResearchArea"@en ;
+    rdfs:subClassOf :MeSHTerm .
+
+:ShortFormList a owl:Class ;
+    rdfs:label "ShortFormList"@en ;
+    rdfs:subClassOf :List ;
+    owl:equivalentClass [ a owl:Restriction ;
+            owl:allValuesFrom :ShortForm ;
+            owl:onProperty :hasMemberOf ] .
+
+:contains a owl:ObjectProperty ;
+    rdfs:label "contains"@en ;
+    rdfs:domain :PairCluster ;
+    rdfs:range :PairList .
+
+:hasLongFormOf a owl:ObjectProperty ;
+    rdfs:label "hasLongFormOf"@en ;
+    rdfs:domain :EachPair ;
+    rdfs:range :LongForm .
+
+:hasShortFormOf a owl:ObjectProperty ;
+    rdfs:label "hasShortFormOf"@en ;
+    rdfs:domain :EachPair ;
+    rdfs:range :ShortForm .
+
+:EachPair a owl:Class ;
+    rdfs:label "EachPair"@en ;
+    rdfs:subClassOf :Pair ;
+    owl:equivalentClass [ a owl:Restriction ;
+            owl:onClass :ShortForm ;
+            owl:onProperty :hasShortFormOf ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onProperty :isaMemberOf ;
+            owl:someValuesFrom :PairList ],
+        [ a owl:Restriction ;
+            owl:onClass :LongForm ;
+            owl:onProperty :hasLongFormOf ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] .
+
+:List a owl:Class ;
+    rdfs:label "List"@en .
+
+:PubMedIDList a owl:Class ;
+    rdfs:label "PubMedIDList"@en ;
+    rdfs:subClassOf :List ;
+    owl:equivalentClass [ a owl:Restriction ;
+            owl:allValuesFrom :PubMedID ;
+            owl:onProperty :hasMemberOf ] .
+
+:hasMemberOf a owl:ObjectProperty ;
+    rdfs:label "hasMemberOf"@en ;
+    owl:inverseOf :isaMemberOf .
+
+:PairList a owl:Class ;
+    rdfs:label "PairList"@en ;
+    rdfs:subClassOf :List ;
+    owl:equivalentClass [ a owl:Restriction ;
+            owl:onProperty :belongsTo ;
+            owl:someValuesFrom :PairCluster ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom :EachPair ;
+            owl:onProperty :hasMemberOf ] .
+
+:isaMemberOf a owl:ObjectProperty ;
+    rdfs:label "isaMemberOf"@en .
+
+:LongForm a owl:Class ;
+    rdfs:label "LongForm"@en .
+
+:Pair a owl:Class ;
+    rdfs:label "Pair"@en ;
+    owl:equivalentClass [ a owl:Restriction ;
+            owl:onDataRange xsd:nonNegativeInteger ;
+            owl:onProperty :frequency ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onClass :ResearchArea ;
+            owl:onProperty :inResearchAreaOf ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onClass :CooccurringShortFormList ;
+            owl:onProperty :cooccursWith ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onClass :PubMedIDList ;
+            owl:onProperty :appearsIn ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] .
+
+:PairCluster a owl:Class ;
+    rdfs:label "PairCluster"@en ;
+    rdfs:subClassOf :Pair ;
+    owl:equivalentClass [ a owl:Restriction ;
+            owl:onClass :LongForm ;
+            owl:onProperty :hasLongFormRepresentationOf ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onClass :ShortForm ;
+            owl:onProperty :hasShortFormRepresentationOf ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onClass :PairList ;
+            owl:onProperty :contains ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ] .
+
+:ShortForm a owl:Class ;
+    rdfs:label "ShortForm"@en ;
+    owl:equivalentClass [ a owl:Restriction ;
+            owl:onProperty :isaMemberOf ;
+            owl:someValuesFrom :ShortFormList ] .
+

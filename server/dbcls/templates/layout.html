@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>{{ title }} | umakaviewer</title>
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="author" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="">
+<link rel="shortcut icon" href="">
+<link rel="stylesheet" href="{{ url_for('static', filename='style/style_2.css') }}">
+</head>
+<body>
+  <div class="wapper {{ page_class }}">
+    {% block overlay %}
+    {% endblock %}
+    <header class="header">
+      {% block header %}
+      <h1>umakaviewer</h1>
+      <ul class="header-menu">
+        <li>
+          <a href="{{ url_for('file_list') }}" class="header-menu__menu-icon">
+            <span>ホーム</span>
+          </a>
+        </li>
+        <li class="header-menu__setting">
+          <a class="header-menu__menu-icon">
+              <span>設定</span>
+          </a>
+          <div class="header-menu__settingmenu">
+            <p>
+              <a href="{{ url_for('change_password') }}">アカウント設定</a>
+            </p>
+            <p>
+              <a href="{{ url_for('logout') }}">ログアウト</a>
+            </p>
+          </div>
+        </li>
+      </ul>
+      {% endblock %}
+    </header>
+
+    <div class="mainCol">
+    {% block contents %}{% endblock %}
+    </div>
+  </div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

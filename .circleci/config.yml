@@ -1,0 +1,80 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6.1
+      - image: mysql:8.0
+        environment:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 1
+          MYSQL_USER: dbcls_tester
+          MYSQL_PASSWORD: AW8loEjqcY
+          MYSQL_DATABASE: dbcls_test
+        command: [--character-set-server=utf8mb4, --collation-server=utf8mb4_bin, --default_authentication_plugin=mysql_native_password, --max_allowed_packet=1GB]
+      - image: redis:5.0-alpine
+    environment:
+      - APP_ENV: circleci
+    steps:
+      - checkout
+      - run:
+          name: Wait for MySQL
+          command: dockerize -wait tcp://localhost:3306 -timeout 1m
+      - run:
+          name: Wait for redis
+          command: dockerize -wait tcp://localhost:6379 -timeout 1m
+      - run:
+          name: install poetry
+          command: curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+      - run:
+          name: install nodejs
+          command: |
+            # nを使ってnodejsをインストール。aptからだと古い
+            sudo apt install -y nodejs npm
+            sudo npm install n -g
+            sudo n 12.18.4
+            sudo apt purge -y nodejs npm
+      - run:
+          name: install yarn
+          command: |
+            sudo  apt-get install -y apt-transport-https
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+            sudo apt-get update && sudo apt-get install -y yarn
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "server/poetry.lock" }}
+            - v1-dependencies-
+      - run:
+          name: install server dependencies
+          command: |
+            source $HOME/.poetry/env
+            cd server
+            sudo pip install --upgrade pip setuptools
+            poetry config virtualenvs.in-project true
+            poetry install
+      - run:
+          name: install client dependencies
+          command: yarn
+      - save_cache:
+          paths:
+            - ~/.cache/pypoetry/virtualenvs
+            - node_modules
+            - visualizer/node_modules
+          key: v1-dependencies-{{ checksum "yarn.lock" }}-{{ checksum "server/poetry.lock" }}
+      - run:
+          name: migration
+          command: |
+            source $HOME/.poetry/env
+            cd server
+            poetry run alembic -n circleci upgrade head
+      - run:
+          name: test
+          command: |
+            source $HOME/.poetry/env
+            cd server
+            poetry run pytest tests
+      - run:
+          name: yarn build
+          command: yarn build
+      - run:
+          name: lint
+          command: yarn lint
