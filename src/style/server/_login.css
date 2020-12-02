@@ -1,0 +1,74 @@
+.layout-login {
+  .header {
+    margin: 0 0 72px;
+    h1 {
+      float: none;
+      text-align: center;
+    }
+  }
+  .loginform-Col {
+    width: 472px;
+    padding: 40px;
+    margin: 72px auto 0;
+    @mixin boxshadow;
+    background-color: #fff;
+    .loginform {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      label {
+        margin: 0 0 8px;
+        display: block;
+      }
+      input {
+        width: 260px;
+        margin: 0 0 16px;
+        @mixin form-input;
+        &.has_error {
+          background: #fdf4f4;
+          border: 1px solid $color-error;
+        }
+      }
+      .loginform__forgerpass {
+        margin: 0 0 32px;
+        a {
+          font-size: 11px;
+          color: #007db2;
+        }
+      }
+      .loginform__errormessage {
+        margin: 0 0 8px;
+        font-size: 12px;
+        color: $color-error;
+      }
+      .loginform__createaccount {
+        margin: 0 0 20px 0;
+      }
+      button {
+        cursor: pointer;
+        width: 191px;
+        height: 46px;
+        background: url(../images/btn_google_signin_dark_normal_web@2x.png) no-repeat center/100%;
+      }
+      .loginform__button--before {
+        width: 191px;
+        height: 46px;
+        background: url(../images/btn_google_signin_dark_disabled_web@2x.png) no-repeat center/100%;
+      }
+    }
+  }
+  .signUpMessage {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0 0 0;
+    line-height: 1.6;
+    color: #666;
+  }
+  .aboutThisWebSite {
+    display: flex;
+    justify-content: center;
+    margin: 72px 25% -52px 25%;
+    line-height: 1.6;
+    color: #666;
+  }
+}

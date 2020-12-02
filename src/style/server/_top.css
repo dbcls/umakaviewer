@@ -1,0 +1,103 @@
+.layout-top {
+  .upload-btn {
+    width: 320px;
+    margin: 32px auto;
+     .upload-btn__btn {
+      width: 320px;
+      display: block;
+      @mixin decision-btn;
+      &:before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 18px;
+        margin: 0 8px 0 0;
+        background: url(../images/upload-btn__btn.png) no-repeat;
+      }
+    }
+  }
+  .howToUpload {
+    max-width: 900px;
+    margin: 0 auto 20px;
+    line-height: 1.6;
+    color: #666;
+    .oneLineMessage {
+      &:first-child {
+        margin: 0 0 16px 0;
+      }
+    }
+  }
+  .layout-datalist {
+    max-width: 900px;
+    margin: 0 auto 32px;
+    table {
+      width: 100%;
+      border: 1px solid $color-grayccc;
+      tr {
+        background: #f3f5f8;
+        &:nth-child(even) {
+          background: $color-white;
+        }
+      }
+      th {
+        height: 42px;
+        line-height: 42px;
+        padding: 0 16px;
+        background: #666;
+        border: 1px solid $color-grayccc;
+        text-align: left;
+        color: $color-white;
+        font-weight: bold;
+        .layout-datalist__titlesavebtn {
+          @mixin decision-btn;
+          width: 60px;
+          height: 24px;
+          display: inline-block;
+          margin: 0 auto;
+          line-height: 24px;
+          font-size: 12px;
+        }
+      }
+      td {
+        padding: 16px;
+        border: 1px solid $color-grayccc;
+        width: 22.2%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -o-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+        box-sizing: border-box;
+        word-break: break-all;
+        &:nth-child(1) {
+          font-weight: bold;
+        }
+        &:nth-child(2) {
+          width: 38.6%;
+        }
+        &:nth-child(3) {
+          width: 16.6%;
+        }
+        &:nth-child(4),
+        &:nth-child(5) {
+          width: 12.6%;
+        }
+        &:nth-child(4) {
+          .private {
+            color: $color-private;
+          }
+        }
+        &:nth-child(5) {
+          .layout-datalist__deletbtn {
+            width: 80px;
+            height: 24px;
+            display: block;
+            margin: 0 auto;
+            @mixin delete-btn;
+            line-height: 24px;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}

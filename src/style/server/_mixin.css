@@ -1,0 +1,86 @@
+$color-white: #fff;
+$color-graye3: #e3e3e3;
+$color-grayccc: #ccc;
+$color-gray90: #909090;
+$color-main: #40b9c4;
+$color-error: #d7443f;
+$color-private: #ff0000;
+
+
+@define-mixin clearfix {
+  *zoom: 1;
+  &:after {
+    display: table;
+    content: "";
+    line-height: 0;
+    clear: both;
+  }
+}
+
+@define-mixin boxshadow {
+  box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
+}
+
+
+@define-mixin border-radius $radius {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  -o-border-radius: $radius;
+  border-radius: $radius;
+}
+
+@define-mixin form-input {
+  height: 36px;
+  padding: 8px;
+  display: block;
+  border: 1px solid $color-grayccc;
+  @mixin border-radius 6px;
+  &:focus {
+    border-color: #45a1cf;
+    background: #fffeec;
+  }
+}
+
+@define-mixin decision-btn {
+  height: 56px;
+  line-height: 56px;
+  border: none;
+  @mixin border-radius 6px;
+  background: $color-main;
+  color: $color-white;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+}
+
+@define-mixin delete-btn {
+  border: none;
+  @mixin border-radius 6px;
+  background: $color-error;
+  color: $color-white;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+}
+
+@define-mixin backbtn {
+  @mixin decision-btn;
+  width: 260px;
+  height: 48px;
+  margin: 0 auto;
+  line-height: 48px;
+  display: block;
+  &:before {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0 8px 0 0;
+    background: url(../images/btn-iconback.png) no-repeat;
+  }
+}
+
+
+

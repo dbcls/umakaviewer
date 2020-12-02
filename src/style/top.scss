@@ -1,0 +1,150 @@
+
+/*top__layout*/
+
+@mixin line-clamp($line-clamp) {
+  overflow : hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line-clamp;
+}
+
+$top-grayish: #888;
+$top-hovercolor: #007db2;
+$top-hover-subcolor: #5cacbf;
+
+$top-component-height: 336px;
+
+.top-datasetlist {
+  margin: 0 auto;
+  padding: 40px 0 0;
+  width: 923px;
+  li {
+    position: relative;
+    display: inline-block;
+    width: 272px;
+    // height: $top-component-height - 32px;
+    margin: 0 32px 32px 0;
+    .top-datasetlist__link {
+      display: block;
+      width: 272px;
+      // height: $top-component-height;
+      padding: 16px;
+      border-radius: 6px;
+      border: 1px solid #e2e2e2;
+      color: #444;
+      box-shadow: 0px 0px 2px rgba(0,0,0,0.1);
+      h2 {
+        height: 25px;
+        margin: 0 0 14px;
+        font-size: 16px;
+        font-weight: 600;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        &:before {
+          content: " ";
+          display: inline-block;
+          width:12px;
+          height: 13px;
+          margin: 0 6px 0 0;
+          background: url(../images/top__icon-datasetlist.png) no-repeat;
+          background-size: auto 26px;
+          vertical-align: middle;
+        }
+      }
+      dl {
+        margin: 66px 0 14px;
+        width: 100%;
+        &:after {
+          content: ".";
+          display: block;
+          visibility: hidden;
+          height: 0;
+          clear: both;
+        }
+        dt {
+          float: left;
+          clear : both;
+          width : 100px;
+          font-weight: 600;
+        }
+        dd {
+          margin: 0 0 0 100px;
+          font-size: 12px;
+          color: $top-grayish;
+          text-align: right;
+        }
+        & dt,
+        & dd {
+          height: 24px;
+          line-height: 24px;
+        }
+      }
+      .top-datasetlist__detailed {
+        margin: 0 0 14px;
+        height: 42px;
+        color: $top-grayish;
+        @include line-clamp(2);
+      }
+      .top-datasetlist__updata {
+        text-align: right;
+        font-size: 12px;
+        color: $top-grayish;
+        &:before {
+          content: " ";
+          display: inline-block;
+          width: 9px;
+          height: 9px;
+          margin: 0 6px 0 0;
+          background: url(../images/top__icon-datasetlist.png) no-repeat;
+          background-position: 100% 0;
+          background-size: auto 26px;
+          vertical-align: baseline;
+        }
+      }
+      &:hover {
+        border: 2px solid $top-hovercolor;
+        padding: 15px;
+        box-shadow: 0px 0px 5px rgba(0,125,178,0.4);
+        color: $top-hovercolor;
+        h2 {
+          &:before {
+            background-position: 0 -13px;
+          }
+        }
+        dl {
+          dd {
+            color: $top-hover-subcolor;
+          }
+        }
+        .top-datasetlist__detailed {
+          color: $top-hover-subcolor;
+        }
+        .top-datasetlist__updata {
+          color: $top-hover-subcolor;
+        }
+        .top-datasetlist__updata {
+          &:before {
+            background-position: 100% -9px;
+          }
+        }
+      }
+    }
+    .top-datasetlist__uri {
+      position: absolute;
+      padding: 0 16px;
+      top: 48px;
+      height: 42px;
+      word-break: break-all;
+      a{
+        @include line-clamp(2);
+        color: #444;
+        z-index: 5;
+        &:hover {
+          color: $top-hovercolor;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% set title = 'アカウント削除' %}
+{% set page_class = 'layout-setting' %}
+
+{% block overlay %}
+<div class="overlayCol-wall" style="display:none;"></div>
+<div class="overlayCol setting-account" style="display:none;">
+  <h2>アカウント削除確認</h2>
+  <a class="overlayCol__btn-close">
+    <span>close</span>
+  </a>
+  <p>本当に <span>{{ g.user.email }}</span> を削除しますか？</p>
+  <div class="setting-account__btnbox">
+    <a class="setting-account__btnbox--delete">削除</a>
+    <a class="setting-account__btnbox--cancel">キャンセル</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block contents %}
+<section class="setting-submenu">
+  <ul>
+    <li>
+      <a href="{{ url_for('change_password') }}">パスワード変更</a>
+    </li>
+    <li>
+      <a href="{{ url_for('change_email') }}">メールアドレス変更</a>
+    </li>
+    <li class="setting-submenu__on">
+      <a href="{{ url_for('delete_account') }}">アカウント削除</a>
+    </li>
+  </ul>
+</section>
+
+<h2>アカウント削除</h2>
+
+<section class="setting-form">
+  <form action="{{ url_for('delete_account') }}" method="post">
+    <label>現在のパスワード</label>
+    <input type="password" name="password" class="{% if error %}has_error{% endif %}">
+    {% if error %}
+    <p class="setting-form__errormessage">{{ error }}</p>
+    {% endif %}
+    <button type="button" class="setting-form__button setting-form__button--before" disabled="disabled">変更する</button>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+			  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+			  crossorigin="anonymous"></script>
+<script>
+  $(function() {
+    $(':input').on('keyup', function() {
+      if($('input').filter(function() {return $(this).val() === ''}).length) {
+        $('.setting-form__button').addClass('setting-form__button--before').prop('disabled', true)
+      } else {
+        $('.setting-form__button').removeClass('setting-form__button--before').prop('disabled', false)
+      }
+    }).keypress(function (e) {
+      return e.which !== 13
+    });
+
+    $('.setting-form__button').on('click', function() {
+      if($(this).is(':enabled')) {
+        $('.overlayCol-wall, .setting-account').show();
+      }
+    });
+
+    $('.overlayCol__btn-close, .setting-account__btnbox--cancel').on("click", function() {
+      $('.overlayCol-wall, .setting-account').hide();
+    });
+
+    $('.setting-account__btnbox--delete').on("click", function() {
+      $('form').submit();
+    });
+
+  });
+</script>
+{% endblock %}

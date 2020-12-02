@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% set title = 'アカウント作成' %}
+{% set page_class = 'layout-login' %}
+
+{% block header %}
+<h1>umakaviewer</h1>
+{% endblock %}
+
+{% block contents %}
+<section class="loginform-Col">
+  <form id="display-create-form" class="loginform">
+    <label>メールアドレス</label>
+    <input type="email" name="display-email" class="{% if error %}has_error{% endif %}">
+    <label>パスワード</label>
+    <input type="password" name="display-password" class="{% if error %}has_error{% endif %}">
+    <label>パスワード（再入力）</label>
+    <input type="password" name="display-password_confirm" class="{% if error %}has_error{% endif %}">
+    {% if error %}
+    <p class="loginform__errormessage">{{ error }}</p>
+    {% endif %}
+    <button type="submit" class="loginform__button--before" disabled="disabled">アカウント作成</button>
+  </form>
+  <form id="hidden-create-form" action="{{ url_for('create_account') }}" method="post">
+    <input type="hidden" name="firebase_uid" value="" />
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-auth.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyB3GMmRd9JWGVvDlEtgpemtYZPo-WRkNpc",
+    authDomain: "fabled-alchemy-246207.firebaseapp.com",
+    databaseURL: "https://fabled-alchemy-246207.firebaseio.com",
+    projectId: "fabled-alchemy-246207",
+    storageBucket: "",
+    messagingSenderId: "873301119866",
+    appId: "1:873301119866:web:ac99be26e7597ff1"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+              integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+              crossorigin="anonymous"></script>
+<script>
+  $(function() {
+    $('input[name|="display"]').on('keyup', function() {
+      if($('input[name|="display"]').filter(function() {return $(this).val() === ''}).length) {
+        $('.loginform button').addClass('loginform__button--before').prop('disabled', true)
+      } else {
+        $('.loginform button').removeClass('loginform__button--before').prop('disabled', false)
+      }
+    });
+
+    $('form#display-create-form').on('submit', function(e) {
+      e.preventDefault();
+      var email = $('input[name="display-email"]').val();
+      var password = $('input[name="display-password"]').val();
+        firebase.auth().createUserWithEmailAndPassword(email, password).then(function(data) {
+          $('input[name="firebase_uid"]').attr({value: data.user.uid})
+          $('form#hidden-create-form').submit()
+      }).catch(function(error) {
+        console.error(error)
+      })
+    })
+  });
+</script>
+{% endblock %}

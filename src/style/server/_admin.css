@@ -1,0 +1,58 @@
+.admin_data_sets {
+  margin: 0 5em 2em 5em;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin_data_sets__actions {
+  display: flex;
+  flex-direction: row-reverse;
+  margin: 0 0 2em 0;
+  button {
+    width: 260px;
+    @mixin decision-btn;
+    &.disabled-button {
+      background: $color-grayccc;
+      color: $color-graye3;
+    }
+  }
+}
+
+.admin_data_sets__table {
+  table {
+    width: 100%;
+    border: 1px solid $color-grayccc;
+    tr {
+      background: #f3f5f8;
+      &:nth-child(even) {
+        background: $color-white;
+      }
+    }
+    th {
+      height: 3em;
+      line-height: 3em;
+      padding: 0 1em;
+      background: #666;
+      border: 1px solid $color-grayccc;
+      text-align: left;
+      color: $color-white;
+      font-weight: bold;
+    }
+    td {
+      padding: 1em;
+      border: 1px solid $color-grayccc;
+      width: auto;
+      vertical-align: middle;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -o-box-sizing: border-box;
+      -ms-box-sizing: border-box;
+      box-sizing: border-box;
+      word-break: break-all;
+    }
+  }
+}
+
+.admin_data_sets__paginate {
+  margin: 2em 0;
+}

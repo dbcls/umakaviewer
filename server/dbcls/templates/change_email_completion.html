@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% set title = 'メールアドレス変更' %}
+{% set page_class = 'layout-setting' %}
+
+{% block contents %}
+<section class="setting-submenu">
+  <ul>
+    <li>
+      <a href="{{ url_for('change_password') }}">パスワード変更</a>
+    </li>
+    <li class="setting-submenu__on">
+      <a href="{{ url_for('change_email') }}">メールアドレス変更</a>
+    </li>
+    <li>
+      <a href="{{ url_for('delete_account') }}">アカウント削除</a>
+    </li>
+  </ul>
+</section>
+
+<h2>メールアドレス変更</h2>
+
+<section class="setting-completion">
+  <div class="setting-completion__mail">
+    <p>
+      メールアドレスを変更しました。
+    </p>
+  </div>
+  <a href="{{ url_for('file_list')}}" class="setting-completion__backbtn">一覧へ戻る</a>
+</section>
+{% endblock %}

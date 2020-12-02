@@ -1,0 +1,16 @@
+FROM alpine:3.10
+
+RUN apk add --no-cache git openssh
+
+RUN mkdir /root/.ssh
+RUN ssh-keygen -t ed25519 -N "" -f /root/.ssh/readonly
+RUN echo $'Host github.com\n\
+     User git\n\
+     Port 22\n\
+     HostName github.com\n\
+     IdentityFile /root/.ssh/readonly\n\
+     TCPKeepAlive yes\n\
+     IdentitiesOnly yes\n\
+' >> /root/.ssh/config
+RUN chmod 700 /root/.ssh
+RUN chmod 600 /root/.ssh/config

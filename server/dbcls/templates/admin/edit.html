@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% set title = 'ユーザ編集' if user else 'ユーザ作成' %}
+
+{% block header %}
+<h1>{{ title }}</h1>
+{% endblock %}
+
+{% block contents %}
+  <style>
+    input {
+      width: 500px;
+      border-bottom: solid 1px #ccc;
+    }
+    input[type=submit] {
+      width: 100px;
+      border: solid 1px #ccc;
+    }
+    dd {
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: solid 1px #666;
+    }
+  </style>
+  <form action="" method="post">
+    <dl>
+      <dt>Name:</dt>
+      <dd><input type="text" name="name" value="{{ user.name if user }}"></dd>
+      <dt>Email:</dt>
+      <dd><input type="email" name="email" value="{{ user.email if user }}"></dd>
+      <dt>Password:</dt>
+      <dd><input type="password" name="password" value=""></dd>
+    </dl>
+    <input type="submit" value={{ '保存' if user else '作成' }}>
+  </form>
+{% endblock %}

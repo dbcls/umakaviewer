@@ -1,0 +1,52 @@
+.layout-dataset-setting {
+  .dataset-setting-form-Col {
+    width: 600px;
+    padding: 40px;
+    margin: 72px auto 0;
+  }
+  .dataset-setting-form {
+    .public-switch-container {
+      margin: 0 0 40px 0;
+      .public-switch {
+        margin: 0 0 20px 0;
+        font-size: 18px;
+        label {
+          margin: 0 10px 0 0;
+        }
+        input {
+          display: none;
+        }
+      }
+    }
+    .tag-container {
+      margin: 0 0 30px 0;
+      display: flex;
+      flex-direction: column;
+      label {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+      }
+      input {
+        margin: 0 0 10px 0;
+        padding: 0 0 0 5px;
+        font-size: 18px;
+        background-color: $color-white;
+        border-radius: 6px;
+        border: 1px solid $color-grayccc;
+        height: 2.5em;
+      }
+      .commaSeparatedTag__error {
+        margin: 10px 0 0 0;
+        color: $color-error;
+      }
+    }
+    button {
+      width: 260px;
+      @mixin decision-btn;
+    }
+    .disabled-button {
+      background: $color-grayccc;
+      color: $color-graye3;
+    }
+  }
+}

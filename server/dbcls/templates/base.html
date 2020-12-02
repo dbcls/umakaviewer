@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
+    <!-- Firefoxだと filter: url(#hoge) はそれが書かれた文書上にある#hogeを指すため外部のCSSに書くとややこしいことに -->
+    <style>
+        #classes-structure circle.focusing {
+            filter: url(#shadow);
+        }
+        #classes-structure circle.searching {
+            filter: url(#searching);
+        }
+        figure > div circle.outer {
+            filter: url(#outer-circle);
+        }
+    </style>
+</head>
+<body>
+    <header>
+    {% block header %}
+    {% endblock %}
+    </header>
+    <div id="content">
+    {% block contents %}{% endblock %}
+    </div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

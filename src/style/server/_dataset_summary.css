@@ -1,0 +1,119 @@
+@define-mixin summary-section {
+  margin: 0 0 20px 0;
+}
+
+.dataset-summary__previews {
+  margin: 50px 25% 50px 25%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dataset-summary__previews-header {
+  display: flex;
+  justify-content: space-between;
+  h2 {
+    font-size: 18px;
+  }
+  a {
+    font-weight: bold;
+    margin: 0 0 0 auto;
+  }
+}
+
+.dataset-summary__previews-contents {
+  margin: 20px 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.dataset-summary__previews-content {
+  width: 47.5%;
+  margin: 0 0 20px 0;
+  &:nth-child(even) {
+    margin: 0 0 20px auto;
+  }
+}
+
+.dataset-summary__wrapper {
+  background-color: $color-white;
+  @mixin boxshadow;
+}
+
+.dataset-summary__container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dataset-summary__title {
+  font-size: 18px;
+  font-weight: bold;
+  @mixin summary-section;
+}
+
+.dataset-summary__label {
+  font-size: 14px;
+  color: $color-gray90;
+  margin: 0 0 5px 0;
+}
+
+.dataset-summary__urlContainer {
+  display: flex;
+  flex-direction: column;
+  @mixin summary-section;
+  .dataset-summary__url {
+    display: flex;
+    flex-direction: column;
+    &:nth-child(1) {
+      margin: 0 0 20px 0;
+    }
+    a {
+      word-break: break-all;
+    }
+  }
+}
+
+.dataset-summary__metaContainer {
+  display: flex;
+  @mixin summary-section;
+  .dataset-summary__meta {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+  }
+}
+
+.dataset-summary__tagContainer {
+  display: flex;
+  flex-direction: column;
+  @mixin summary-section;
+  .dataset-summary__tags {
+    margin: 3px 0 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    .dataset-summary__tag {
+      margin: 0 10px 20px 0;
+      span {
+        color: $color-white;
+        background-color: #397dac;
+        border-radius: 11px;
+        padding: 5px 10px;
+      }
+    }
+  }
+}
+
+.dataset-summary__creatorContainer {
+  display: flex;
+  flex-direction: column;
+  @mixin summary-section;
+  .dataset-summary__creator {
+    margin: 0 10px 0 0;
+  }
+}
+
+.dataset-summary__uploadDateContainer {
+  display: flex;
+  flex-direction: column;
+}

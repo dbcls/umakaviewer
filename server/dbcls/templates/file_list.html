@@ -1,0 +1,221 @@
+{% extends "layout.html" %}
+
+{% set title = 'ファイル管理' %}
+{% set page_class = 'layout-top' %}
+
+{% block overlay %}
+<div class="overlayCol-wall" style="display:none;"></div>
+<div class="overlayCol upload-firststep" style="display:none;">
+  <h2>アップロード画面</h2>
+  <a class="overlayCol__btn-close">
+    <span>close</span>
+  </a>
+  <div class="upload-uploadarea">
+    <i class="upload-uploadarea__upload-icon"></i>
+    <p>アップロードするファイルを選択</p>
+    <p>またはファイルをドラック＆ドロップします</p>
+  </div>
+</div>
+<div class="overlayCol upload-completion" style="display:none;">
+  <h2>アップロード成功しました！</h2>
+  <a class="overlayCol__btn-close">
+    <span>close</span>
+  </a>
+  <a class="upload-completion__backbtn">一覧へ戻る</a>
+</div>
+<div class="overlayCol upload-loading" style="display:none;">
+  <h2>アップロード中・・・</h2>
+  <a class="overlayCol__btn-close">
+    <span>close</span>
+  </a>
+  <div class="upload-loading__loading-images">
+    <div class="floatingCirclesG">
+      <div class="f_circleG frotateG_01"></div>
+      <div class="f_circleG frotateG_02"></div>
+      <div class="f_circleG frotateG_03"></div>
+      <div class="f_circleG frotateG_04"></div>
+      <div class="f_circleG frotateG_05"></div>
+      <div class="f_circleG frotateG_06"></div>
+      <div class="f_circleG frotateG_07"></div>
+      <div class="f_circleG frotateG_08"></div>
+    </div>
+  </div>
+</div>
+<div class="overlayCol upload-error" style="display:none;">
+  <h2>アップロードエラー！</h2>
+  <a class="overlayCol__btn-close">
+    <span>close</span>
+  </a>
+  <div class="upload-errorCol">
+    <div class="upload-errorCol__layout">
+      <div class="upload-errorCol__layout--column">
+        <h3>正常な JSON でありません。</h3>
+      </div>
+    </div>
+  </div>
+  <a class="upload-error__backbtn">一覧へ戻る</a>
+</div>
+
+<div class="overlayCol setting-account" style="display:none;">
+  <h2>ファイル削除確認</h2>
+  <a class="overlayCol__btn-close">
+    <span>close</span>
+  </a>
+  <p>本当に <span class="title"></span> を削除しますか？</p>
+  <div class="setting-account__btnbox">
+    <a class="setting-account__btnbox--delete">削除</a>
+    <a class="setting-account__btnbox--cancel">キャンセル</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block contents %}
+<section class="upload-btn">
+  <a class="upload-btn__btn">ファイルをアップロード</a>
+</section>
+<section class="layout-datalist">
+  <table>
+    <tr>
+      <th>タイトル <a class="layout-datalist__titlesavebtn" style="display: none;">更新</a></th>
+      <th>URL</th>
+      <th>日付</th>
+      <th>削除</th>
+    </tr>
+    {% for d in data_sets %}
+    <tr>
+      <td contenteditable="true" data-update-url="{{ url_for('data_set_update', data_set_id=d.id) }}" data-org-title="{{ d.title }}">{{ d.title }}</td>
+      <td><a href="{{ d.visualization_url }}" target="_blank">{{ d.visualization_url }}</a></td>
+      <td>{{ d.upload_at | datetimeformat('%y.%m.%d&nbsp;%H:%M') }}</td>
+      <td>
+        <a class="layout-datalist__deletbtn" data-delete-url="{{ url_for('data_set_delete', data_set_id=d.id) }}">削除</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</section>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+			  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+			  crossorigin="anonymous"></script>
+<script>
+  $(function() {
+    // change title
+    $('.layout-datalist td:nth-child(1)').on('keyup', function() {
+      if($(this).text().length > 32) {
+        $(this).css('color', 'red');
+      } else {
+        $(this).css('color', 'black');
+      }
+
+      $('.layout-datalist__titlesavebtn').show();
+      $('.layout-datalist td:nth-child(1)').each(function() {
+        if($(this).text().length > 32) {
+          $('.layout-datalist__titlesavebtn').hide();
+        }
+      })
+    });
+
+    $('.layout-datalist__titlesavebtn').on('click').on('click', function() {
+      $('.layout-datalist td:nth-child(1)').filter(function() {
+        return ($(this).text() !== $(this).data('org-title'));
+      }).each(function() {
+        var update_url = $(this).data('update-url');
+        $.ajax({
+          url: update_url,
+          type: 'POST',
+          data: {title: $(this).text()},
+          success: function() {
+            $('.layout-datalist__titlesavebtn').hide();
+          }
+        });
+      });
+
+      return false;
+
+    });
+
+    // open overlay
+    $('.upload-btn__btn').on('click', function() {
+      $('.overlayCol-wall, .upload-firststep').show();
+    });
+
+    // close overlay
+    $('.upload-firststep .overlayCol__btn-close').on('click', function() {
+      $('.overlayCol-wall, .upload-firststep').hide();
+    });
+    $('.upload-completion .overlayCol__btn-close,\
+       .upload-completion .upload-completion__backbtn').on('click', function() {
+      location.reload();
+    });
+    $('.upload-error .overlayCol__btn-close,\
+       .upload-error .upload-error__backbtn').on('click', function() {
+      $('.overlayCol-wall, .upload-error').hide();
+    });
+    $('.setting-account .overlayCol__btn-close,\
+       .setting-account .setting-account__btnbox--cancel').on('click', function() {
+      $('.overlayCol-wall, .setting-account').hide();
+    });
+
+    // upload
+    $('.upload-firststep').on('dragenter dragover', function() {
+      return false;
+    });
+    function upload(file) {
+      var form_data = new FormData();
+      form_data.append('file', file);
+      $.ajax({
+        type: 'POST',
+        contentType: false,
+        processData: false,
+        url: '{{ url_for("data_set_upload") }}',
+        data: form_data,
+        beforeSend: function() {
+          $('.upload-firststep').hide();
+          $('.upload-loading').show();
+        },
+        success: function() {
+          $('.upload-loading').hide();
+          $('.upload-completion').show();
+        },
+        error: function() {
+          $('.upload-loading').hide();
+          $('.upload-error').show();
+        }
+      });
+    }
+    $('.upload-uploadarea').on('click', function() {
+      var file = $('<input type="file" accept="application/json">');
+      file.on('change', function(e) {
+        var file = e.target.files[0];
+        upload(file);
+      }).click();
+    });
+    $('.upload-firststep').on('drop', function(e) {
+      e.preventDefault();
+      var file = e.originalEvent.dataTransfer.files[0];
+      upload(file);
+    });
+
+    // delete
+    $('.layout-datalist__deletbtn').on('click', function() {
+      var delete_url = $(this).data('delete-url');
+      var $tr = $(this).parents('tr');
+      $('.overlayCol-wall, .title').text($tr.find('td:nth-child(1)').text());
+      $('.overlayCol-wall, .setting-account').show();
+      $('.setting-account__btnbox--delete').off().on('click', function() {
+        $.ajax({
+          url: delete_url,
+          type: 'DELETE',
+          success: function() {
+            $tr.remove()
+            $('.overlayCol-wall, .setting-account').hide();
+          }
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}

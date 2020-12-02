@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% set title = 'Graph' %}
+
+{% block header %}
+<p id="back">
+    <a href="/">&lt;DataSet選択</a>
+</p>
+<h1>{{ data_set_title.upper() }}</h1>
+{% endblock %}
+
+{% block scripts %}
+    <script>var setting = {
+        title: "{{ data_set_title }}",
+        content: {{ data_set_content|safe }}
+    };</script>
+    <script src="{{ url_for('static', filename='scripts/index.js') }}"></script>
+{% endblock %}

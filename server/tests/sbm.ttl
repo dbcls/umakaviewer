@@ -1,0 +1,931 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix sbm: <http://sparqlbuilder.org/2015/09/rdf-metadata-schema#> .
+
+_:node1b1k18hkax40 a sd:Service ;
+	sd:endpoint <http://data.allie.dbcls.jp/sparql> ;
+	sd:defaultDataset _:node1b1k18hkax39 .
+
+_:node1b1k18hkax39 a sd:Dataset ;
+	sbm:metadataGraphURI <http://data.allie.dbcls.jp/sparql> ;
+	void:properties "33"^^xsd:long ;
+	void:classes "19"^^xsd:long ;
+	sbm:datatypes "4"^^xsd:long ;
+	void:triples "150184110"^^xsd:long ;
+	sbm:endpointCategory "2"^^xsd:long ;
+	sbm:propertyCategory "3"^^xsd:long ;
+	sbm:classCategory "2"^^xsd:long ;
+	void:propertyPartition _:node1b1k18hkax2 .
+
+_:node1b1k18hkax2 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#frequency> ;
+	void:triples "8468287"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "3"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "3"^^xsd:long ;
+	void:distinctSubjects "8468287"^^xsd:long ;
+	void:distinctObjects "4901"^^xsd:long ;
+	sbm:propertyCategory "3"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax41 .
+
+_:node1b1k18hkax41 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#EachPair> ;
+	void:triples "3109687"^^xsd:long ;
+	void:distinctSubjects "3109687"^^xsd:long ;
+	void:distinctObjects "2263"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype xsd:string .
+
+_:node1b1k18hkax2 sbm:classRelation _:node1b1k18hkax42 .
+
+_:node1b1k18hkax42 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#LongForm> ;
+	void:triples "2638336"^^xsd:long ;
+	void:distinctSubjects "2638336"^^xsd:long ;
+	void:distinctObjects "2357"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype xsd:string .
+
+_:node1b1k18hkax2 sbm:classRelation _:node1b1k18hkax43 .
+
+_:node1b1k18hkax43 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#ShortForm> ;
+	void:triples "743574"^^xsd:long ;
+	void:distinctSubjects "743574"^^xsd:long ;
+	void:distinctObjects "2968"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype xsd:string .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax3 .
+
+_:node1b1k18hkax3 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#publishedIn> ;
+	void:triples "8136885"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "1"^^xsd:long ;
+	void:distinctSubjects "8136885"^^xsd:long ;
+	void:distinctObjects "104"^^xsd:long ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax44 .
+
+_:node1b1k18hkax44 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#PubMedID> ;
+	void:triples "8136885"^^xsd:long ;
+	void:distinctSubjects "8136885"^^xsd:long ;
+	void:distinctObjects "104"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype xsd:nonNegativeInteger .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax4 .
+
+_:node1b1k18hkax4 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#hasLongFormRepresentationOf> ;
+	void:triples "1976690"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "1976690"^^xsd:long ;
+	void:distinctObjects "1799154"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax5 .
+
+_:node1b1k18hkax5 a void:Dataset ;
+	void:property rdfs:label ;
+	void:triples "3570741"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "5"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "5"^^xsd:long ;
+	void:distinctSubjects "3383077"^^xsd:long ;
+	void:distinctObjects "3436122"^^xsd:long ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax45 .
+
+_:node1b1k18hkax45 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#LongForm> ;
+	void:triples "2825876"^^xsd:long ;
+	void:distinctSubjects "2638336"^^xsd:long ;
+	void:distinctObjects "2701128"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype rdf:langString .
+
+_:node1b1k18hkax5 sbm:classRelation _:node1b1k18hkax46 .
+
+_:node1b1k18hkax46 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#ResearchArea> ;
+	void:triples "1267"^^xsd:long ;
+	void:distinctSubjects "1143"^^xsd:long ;
+	void:distinctObjects "1266"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype rdf:langString .
+
+_:node1b1k18hkax5 sbm:classRelation _:node1b1k18hkax47 .
+
+_:node1b1k18hkax47 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#ShortForm> ;
+	void:triples "743574"^^xsd:long ;
+	void:distinctSubjects "743574"^^xsd:long ;
+	void:distinctObjects "743574"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype rdf:langString .
+
+_:node1b1k18hkax5 sbm:classRelation _:node1b1k18hkax48 .
+
+_:node1b1k18hkax48 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#Class> ;
+	void:triples "14"^^xsd:long ;
+	void:distinctSubjects "14"^^xsd:long ;
+	void:distinctObjects "14"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype rdf:langString .
+
+_:node1b1k18hkax5 sbm:classRelation _:node1b1k18hkax49 .
+
+_:node1b1k18hkax49 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+	void:triples "10"^^xsd:long ;
+	void:distinctSubjects "10"^^xsd:long ;
+	void:distinctObjects "10"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype rdf:langString .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax6 .
+
+_:node1b1k18hkax6 a void:Dataset ;
+	void:property rdfs:domain ;
+	void:triples "9"^^xsd:long ;
+	void:classes "2"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "9"^^xsd:long ;
+	void:distinctObjects "4"^^xsd:long ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax50 .
+
+_:node1b1k18hkax50 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+	void:triples "9"^^xsd:long ;
+	void:distinctSubjects "9"^^xsd:long ;
+	void:distinctObjects "4"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://www.w3.org/2002/07/owl#Class> .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax7 .
+
+_:node1b1k18hkax7 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#inResearchAreaOf> ;
+	void:triples "5047530"^^xsd:long ;
+	void:classes "2"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "2"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "5047530"^^xsd:long ;
+	void:distinctObjects "1154"^^xsd:long ;
+	sbm:propertyCategory "3"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax51 .
+
+_:node1b1k18hkax51 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#EachPair> ;
+	void:triples "3085701"^^xsd:long ;
+	void:distinctSubjects "3085701"^^xsd:long ;
+	void:distinctObjects "1143"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://purl.org/allie/ontology/201108#ResearchArea> .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax8 .
+
+_:node1b1k18hkax8 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#sameAs> ;
+	void:triples "113469"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "52622"^^xsd:long ;
+	void:distinctObjects "52303"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax9 .
+
+_:node1b1k18hkax9 a void:Dataset ;
+	void:property <http://purl.org/dc/terms/created> ;
+	void:triples "1"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "1"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax52 .
+
+_:node1b1k18hkax52 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#Ontology> ;
+	void:triples "1"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype xsd:dateTime .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax10 .
+
+_:node1b1k18hkax10 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#qualifiedCardinality> ;
+	void:triples "11"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "11"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax11 .
+
+_:node1b1k18hkax11 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#onClass> ;
+	void:triples "10"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "10"^^xsd:long ;
+	void:distinctObjects "6"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax12 .
+
+_:node1b1k18hkax12 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#appearsIn> ;
+	void:triples "5086377"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "5086377"^^xsd:long ;
+	void:distinctObjects "5086377"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax13 .
+
+_:node1b1k18hkax13 a void:Dataset ;
+	void:property rdfs:subClassOf ;
+	void:triples "9"^^xsd:long ;
+	void:classes "1"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "9"^^xsd:long ;
+	void:distinctObjects "5"^^xsd:long ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax53 .
+
+_:node1b1k18hkax53 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#Class> ;
+	void:triples "9"^^xsd:long ;
+	void:distinctSubjects "9"^^xsd:long ;
+	void:distinctObjects "5"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://www.w3.org/2002/07/owl#Class> .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax14 .
+
+_:node1b1k18hkax14 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#hasShortFormOf> ;
+	void:triples "3109687"^^xsd:long ;
+	void:classes "2"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "3109687"^^xsd:long ;
+	void:distinctObjects "743574"^^xsd:long ;
+	sbm:propertyCategory "1"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax54 .
+
+_:node1b1k18hkax54 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#EachPair> ;
+	void:triples "3109687"^^xsd:long ;
+	void:distinctSubjects "3109687"^^xsd:long ;
+	void:distinctObjects "743574"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://purl.org/allie/ontology/201108#ShortForm> .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax15 .
+
+_:node1b1k18hkax15 a void:Dataset ;
+	void:property <http://purl.org/dc/terms/license> ;
+	void:triples "1"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax16 .
+
+_:node1b1k18hkax16 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#inverseOf> ;
+	void:triples "2"^^xsd:long ;
+	void:classes "1"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "2"^^xsd:long ;
+	void:distinctObjects "2"^^xsd:long ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax55 .
+
+_:node1b1k18hkax55 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+	void:triples "2"^^xsd:long ;
+	void:distinctSubjects "2"^^xsd:long ;
+	void:distinctObjects "2"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://www.w3.org/2002/07/owl#ObjectProperty> .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax17 .
+
+_:node1b1k18hkax17 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#allValuesFrom> ;
+	void:triples "3"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "3"^^xsd:long ;
+	void:distinctObjects "3"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax18 .
+
+_:node1b1k18hkax18 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#someValuesFrom> ;
+	void:triples "4"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "4"^^xsd:long ;
+	void:distinctObjects "4"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax19 .
+
+_:node1b1k18hkax19 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#hasLongFormOf> ;
+	void:triples "3109687"^^xsd:long ;
+	void:classes "2"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "3109687"^^xsd:long ;
+	void:distinctObjects "2638336"^^xsd:long ;
+	sbm:propertyCategory "1"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax56 .
+
+_:node1b1k18hkax56 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#EachPair> ;
+	void:triples "3109687"^^xsd:long ;
+	void:distinctSubjects "3109687"^^xsd:long ;
+	void:distinctObjects "2638336"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://purl.org/allie/ontology/201108#LongForm> .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax20 .
+
+_:node1b1k18hkax20 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#onDataRange> ;
+	void:triples "1"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax21 .
+
+_:node1b1k18hkax21 a void:Dataset ;
+	void:property <http://www.w3.org/2004/02/skos/core#exactMatch> ;
+	void:triples "110818"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "61764"^^xsd:long ;
+	void:distinctObjects "58460"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax22 .
+
+_:node1b1k18hkax22 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#onProperty> ;
+	void:triples "18"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "2"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "18"^^xsd:long ;
+	void:distinctObjects "12"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax23 .
+
+_:node1b1k18hkax23 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#hasMemberOf> ;
+	void:triples "75513602"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "3"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "11221780"^^xsd:long ;
+	void:distinctObjects "11836528"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax24 .
+
+_:node1b1k18hkax24 a void:Dataset ;
+	void:property <http://purl.org/dc/elements/1.1/publisher> ;
+	void:triples "1"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax25 .
+
+_:node1b1k18hkax25 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#contains> ;
+	void:triples "1976690"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "1976690"^^xsd:long ;
+	void:distinctObjects "1976690"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax26 .
+
+_:node1b1k18hkax26 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#hasShortFormRepresentationOf> ;
+	void:triples "1976690"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "0"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "1976690"^^xsd:long ;
+	void:distinctObjects "704285"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax27 .
+
+_:node1b1k18hkax27 a void:Dataset ;
+	void:property rdfs:comment ;
+	void:triples "2"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "1"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "2"^^xsd:long ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax57 .
+
+_:node1b1k18hkax57 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#Ontology> ;
+	void:triples "2"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "2"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype rdf:langString .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax28 .
+
+_:node1b1k18hkax28 a void:Dataset ;
+	void:property rdfs:range ;
+	void:triples "9"^^xsd:long ;
+	void:classes "2"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "1"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "9"^^xsd:long ;
+	void:distinctObjects "7"^^xsd:long ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax58 .
+
+_:node1b1k18hkax58 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+	void:triples "9"^^xsd:long ;
+	void:distinctSubjects "9"^^xsd:long ;
+	void:distinctObjects "7"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://www.w3.org/2002/07/owl#Class> .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax29 .
+
+_:node1b1k18hkax29 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#versionInfo> ;
+	void:triples "1"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "1"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax59 .
+
+_:node1b1k18hkax59 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#Ontology> ;
+	void:triples "1"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype xsd:string .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax30 .
+
+_:node1b1k18hkax30 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#imports> ;
+	void:triples "1"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax31 .
+
+_:node1b1k18hkax31 a void:Dataset ;
+	void:property <http://purl.org/allie/ontology/201108#cooccursWith> ;
+	void:triples "4158713"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "4158713"^^xsd:long ;
+	void:distinctObjects "4158713"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax32 .
+
+_:node1b1k18hkax32 a void:Dataset ;
+	void:property <http://www.w3.org/2002/07/owl#equivalentClass> ;
+	void:triples "18"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "9"^^xsd:long ;
+	void:distinctObjects "18"^^xsd:long ;
+	sbm:propertyCategory "4"^^xsd:long .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax33 .
+
+_:node1b1k18hkax33 a void:Dataset ;
+	void:property rdf:type ;
+	void:triples "27828140"^^xsd:long ;
+	void:classes "6"^^xsd:long ;
+	sbm:subjectClasses "9"^^xsd:long ;
+	sbm:objectClasses "6"^^xsd:long ;
+	sbm:objectDatatypes "0"^^xsd:long ;
+	void:distinctSubjects "27828140"^^xsd:long ;
+	void:distinctObjects "14"^^xsd:long ;
+	sbm:propertyCategory "3"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax60 .
+
+_:node1b1k18hkax60 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#EachPair> ;
+	void:triples "3109687"^^xsd:long ;
+	void:distinctSubjects "3109687"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://www.w3.org/2002/07/owl#Class> .
+
+_:node1b1k18hkax33 sbm:classRelation _:node1b1k18hkax61 .
+
+_:node1b1k18hkax61 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#LongForm> ;
+	void:triples "2638336"^^xsd:long ;
+	void:distinctSubjects "2638336"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://www.w3.org/2002/07/owl#Class> .
+
+_:node1b1k18hkax33 sbm:classRelation _:node1b1k18hkax62 .
+
+_:node1b1k18hkax62 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#PubMedID> ;
+	void:triples "8136885"^^xsd:long ;
+	void:distinctSubjects "8136885"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://www.w3.org/2002/07/owl#Class> .
+
+_:node1b1k18hkax33 sbm:classRelation _:node1b1k18hkax63 .
+
+_:node1b1k18hkax63 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#ResearchArea> ;
+	void:triples "1143"^^xsd:long ;
+	void:distinctSubjects "1143"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://www.w3.org/2002/07/owl#Class> .
+
+_:node1b1k18hkax33 sbm:classRelation _:node1b1k18hkax64 .
+
+_:node1b1k18hkax64 a sbm:ClassRelation ;
+	sbm:subjectClass <http://purl.org/allie/ontology/201108#ShortForm> ;
+	void:triples "743574"^^xsd:long ;
+	void:distinctSubjects "743574"^^xsd:long ;
+	void:distinctObjects "1"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectClass <http://www.w3.org/2002/07/owl#Class> .
+
+_:node1b1k18hkax39 void:propertyPartition _:node1b1k18hkax34 .
+
+_:node1b1k18hkax34 a void:Dataset ;
+	void:property <http://purl.org/dc/elements/1.1/creator> ;
+	void:triples "3"^^xsd:long ;
+	void:classes "0"^^xsd:long ;
+	sbm:subjectClasses "1"^^xsd:long ;
+	sbm:objectClasses "0"^^xsd:long ;
+	sbm:objectDatatypes "1"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "3"^^xsd:long ;
+	sbm:propertyCategory "3"^^xsd:long ;
+	sbm:classRelation _:node1b1k18hkax65 .
+
+_:node1b1k18hkax65 a sbm:ClassRelation ;
+	sbm:subjectClass <http://www.w3.org/2002/07/owl#Ontology> ;
+	void:triples "2"^^xsd:long ;
+	void:distinctSubjects "1"^^xsd:long ;
+	void:distinctObjects "2"^^xsd:long ;
+	sbm:sample "" ;
+	sbm:objectDatatype rdf:langString .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax66 .
+
+_:node1b1k18hkax66 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#CooccurringShortFormList> ;
+	void:entities "4158713"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax67 .
+
+_:node1b1k18hkax67 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#EachPair> ;
+	void:entities "3109687"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax68 .
+
+_:node1b1k18hkax68 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#ExternalResource> ;
+	void:entities "0"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax69 .
+
+_:node1b1k18hkax69 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#List> ;
+	void:entities "0"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax70 .
+
+_:node1b1k18hkax70 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#LongForm> ;
+	void:entities "2638336"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax71 .
+
+_:node1b1k18hkax71 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#MeSHTerm> ;
+	void:entities "0"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax72 .
+
+_:node1b1k18hkax72 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#Pair> ;
+	void:entities "5086377"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax73 .
+
+_:node1b1k18hkax73 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#PairCluster> ;
+	void:entities "1976690"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax74 .
+
+_:node1b1k18hkax74 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#PairList> ;
+	void:entities "1976690"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax75 .
+
+_:node1b1k18hkax75 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#PubMedID> ;
+	void:entities "8136885"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax76 .
+
+_:node1b1k18hkax76 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#PubMedIDList> ;
+	void:entities "5086377"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax77 .
+
+_:node1b1k18hkax77 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#ResearchArea> ;
+	void:entities "1154"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax78 .
+
+_:node1b1k18hkax78 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#ShortForm> ;
+	void:entities "743574"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax79 .
+
+_:node1b1k18hkax79 a void:Dataset ;
+	void:class <http://purl.org/allie/ontology/201108#ShortFormList> ;
+	void:entities "0"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax80 .
+
+_:node1b1k18hkax80 a void:Dataset ;
+	void:class <http://www.w3.org/2002/07/owl#Class> ;
+	void:entities "14"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax81 .
+
+_:node1b1k18hkax81 a void:Dataset ;
+	void:class <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+	void:entities "1"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax82 .
+
+_:node1b1k18hkax82 a void:Dataset ;
+	void:class <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+	void:entities "11"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax83 .
+
+_:node1b1k18hkax83 a void:Dataset ;
+	void:class <http://www.w3.org/2002/07/owl#Ontology> ;
+	void:entities "1"^^xsd:long .
+
+_:node1b1k18hkax39 void:classPartition _:node1b1k18hkax84 .
+
+_:node1b1k18hkax84 a void:Dataset ;
+	void:class <http://www.w3.org/2002/07/owl#Restriction> ;
+	void:entities "18"^^xsd:long .
+
+_:node1b1k18hkax39 sbm:propertyCategorySubset _:node1b1k18hkax35 .
+
+_:node1b1k18hkax35 a void:Dataset ;
+	sbm:propertyCategory "2"^^xsd:long ;
+	void:properties "9"^^xsd:long ;
+	void:triples "11707659"^^xsd:long ;
+	sbm:searchableTriples "0"^^xsd:long .
+
+_:node1b1k18hkax39 sbm:propertyCategorySubset _:node1b1k18hkax36 .
+
+_:node1b1k18hkax36 a void:Dataset ;
+	sbm:propertyCategory "1"^^xsd:long ;
+	void:properties "2"^^xsd:long ;
+	void:triples "6219374"^^xsd:long ;
+	sbm:searchableTriples "0"^^xsd:long .
+
+_:node1b1k18hkax39 sbm:propertyCategorySubset _:node1b1k18hkax37 .
+
+_:node1b1k18hkax37 a void:Dataset ;
+	sbm:propertyCategory "4"^^xsd:long ;
+	void:properties "18"^^xsd:long ;
+	void:triples "90913117"^^xsd:long ;
+	sbm:searchableTriples "0"^^xsd:long .
+
+_:node1b1k18hkax39 sbm:propertyCategorySubset _:node1b1k18hkax38 .
+
+_:node1b1k18hkax38 a void:Dataset ;
+	sbm:propertyCategory "3"^^xsd:long ;
+	void:properties "4"^^xsd:long ;
+	void:triples "41343960"^^xsd:long ;
+	sbm:searchableTriples "0"^^xsd:long .
+
+_:node1b1k18hkax39 sbm:crawlLog _:node1b1k18hkax1 .
+
+_:node1b1k18hkax1 a sbm:CrawlLog ;
+	sbm:crawlStartTime "2016-11-15T22:01:49.071+09:00"^^xsd:dateTime ;
+	sbm:crawlEndTime "2016-11-15T22:01:49.071+09:00"^^xsd:dateTime ;
+	sbm:endpointAccesses "1"^^xsd:long .
+
+<http://purl.org/allie/ontology/201108#CooccurringShortFormList> a rdfs:Class ;
+	rdfs:label "CooccurringShortFormList"@en .
+
+<http://purl.org/allie/ontology/201108#EachPair> a rdfs:Class ;
+	rdfs:label "EachPair"@en .
+
+<http://purl.org/allie/ontology/201108#ExternalResource> a rdfs:Class ;
+	rdfs:label "ExternalResource"@en .
+
+<http://purl.org/allie/ontology/201108#List> a rdfs:Class ;
+	rdfs:label "List"@en .
+
+<http://purl.org/allie/ontology/201108#LongForm> a rdfs:Class ;
+	rdfs:label "LongForm"@en .
+
+<http://purl.org/allie/ontology/201108#MeSHTerm> a rdfs:Class ;
+	rdfs:label "MeSHTerm"@en .
+
+<http://purl.org/allie/ontology/201108#Pair> a rdfs:Class ;
+	rdfs:label "Pair"@en .
+
+<http://purl.org/allie/ontology/201108#PairCluster> a rdfs:Class ;
+	rdfs:label "PairCluster"@en .
+
+<http://purl.org/allie/ontology/201108#PairList> a rdfs:Class ;
+	rdfs:label "PairList"@en .
+
+<http://purl.org/allie/ontology/201108#PubMedID> a rdfs:Class ;
+	rdfs:label "PubMedID"@en .
+
+<http://purl.org/allie/ontology/201108#PubMedIDList> a rdfs:Class ;
+	rdfs:label "PubMedIDList"@en .
+
+<http://purl.org/allie/ontology/201108#ResearchArea> a rdfs:Class ;
+	rdfs:label "ResearchArea"@en .
+
+<http://purl.org/allie/ontology/201108#ShortForm> a rdfs:Class ;
+	rdfs:label "ShortForm"@en .
+
+<http://purl.org/allie/ontology/201108#ShortFormList> a rdfs:Class ;
+	rdfs:label "ShortFormList"@en .
+
+<http://purl.org/allie/ontology/201108#hasLongFormRepresentationOf> rdfs:domain <http://purl.org/allie/ontology/201108#PairCluster> .
+
+<http://purl.org/allie/ontology/201108#inResearchAreaOf> rdfs:domain <http://purl.org/allie/ontology/201108#Pair> .
+
+<http://purl.org/allie/ontology/201108#hasShortFormOf> rdfs:domain <http://purl.org/allie/ontology/201108#EachPair> .
+
+<http://purl.org/allie/ontology/201108#contains> rdfs:domain <http://purl.org/allie/ontology/201108#PairCluster> .
+
+<http://purl.org/allie/ontology/201108#cooccursWith> rdfs:domain <http://purl.org/allie/ontology/201108#Pair> .
+
+<http://purl.org/allie/ontology/201108#hasShortFormRepresentationOf> rdfs:domain <http://purl.org/allie/ontology/201108#PairCluster> .
+
+<http://purl.org/allie/ontology/201108#belongsTo> rdfs:domain <http://purl.org/allie/ontology/201108#PairList> .
+
+<http://purl.org/allie/ontology/201108#hasLongFormOf> rdfs:domain <http://purl.org/allie/ontology/201108#EachPair> .
+
+<http://purl.org/allie/ontology/201108#appearsIn> rdfs:domain <http://purl.org/allie/ontology/201108#Pair> .
+
+<http://purl.org/allie/ontology/201108#hasLongFormRepresentationOf> rdfs:range <http://purl.org/allie/ontology/201108#LongForm> .
+
+<http://purl.org/allie/ontology/201108#inResearchAreaOf> rdfs:range <http://purl.org/allie/ontology/201108#ResearchArea> .
+
+<http://purl.org/allie/ontology/201108#hasShortFormOf> rdfs:range <http://purl.org/allie/ontology/201108#ShortForm> .
+
+<http://purl.org/allie/ontology/201108#contains> rdfs:range <http://purl.org/allie/ontology/201108#PairList> .
+
+<http://purl.org/allie/ontology/201108#cooccursWith> rdfs:range <http://purl.org/allie/ontology/201108#CooccurringShortFormList> .
+
+<http://purl.org/allie/ontology/201108#hasShortFormRepresentationOf> rdfs:range <http://purl.org/allie/ontology/201108#ShortForm> .
+
+<http://purl.org/allie/ontology/201108#belongsTo> rdfs:range <http://purl.org/allie/ontology/201108#PairCluster> .
+
+<http://purl.org/allie/ontology/201108#hasLongFormOf> rdfs:range <http://purl.org/allie/ontology/201108#LongForm> .
+
+<http://purl.org/allie/ontology/201108#appearsIn> rdfs:range <http://purl.org/allie/ontology/201108#PubMedIDList> ;
+	rdfs:label "appearsIn"@en .
+
+<http://purl.org/allie/ontology/201108#contains> rdfs:label "contains"@en .
+
+<http://purl.org/allie/ontology/201108#cooccursWith> rdfs:label "cooccursWith"@en .
+
+<http://purl.org/allie/ontology/201108#hasLongFormOf> rdfs:label "hasLongFormOf"@en .
+
+<http://purl.org/allie/ontology/201108#hasLongFormRepresentationOf> rdfs:label "hasLongFormRepresentationOf"@en .
+
+<http://purl.org/allie/ontology/201108#hasMemberOf> rdfs:label "hasMemberOf"@en .
+
+<http://purl.org/allie/ontology/201108#hasShortFormOf> rdfs:label "hasShortFormOf"@en .
+
+<http://purl.org/allie/ontology/201108#hasShortFormRepresentationOf> rdfs:label "hasShortFormRepresentationOf"@en .
+
+<http://purl.org/allie/ontology/201108#inResearchAreaOf> rdfs:label "inResearchAreaOf"@en .
