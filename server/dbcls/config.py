@@ -57,7 +57,6 @@ class CircleciConfig(TestConfig):
 class ProductionConfig(ConfigBase):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://umaka_v:glnyUnLiybsaE968Z7@mysql:3306/dbcls_production?charset=utf8mb4'
-    GOOGLE_CREDENTIALS_PATH = Path('/app/adminsdk.json').as_posix()
     REDIS = {
         'host': 'redis',
         'port': 6379,
