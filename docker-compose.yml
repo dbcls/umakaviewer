@@ -8,6 +8,9 @@ services:
       MYSQL_USER: umaka_v
       MYSQL_DATABASE: dbcls_production
       MYSQL_PASSWORD: glnyUnLiybsaE968Z7
+    volumes:
+      - /opt/services/umaka_v/data:/var/lib/mysql
+      - /home/umaka_v/restore:/restore
   redis:
     image: redis:5.0-alpine
   server:
