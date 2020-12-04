@@ -1,36 +1,43 @@
 #!/bin/sh
 
-update_repo() {
+update() {
     cd $HOME/repos/umakaviewer
     git pull origin main
 }
 
 rebuild() {
+    cd $HOME/repos/umakaviewer
     $HOME/local/bin/docker-compose build
 }
 
-start_app() {
+start() {
+    cd $HOME/repos/umakaviewer
     $HOME/local/bin/docker-compose up -d
 }
 
-stop_app() {
+stop() {
+    cd $HOME/repos/umakaviewer
     $HOME/local/bin/docker-compose down
 }
 
-restart_app() {
+restart() {
+    cd $HOME/repos/umakaviewer
     $HOME/local/bin/docker-compose restart
 }
 
-stat() {
+ps() {
+    cd $HOME/repos/umakaviewer
     $HOME/local/bin/docker-compose ps
 }
 
 main() {
     case $1 in
-        "update_repo" ) update_repo ;;
+        "update" ) update_repo ;;
         "rebuild" ) rebuild ;;
-        "start_app" ) start_app ;;
-        "stat" ) stat ;;
+        "start" ) start_app ;;
+        "stop" ) start_app ;;
+        "restart" ) start_app ;;
+        "ps" ) stat ;;
     esac
 }
 
