@@ -32,12 +32,12 @@ ps() {
 
 main() {
     case $1 in
-        "update" ) update_repo ;;
+        "update" ) update ;;
         "rebuild" ) rebuild ;;
-        "start" ) start_app ;;
-        "stop" ) start_app ;;
-        "restart" ) start_app ;;
-        "ps" ) stat ;;
+        "start" ) start ;;
+        "stop" ) stop ;;
+        "restart" ) restart ;;
+        "ps" ) ps ;;
     esac
 }
 
