@@ -13,6 +13,14 @@ start_app() {
     $HOME/local/bin/docker-compose up -d
 }
 
+stop_app() {
+    $HOME/local/bin/docker-compose down
+}
+
+restart_app() {
+    $HOME/local/bin/docker-compose restart
+}
+
 stat() {
     $HOME/local/bin/docker-compose ps
 }
