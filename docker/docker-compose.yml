@@ -19,7 +19,7 @@ services:
       - 80:80
     volumes:
       - ./default.conf:/etc/nginx/conf.d/default.conf
-      - ../public/:/var/www/dbcls/public/
+      - ../node/public/:/var/www/dbcls/public/
 
   dbcls_redis:
     image: redis:5.0-alpine
