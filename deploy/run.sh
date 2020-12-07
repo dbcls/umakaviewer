@@ -7,27 +7,27 @@ update() {
 
 rebuild() {
     cd $HOME/repos/umakaviewer
-    $HOME/local/bin/docker-compose build
+    docker-compose -p umakaviewer build
 }
 
 start() {
     cd $HOME/repos/umakaviewer
-    $HOME/local/bin/docker-compose up -d
+    docker-compose -p umakaviewer up -d
 }
 
 stop() {
     cd $HOME/repos/umakaviewer
-    $HOME/local/bin/docker-compose down
+    docker-compose -p umakaviewer down
 }
 
 restart() {
     cd $HOME/repos/umakaviewer
-    $HOME/local/bin/docker-compose restart
+    docker-compose -p umakaviewer restart
 }
 
 ps() {
     cd $HOME/repos/umakaviewer
-    $HOME/local/bin/docker-compose ps
+    docker-compose -p umakaviewer ps
 }
 
 main() {
