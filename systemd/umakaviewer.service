@@ -1,0 +1,14 @@
+[Unit]
+Description=UmakaViewer
+
+[Service]
+ExecStart=/home/umaka_v/repos/umakaviewer/deploy/run.sh start
+ExecStop=/home/umaka_v/repos/umakaviewer/deploy/run.sh stop
+ExecReload=/home/umaka_v/repos/umakaviewer/deploy/run.sh restart
+Restart=always
+User=umaka_v
+Group=umaka_v
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
