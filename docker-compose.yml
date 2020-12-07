@@ -19,6 +19,8 @@ services:
     depends_on:
       - mysql
       - redis
+    ports:
+      - 5000:5000
     volumes:
       - /opt/services/umaka_v/firebase/adminsdk.json:/app/firebase-config.json
   nginx:
