@@ -1,2 +1,2 @@
 alembic -n production upgrade head
-python manage.py runserver
+APP_ENV=production python manage.py runserver
