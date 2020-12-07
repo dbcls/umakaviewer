@@ -13,7 +13,7 @@ services:
       - /home/umaka_v/restore:/restore
   redis:
     image: redis:5.0-alpine
-  server:
+  api:
     build:
       context: server
     depends_on:
@@ -27,4 +27,4 @@ services:
     ports:
       - 10082:80
     depends_on:
-      - server
+      - api
