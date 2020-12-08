@@ -1,4 +1,4 @@
-$header-height: 64px;
+$header-height: 88px; // 24px + 64px
 $domain-color: #f19b2c;
 $range-color: #b96bc6;
 $domain-range-color: #e2ac13;
@@ -183,7 +183,7 @@ body {
   width: 100%;
   min-width: 1052px;
   height: calc(100% - #{$header-height});
-  min-height: 800px + $header-height;
+  min-height: 750px + $header-height;
   position: absolute;
   -moz-box-sizing:border-box;
   -webkit-box-sizing:border-box;
@@ -355,10 +355,14 @@ body {
       position: relative;
       overflow: hidden;
 
+      figure {
+        z-index: 2;
+      }
+
       .breadcrumbs {
         background-color: rgba(255, 255, 255, 0.8);
         position: fixed;
-        top: 72px;
+        top: calc(#{$header-height} + 8px);
         left: calc(279px + 16px);
         max-width: calc(100% - 293px - 332px - 1em);
         padding: calc((30px - 1em) / 2);
@@ -1025,6 +1029,7 @@ body {
       }
     }
     #legend-wrapper {
+      z-index: 1;
       position: absolute;
       bottom: 0px;
       right: 24px;
@@ -1355,6 +1360,16 @@ body {
       bottom: -25px;
       border-width: 25px 25px 0 25px;
     }
+  }
+}
+
+#dbcls-common-footer.--simple {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - 225px);
+
+  div.footer__common {
+    background-color: rgba(242, 242, 242, 0.7);
   }
 }
 
