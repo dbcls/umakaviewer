@@ -10,8 +10,10 @@ import Visualize from '../containers/Visualize'
 import DataSetSetting from '../containers/DataSetSetting'
 import SettingRouter from './SettingRouter'
 import PublicDataSetViewer from '../containers/PublicDataSetViewer'
+import { useDBCLSFooter } from '../useDBCLSFooter'
 
 const Wrapper: React.SFC = () => {
+  useDBCLSFooter()
   return (
     <div className={getWrapperClassName()}>
       <main className="mainCol">
