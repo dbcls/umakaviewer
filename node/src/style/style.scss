@@ -1363,10 +1363,12 @@ body {
   }
 }
 
+$footer-width: 325px;
 #dbcls-common-footer.--simple {
   position: absolute;
   bottom: 0;
-  left: calc(50% - 225px);
+  left: calc((100% - #{$footer-width}) / 2);
+  width: $footer-width;
 
   div.footer__common {
     background-color: rgba(242, 242, 242, 0.7);
