@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { GetDataSetAction, VisualizedDataSet } from '../actions/visualize'
 
-import Visualizer, { Content } from '../../visualizer'
+import Visualizer, { Content } from '../visualizer'
 
 interface Props {
   match: {

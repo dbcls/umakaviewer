@@ -61,6 +61,6 @@
   },
   "include": [
     "src/ts/**/*",
-    "src/visualizer/**/*"
+    "src/ts/visualizer/**/*"
   ]
 }

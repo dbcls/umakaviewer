@@ -1,4 +1,5 @@
 $header-height: 88px; // 24px + 64px
+$dbcls-footer-height: 28px;
 $domain-color: #f19b2c;
 $range-color: #b96bc6;
 $domain-range-color: #e2ac13;
@@ -179,10 +180,16 @@ body {
   white-space: nowrap;
 }
 
+#content::after {
+  content: “”;
+  display: block;
+  clear: both;
+}
+
 #content {
   width: 100%;
   min-width: 1052px;
-  height: calc(100% - #{$header-height});
+  height: calc(100% - #{$header-height} - #{$dbcls-footer-height});
   min-height: 750px + $header-height;
   position: absolute;
   -moz-box-sizing:border-box;
@@ -488,7 +495,7 @@ body {
         }
       }
       text.focusing {
-        text-shadow: 
+        text-shadow:
           0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
           0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
           0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
@@ -558,7 +565,7 @@ body {
             font-size: 18px;
             font-weight: bold;
             line-height: 1.8;
-            text-shadow: 
+            text-shadow:
               0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
               0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
               0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
@@ -1363,16 +1370,16 @@ body {
   }
 }
 
-$footer-width: 325px;
-#dbcls-common-footer.--simple {
-  position: absolute;
-  bottom: 0;
-  left: calc((100% - #{$footer-width}) / 2);
-  width: $footer-width;
+// $footer-width: 325px;
+// #dbcls-common-footer.--simple {
+//   position: absolute;
+//   bottom: 0;
+//   left: calc((100% - #{$footer-width}) / 2);
+//   width: $footer-width;
 
-  div.footer__common {
-    background-color: rgba(242, 242, 242, 0.7);
-  }
-}
+//   div.footer__common {
+//     background-color: rgba(242, 242, 242, 0.7);
+//   }
+// }
 
 @import "top.scss";

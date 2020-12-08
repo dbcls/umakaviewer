@@ -25,7 +25,8 @@ import Detail from './components/Detail'
 import Graph from './components/Graph'
 
 import configureStore from './store/store'
-import ApiClient from '../ts/ApiClient'
+import ApiClient from '../ApiClient'
+import { useDBCLSFooterOuterText } from '../useDBCLSFooter'
 
 declare global {
   interface Document {
@@ -65,6 +66,7 @@ const App: React.FC<AppProps> = (props) => {
   const [messages, setMessages] = useState<{ [key: string]: string }>(
     getLocaleMessages('ja')
   )
+  const footer = useDBCLSFooterOuterText()
 
   const [state, setState] = useState<AppState>({
     structure: [],
@@ -88,13 +90,11 @@ const App: React.FC<AppProps> = (props) => {
     },
     [state.prefixes]
   )
-
   useEffect(() => {
     // set locale/messages
     const localeShortString = getLocaleShortString()
     setLocale(localeShortString)
     setMessages(getLocaleMessages(localeShortString))
-
     ApiClient.checkHealthy().then((res) => {
       if (res.data.ok) {
         // set content
@@ -116,7 +116,7 @@ const App: React.FC<AppProps> = (props) => {
         setState(filteredContent)
       }
     })
-  }, [content]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [content, footer]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ReduxProvider store={store}>
@@ -132,6 +132,10 @@ const App: React.FC<AppProps> = (props) => {
             </div>
             <Tooltip classes={state.classes} />
           </div>
+          <div
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: footer }}
+          />
         </>
       </IntlProvider>
     </ReduxProvider>
