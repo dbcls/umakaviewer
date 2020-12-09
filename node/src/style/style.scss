@@ -190,7 +190,7 @@ body {
   width: 100%;
   min-width: 1052px;
   height: calc(100% - #{$header-height} - #{$dbcls-footer-height});
-  min-height: 750px + $header-height;
+  // min-height: 750px + $header-height + $dbcls-footer-height;
   position: absolute;
   -moz-box-sizing:border-box;
   -webkit-box-sizing:border-box;
