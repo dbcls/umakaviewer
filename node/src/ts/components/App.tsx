@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Route } from 'react-router-dom'
+import { Redirect, Route, useLocation } from 'react-router-dom'
 import { IntlProvider } from 'react-intl'
 
 import firebase from 'firebase/app'
@@ -14,6 +14,7 @@ const App = (props: { runRootSaga: () => void }) => {
   const [firebaseUser, setFirebaseUser] = React.useState<
     firebase.User | null | undefined
   >(undefined)
+  const location = useLocation()
   React.useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
@@ -39,13 +40,25 @@ const App = (props: { runRootSaga: () => void }) => {
         locale={navigator.language}
         messages={localeMessages[navigator.language] || localeMessages.en}
       >
-        {firebaseUser !== undefined && (
-          <>
-            <Route path="/" component={Header} />
-            <Route path="/" component={Wrapper} />
-            <Route path={Url.Admin.PREFIX} component={AdminWrapper} />
-          </>
-        )}
+        {(() => {
+          if (firebaseUser === undefined) {
+            return null
+          }
+          if (
+            firebaseUser === null &&
+            !location.pathname.startsWith(`${Url.VISUALIZER_PREFIX}/`) &&
+            location.pathname !== Url.LOGIN
+          ) {
+            return <Redirect to={Url.LOGIN} />
+          }
+          return (
+            <>
+              <Route path="/" component={Header} />
+              <Route path="/" component={Wrapper} />
+              <Route path={Url.Admin.PREFIX} component={AdminWrapper} />
+            </>
+          )
+        })()}
       </IntlProvider>
     </div>
   )
