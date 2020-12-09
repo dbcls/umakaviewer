@@ -47,6 +47,7 @@ const App = (props: { runRootSaga: () => void }) => {
           if (
             firebaseUser === null &&
             !location.pathname.startsWith(`${Url.VISUALIZER_PREFIX}/`) &&
+            location.pathname !== Url.PUBLIC_DATA_SETS &&
             location.pathname !== Url.LOGIN
           ) {
             return <Redirect to={Url.LOGIN} />
