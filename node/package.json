@@ -54,9 +54,9 @@
     "sanitize.css": "3.3.0"
   },
   "devDependencies": {
-    "@babel/core": "7.12.9",
-    "@babel/preset-env": "7.12.7",
-    "@babel/preset-react": "7.12.7",
+    "@babel/core": "7.12.10",
+    "@babel/preset-env": "7.12.10",
+    "@babel/preset-react": "7.12.10",
     "@babel/preset-typescript": "7.12.7",
     "@types/d3": "6.2.0",
     "@types/lodash": "4.14.165",
