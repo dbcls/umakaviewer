@@ -520,14 +520,12 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
           hasNoMultipleInheritance(domainClassDetail) &&
           hasNoMultipleInheritance(rangeClassDetail)
 
-        if (
-          domain &&
-          range &&
-          domain !== range &&
-          object !== undefined &&
-          canDrawTriple
-        ) {
-          GraphRepository.updateRightLines([object])
+        if (domain && range && object !== undefined && canDrawTriple) {
+          if (domain !== range) {
+            GraphRepository.updateRightLines([object])
+          } else {
+            GraphRepository.updateSelfLines([object])
+          }
         }
         showCircles(showPropertyClass(domain, range), animate)
         return
