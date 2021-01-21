@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import React from 'react'
+import React, { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import _ from 'lodash'
 import { UiAction } from '../actions/ui'
@@ -13,6 +13,7 @@ import Legend from './Legend'
 import Breadcrumbs from './Breadcrumbs'
 import ClassStructure from './ClassStructure'
 import { Tree } from './Tree'
+import LoadingSpinner from './LoadingSpinner'
 
 type GraphProps = {
   classes: Classes
@@ -129,8 +130,9 @@ const Graph: React.FC<GraphProps> = (props) => {
     }
   }, [circleDiameter, classes, setRootNode, structure])
 
+  const containerRef = useRef(null)
   return (
-    <div id="graph-container">
+    <div id="graph-container" ref={containerRef}>
       <Breadcrumbs classes={classes} />
       <svg
         id="classes-structure"
@@ -148,6 +150,10 @@ const Graph: React.FC<GraphProps> = (props) => {
       </svg>
       <Legend />
       {showTree && <Tree nodes={sortedNodes} classes={classes} />}
+      <LoadingSpinner
+        containerEl={containerRef.current}
+        loadElSelector="circle.root"
+      />
     </div>
   )
 }
