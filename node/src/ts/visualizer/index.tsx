@@ -11,6 +11,7 @@ import '@formatjs/intl-relativetimeformat/locale-data/ja'
 import '@formatjs/intl-relativetimeformat/locale-data/en'
 
 import { Provider as ReduxProvider } from 'react-redux'
+import _ from 'lodash'
 import { getLocaleMessages, getLocaleShortString } from './utils'
 import { Property } from './types/property'
 import { Prefixes } from './types/prefix'
@@ -41,6 +42,66 @@ declare global {
 
 const store = configureStore()
 
+export type AppState = {
+  structure: Structure[]
+  classes: Classes
+  properties: Property[]
+  prefixes: Prefixes
+}
+
+const initialAppState: AppState = {
+  structure: [],
+  classes: {},
+  properties: [],
+  prefixes: {},
+}
+
+const filterContent = (
+  { structure, classes, properties, prefixes }: AppState,
+  condition: (uri: string) => boolean
+): AppState => {
+  const filterStructure = (children: Structure[]) => {
+    for (let i = 0; i < children.length; i += 1) {
+      const node = children[i]
+      if (condition(node.uri)) {
+        children.splice(i, 1)
+        i -= 1
+      } else if (node.children !== undefined) {
+        filterStructure(node.children)
+      }
+    }
+  }
+  filterStructure(structure)
+
+  const filteredClasses = Object.entries(classes).reduce<Classes>(
+    (prev, [key, val]) => {
+      if (condition(key)) {
+        return prev
+      }
+      prev[key] = val // eslint-disable-line no-param-reassign
+      return prev
+    },
+    {}
+  )
+
+  properties.forEach(({ class_relations: relations }) => {
+    for (let i = 0; i < relations.length; i += 1) {
+      const { subject_class: s, object_class: o } = relations[i]
+      if ((s && condition(s)) || (o && condition(o))) {
+        relations.splice(i, 1)
+        i -= 1
+      }
+    }
+  })
+
+  return {
+    structure,
+    classes: filteredClasses,
+    properties,
+    prefixes,
+  }
+}
+
 export type Content = {
   inheritance_structure: Structure[]
   classes: Classes
@@ -53,13 +114,6 @@ type AppProps = {
   content: Content
 }
 
-export type AppState = {
-  structure: Structure[]
-  classes: Classes
-  properties: Property[]
-  prefixes: Prefixes
-}
-
 const App: React.FC<AppProps> = (props) => {
   const { content } = props
   const [locale, setLocale] = useState('ja')
@@ -68,12 +122,8 @@ const App: React.FC<AppProps> = (props) => {
   )
   const footer = useDBCLSFooterOuterText()
 
-  const [state, setState] = useState<AppState>({
-    structure: [],
-    classes: {},
-    properties: [],
-    prefixes: {},
-  })
+  const [state, setState] = useState<AppState>(initialAppState)
+  const [stateToDraw, setStateToDraw] = useState<AppState>(initialAppState)
 
   // utility
   const getReferenceURL = useCallback(
@@ -98,7 +148,7 @@ const App: React.FC<AppProps> = (props) => {
     ApiClient.checkHealthy().then((res) => {
       if (res.data.ok) {
         // set content
-        const preferedContent = {
+        const preferredContent = {
           structure: content.inheritance_structure,
           classes: content.classes,
           properties: content.properties,
@@ -112,25 +162,65 @@ const App: React.FC<AppProps> = (props) => {
         })
 
         // filter content
-        const filteredContent = Blacklist.filter(preferedContent)
+        const existsInBlacklist = (uri: string) =>
+          Blacklist.has(uri, preferredContent.prefixes)
+        const filteredContent = filterContent(
+          preferredContent,
+          existsInBlacklist
+        )
         setState(filteredContent)
+        setStateToDraw(filteredContent)
       }
     })
   }, [content, footer]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const restrictNoChildClass = true
+  const lowerLimitOfClassInstances: number | null = 3
+  useEffect(() => {
+    if (lowerLimitOfClassInstances === null) {
+      return
+    }
+
+    const flattenChildren = (elem: Structure): Structure[] => {
+      if (elem.children === undefined) {
+        return [elem]
+      }
+      return _.flatMap(elem.children, flattenChildren).concat([elem])
+    }
+
+    const urisToFilter = state.structure
+      .flatMap((elem) => flattenChildren(elem))
+      .filter((elem) => !restrictNoChildClass || !elem.children)
+      .map((elem) => elem.uri)
+    const urisToHide = urisToFilter.filter((uri) => {
+      const { entities } = state.classes[uri]
+      return entities === undefined || entities < lowerLimitOfClassInstances
+    })
+
+    const shouldHideElement = (uri: string) => urisToHide.includes(uri)
+    const filteredState = filterContent({ ...state }, shouldHideElement)
+    setStateToDraw(filteredState)
+  }, [state])
 
   return (
     <ReduxProvider store={store}>
       <IntlProvider locale={locale} messages={messages}>
         <>
           <div id="main">
-            <PropertyList properties={state.properties} />
-            <Graph classes={state.classes} structure={state.structure} />
-            <Detail classes={state.classes} getReferenceURL={getReferenceURL} />
+            <PropertyList properties={stateToDraw.properties} />
+            <Graph
+              classes={stateToDraw.classes}
+              structure={stateToDraw.structure}
+            />
+            <Detail
+              classes={stateToDraw.classes}
+              getReferenceURL={getReferenceURL}
+            />
             <div id="header-right">
-              <SearchBox classes={state.classes} />
-              <Prefix prefixes={state.prefixes} />
+              <SearchBox classes={stateToDraw.classes} />
+              <Prefix prefixes={stateToDraw.prefixes} />
             </div>
-            <Tooltip classes={state.classes} />
+            <Tooltip classes={stateToDraw.classes} />
           </div>
           <div
             // eslint-disable-next-line react/no-danger
