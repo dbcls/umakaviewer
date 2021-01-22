@@ -40,8 +40,6 @@ declare global {
   }
 }
 
-const store = configureStore()
-
 export type AppState = {
   structure: Structure[]
   classes: Classes
@@ -203,35 +201,43 @@ const App: React.FC<AppProps> = (props) => {
   }, [state])
 
   return (
-    <ReduxProvider store={store}>
-      <IntlProvider locale={locale} messages={messages}>
-        <>
-          <div id="main">
-            <PropertyList properties={stateToDraw.properties} />
-            <Graph
-              classes={stateToDraw.classes}
-              structure={stateToDraw.structure}
-            />
-            <Detail
-              classes={stateToDraw.classes}
-              getReferenceURL={getReferenceURL}
-            />
-            <div id="header-right">
-              <SearchBox classes={stateToDraw.classes} />
-              <Prefix prefixes={stateToDraw.prefixes} />
-            </div>
-            <Tooltip classes={stateToDraw.classes} />
-          </div>
-          <div
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: footer }}
+    <IntlProvider locale={locale} messages={messages}>
+      <>
+        <div id="main">
+          <PropertyList properties={stateToDraw.properties} />
+          <Graph
+            classes={stateToDraw.classes}
+            structure={stateToDraw.structure}
           />
-        </>
-      </IntlProvider>
-    </ReduxProvider>
+          <Detail
+            classes={stateToDraw.classes}
+            getReferenceURL={getReferenceURL}
+          />
+          <div id="header-right">
+            <SearchBox classes={stateToDraw.classes} />
+            <Prefix prefixes={stateToDraw.prefixes} />
+          </div>
+          <Tooltip classes={stateToDraw.classes} />
+        </div>
+        <div
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: footer }}
+        />
+      </>
+    </IntlProvider>
   )
 }
 
 App.displayName = 'App'
 
-export default App
+const store = configureStore()
+const Visualizer: React.FC<AppProps> = (props) => {
+  const { content } = props
+  return (
+    <ReduxProvider store={store}>
+      <App content={content} />
+    </ReduxProvider>
+  )
+}
+
+export default Visualizer
