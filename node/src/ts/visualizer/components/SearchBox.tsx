@@ -132,7 +132,7 @@ const SearchBox: React.FC<SearchBoxProps> = (props) => {
   const focus = useCallback(() => {
     // http://stackoverflow.com/a/11676673
     const { scrollX, scrollY } = window
-    textboxRef.current?.focus()
+    // textboxRef.current?.focus()
     window.scrollTo(scrollX, scrollY)
   }, [])
 
