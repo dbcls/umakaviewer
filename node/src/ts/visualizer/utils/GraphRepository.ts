@@ -462,8 +462,8 @@ class GraphRepository {
 
   updateSelfLines(
     nodes: NodeType[],
-    handleMouseOver: SVGEventHandlerType,
-    handleMouseOut: SVGEventHandlerType
+    handleMouseOver: SVGEventHandlerType = () => {},
+    handleMouseOut: SVGEventHandlerType = () => {}
   ) {
     const selfLines = this.paths.self?.data(nodes, nodeKeyFn)
     selfLines
