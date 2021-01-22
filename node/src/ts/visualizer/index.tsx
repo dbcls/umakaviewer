@@ -10,7 +10,7 @@ import '@formatjs/intl-relativetimeformat/polyfill'
 import '@formatjs/intl-relativetimeformat/locale-data/ja'
 import '@formatjs/intl-relativetimeformat/locale-data/en'
 
-import { Provider as ReduxProvider } from 'react-redux'
+import { Provider as ReduxProvider, useSelector } from 'react-redux'
 import _ from 'lodash'
 import { getLocaleMessages, getLocaleShortString } from './utils'
 import { Property } from './types/property'
@@ -28,6 +28,8 @@ import Graph from './components/Graph'
 import configureStore from './store/store'
 import ApiClient from '../ApiClient'
 import { useDBCLSFooterOuterText } from '../useDBCLSFooter'
+import Filter from './components/Filter'
+import { RootState } from './reducers'
 
 declare global {
   interface Document {
@@ -112,6 +114,10 @@ type AppProps = {
   content: Content
 }
 
+const selector = ({ filter: { lowerLimitOfClassInstances } }: RootState) => ({
+  lowerLimitOfClassInstances,
+})
+
 const App: React.FC<AppProps> = (props) => {
   const { content } = props
   const [locale, setLocale] = useState('ja')
@@ -173,9 +179,10 @@ const App: React.FC<AppProps> = (props) => {
   }, [content, footer]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const restrictNoChildClass = true
-  const lowerLimitOfClassInstances: number | null = 3
+  const { lowerLimitOfClassInstances } = useSelector(selector)
   useEffect(() => {
-    if (lowerLimitOfClassInstances === null) {
+    if (lowerLimitOfClassInstances === 0) {
+      setStateToDraw(state)
       return
     }
 
@@ -196,9 +203,9 @@ const App: React.FC<AppProps> = (props) => {
     })
 
     const shouldHideElement = (uri: string) => urisToHide.includes(uri)
-    const filteredState = filterContent({ ...state }, shouldHideElement)
+    const filteredState = filterContent(_.cloneDeep(state), shouldHideElement)
     setStateToDraw(filteredState)
-  }, [state])
+  }, [state, lowerLimitOfClassInstances])
 
   return (
     <IntlProvider locale={locale} messages={messages}>
@@ -214,6 +221,7 @@ const App: React.FC<AppProps> = (props) => {
             getReferenceURL={getReferenceURL}
           />
           <div id="header-right">
+            <Filter />
             <SearchBox classes={stateToDraw.classes} />
             <Prefix prefixes={stateToDraw.prefixes} />
           </div>
