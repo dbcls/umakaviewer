@@ -21,9 +21,9 @@
   "dependencies": {
     "@formatjs/intl-pluralrules": "3.5.6",
     "@formatjs/intl-relativetimeformat": "7.3.6",
-    "@fortawesome/fontawesome-svg-core": "1.2.32",
-    "@fortawesome/free-regular-svg-icons": "5.15.1",
-    "@fortawesome/free-solid-svg-icons": "5.15.1",
+    "@fortawesome/fontawesome-svg-core": "1.2.34",
+    "@fortawesome/free-regular-svg-icons": "5.15.2",
+    "@fortawesome/free-solid-svg-icons": "5.15.2",
     "@fortawesome/react-fontawesome": "0.1.14",
     "axios": "0.19.2",
     "clsx": "1.1.1",
