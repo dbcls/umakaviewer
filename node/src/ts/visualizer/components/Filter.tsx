@@ -1,12 +1,21 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useIntl } from 'react-intl'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { DetailAction } from '../actions/detail'
 import { FilterAction } from '../actions/filter'
+import { RootState } from '../reducers'
 
+const selector = ({ filter: { showingConditions } }: RootState) => ({
+  showingConditions,
+})
 const Filter: React.FC = () => {
+  const { showingConditions } = useSelector(selector)
   const dispatch = useDispatch()
   const intl = useIntl()
+
+  const handleClick = useCallback(() => {
+    dispatch(FilterAction.showConditions())
+  }, [])
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -22,35 +31,69 @@ const Filter: React.FC = () => {
     []
   )
 
-  return (
-    <div id="filter-wrapper">
-      <div className="filter-header">
-        <span className="legend-label">
-          {intl.formatMessage({
-            id: 'filter.display.condition',
-          })}
-        </span>
-        <button type="button" className="hidden-toggle" />
+  const showingConditionsEl = useMemo(() => {
+    return (
+      <div id="filter">
+        <div className="filter-header">
+          <span className="legend-label">
+            {intl.formatMessage({
+              id: 'filter.display.condition',
+            })}
+          </span>
+          <button
+            type="button"
+            className="hidden-toggle"
+            onClick={handleClick}
+          />
+        </div>
+        <div className="filter-conditions">
+          <ul>
+            <li>
+              <span>
+                {intl.formatMessage({
+                  id: 'filter.show.more.than.specified.entities.prefix',
+                })}
+              </span>
+              <input type="number" onKeyPress={handleKeyPress} />
+              <span>
+                {intl.formatMessage({
+                  id: 'filter.show.more.than.specified.entities.suffix',
+                })}
+              </span>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div className="filter-conditions">
-        <ul>
-          <li>
-            <span>
-              {intl.formatMessage({
-                id: 'filter.show.more.than.specified.entities.prefix',
-              })}
-            </span>
-            <input type="number" onKeyPress={handleKeyPress} />
-            <span>
-              {intl.formatMessage({
-                id: 'filter.show.more.than.specified.entities.suffix',
-              })}
-            </span>
-          </li>
-        </ul>
+    )
+  }, [])
+
+  const noShowingConditionsEl = useMemo(() => {
+    return (
+      <div id="filter" className="close">
+        <div className="filter-header">
+          <span className="legend-label">
+            {intl.formatMessage({
+              id: 'filter.display.condition',
+            })}
+          </span>
+          <button
+            type="button"
+            className="hidden-toggle"
+            onClick={handleClick}
+          />
+        </div>
       </div>
-    </div>
-  )
+    )
+  }, [])
+
+  const filterEl = useMemo(() => {
+    if (showingConditions) {
+      return showingConditionsEl
+    }
+    return noShowingConditionsEl
+  }, [showingConditionsEl, noShowingConditionsEl, showingConditions])
+
+  return <div id="filter-wrapper">{filterEl}</div>
 }
 
 export default Filter
