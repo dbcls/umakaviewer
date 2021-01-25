@@ -28,7 +28,6 @@ import Graph from './components/Graph'
 import configureStore from './store/store'
 import ApiClient from '../ApiClient'
 import { useDBCLSFooterOuterText } from '../useDBCLSFooter'
-import Filter from './components/Filter'
 import { RootState } from './reducers'
 
 declare global {
@@ -221,7 +220,6 @@ const App: React.FC<AppProps> = (props) => {
             getReferenceURL={getReferenceURL}
           />
           <div id="header-right">
-            <Filter />
             <SearchBox classes={stateToDraw.classes} />
             <Prefix prefixes={stateToDraw.prefixes} />
           </div>

@@ -48,6 +48,10 @@ const messages = {
   'tree.number.of.classes': '{count}クラス',
   'tree.display': '表示',
   'tree.return.to.selected.class': '選択中のクラスに戻る',
+  'filter.display.condition': '表示条件',
+  'filter.show.more.than.specified.entities.prefix': ' ',
+  'filter.show.more.than.specified.entities.suffix':
+    '個以上のエンティティ数を持つクラスを表示',
 }
 
 export default messages

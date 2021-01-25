@@ -14,6 +14,7 @@ import Breadcrumbs from './Breadcrumbs'
 import ClassStructure from './ClassStructure'
 import { Tree } from './Tree'
 import LoadingSpinner from './LoadingSpinner'
+import Filter from './Filter'
 
 type GraphProps = {
   classes: Classes
@@ -134,6 +135,7 @@ const Graph: React.FC<GraphProps> = (props) => {
   return (
     <div id="graph-container" ref={containerRef}>
       <Breadcrumbs classes={classes} />
+      <Filter />
       <svg
         id="classes-structure"
         viewBox={isIE11 ? `0 0 ${svgWidth} ${svgHeight}` : undefined}
