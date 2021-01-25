@@ -384,7 +384,7 @@ body {
         position: fixed;
         top: calc(#{$header-height} + 8px);
         left: calc(279px + 16px);
-        max-width: calc(100% - 293px - 332px - 1em - 136px);
+        max-width: calc(100% - 293px - 332px - 1em - 180px);
         padding: calc((30px - 1em) / 2);
         height: $breadcrumbs-height;
         font-size: 13px;
@@ -428,7 +428,7 @@ body {
         }
 
         #filter.close {
-          width: 120px;
+          width: 164px;
           float: right;
         }
 

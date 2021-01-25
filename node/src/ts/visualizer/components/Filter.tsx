@@ -79,7 +79,7 @@ const Filter: React.FC = () => {
         </div>
       </div>
     )
-  }, [])
+  }, [intl])
 
   const noShowingConditionsEl = useMemo(() => {
     return (
@@ -98,7 +98,7 @@ const Filter: React.FC = () => {
         </div>
       </div>
     )
-  }, [])
+  }, [intl])
 
   const filterEl = useMemo(() => {
     if (showingConditions) {
