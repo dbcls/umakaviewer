@@ -3,10 +3,12 @@ import * as types from '../constants/ActionTypes'
 
 export interface FilterState {
   lowerLimitOfClassInstances: number
+  showingConditions: boolean
 }
 
 const initialState: FilterState = {
   lowerLimitOfClassInstances: 0,
+  showingConditions: true,
 }
 
 export default function legend(
@@ -18,6 +20,11 @@ export default function legend(
       return {
         ...state,
         lowerLimitOfClassInstances: action.payload.limit,
+      }
+    case types.SHOW_CONDITIONS:
+      return {
+        ...state,
+        showingConditions: !state.showingConditions,
       }
     default:
       return state

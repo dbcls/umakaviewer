@@ -189,6 +189,7 @@ body {
   display: inline-block;
   width: 20px;
   height: 20px;
+  min-height: 0;
   background-image: url("../images/icon-hanrei-arrow.png");
 }
 
@@ -413,15 +414,23 @@ body {
       }
 
       #filter-wrapper {
-        min-width: 300px;
+        width: 376px;
         top: calc(#{$header-height} + 8px);
         right: calc(332px + 16px);
         position: fixed;
-        background-color: rgba(255, 255, 255, 0.8);
-        border: 1px solid #dddee2;
-        padding: calc((30px - 1em) / 2);
-        font-size: 14px;
         z-index: 5;
+
+        #filter {
+          background-color: rgba(255, 255, 255, 0.8);
+          border: 1px solid #dddee2;
+          padding: 16px 8px 8px 16px;
+          font-size: 14px;
+        }
+
+        #filter.close {
+          width: 120px;
+          float: right;
+        }
 
         .filter-header {
           margin-bottom: 8px;

@@ -30,3 +30,4 @@ export const HIDE_DETAIL_PANE = 'HIDE_DETAIL_PANE'
 export const RESIZE = 'RESIZE'
 
 export const FILTER_CLASSES = 'FILTER_CLASSES'
+export const SHOW_CONDITIONS = 'SHOW_CONDITIONS'
