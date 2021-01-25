@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { DetailAction } from '../actions/detail'
 import { FilterAction } from '../actions/filter'
 import { RootState } from '../reducers'
+import { useQuery } from '../utils'
 
 const selector = ({ filter: { showingConditions } }: RootState) => ({
   showingConditions,
@@ -12,6 +13,15 @@ const Filter: React.FC = () => {
   const { showingConditions } = useSelector(selector)
   const dispatch = useDispatch()
   const intl = useIntl()
+  const query = useQuery()
+
+  const defaultEntitiesLimit = useMemo(() => {
+    const limit = Number(query.get('limit'))
+    if (Number.isInteger(limit)) {
+      return limit
+    }
+    return 0
+  }, [])
 
   const handleClick = useCallback(() => {
     dispatch(FilterAction.showConditions())
@@ -54,7 +64,11 @@ const Filter: React.FC = () => {
                   id: 'filter.show.more.than.specified.entities.prefix',
                 })}
               </span>
-              <input type="number" onKeyPress={handleKeyPress} />
+              <input
+                type="number"
+                defaultValue={defaultEntitiesLimit}
+                onKeyPress={handleKeyPress}
+              />
               <span>
                 {intl.formatMessage({
                   id: 'filter.show.more.than.specified.entities.suffix',
