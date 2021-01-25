@@ -568,11 +568,10 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
   )
 
   React.useEffect(() => {
-    GraphRepository.classes = props.classes
-    GraphRepository.updateNode(props.nodes)
-  }, [props.classes, props.nodes])
+    GraphRepository.classes = classes
+    GraphRepository.updateNode(nodes)
+    GraphRepository.removeCircles()
 
-  React.useEffect(() => {
     GraphRepository.setSvg()
     GraphRepository.setShadow()
     GraphRepository.setSearching()
@@ -591,7 +590,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       setInterval(GraphRepository.forceRedrawLines, 10)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [classes, nodes])
 
   const oldPropsRef = useRef({ oldWidth: width, oldHeight: height })
   const mounted = React.useRef(false)

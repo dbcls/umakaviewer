@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
+import { DetailAction } from '../actions/detail'
 import { FilterAction } from '../actions/filter'
 
 const Filter: React.FC = () => {
@@ -10,6 +11,7 @@ const Filter: React.FC = () => {
       if (e.key === 'Enter') {
         const limit = Number(e.currentTarget.value)
         dispatch(FilterAction.filterClasses(limit))
+        dispatch(DetailAction.focusCircle(0, ''))
       }
       if (!e.key.match(/[0-9]/)) {
         e.preventDefault()
