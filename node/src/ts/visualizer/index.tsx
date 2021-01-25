@@ -10,9 +10,13 @@ import '@formatjs/intl-relativetimeformat/polyfill'
 import '@formatjs/intl-relativetimeformat/locale-data/ja'
 import '@formatjs/intl-relativetimeformat/locale-data/en'
 
-import { Provider as ReduxProvider, useSelector } from 'react-redux'
+import {
+  Provider as ReduxProvider,
+  useDispatch,
+  useSelector,
+} from 'react-redux'
 import _ from 'lodash'
-import { getLocaleMessages, getLocaleShortString } from './utils'
+import { getLocaleMessages, getLocaleShortString, useQuery } from './utils'
 import { Property } from './types/property'
 import { Prefixes } from './types/prefix'
 import { Classes } from './types/class'
@@ -29,6 +33,7 @@ import configureStore from './store/store'
 import ApiClient from '../ApiClient'
 import { useDBCLSFooterOuterText } from '../useDBCLSFooter'
 import { RootState } from './reducers'
+import { FilterAction } from './actions/filter'
 
 declare global {
   interface Document {
@@ -113,8 +118,8 @@ type AppProps = {
   content: Content
 }
 
-const selector = ({ filter: { lowerLimitOfClassInstances } }: RootState) => ({
-  lowerLimitOfClassInstances,
+const selector = ({ filter: { lowerLimitOfClassEntities } }: RootState) => ({
+  lowerLimitOfClassEntities,
 })
 
 const App: React.FC<AppProps> = (props) => {
@@ -124,6 +129,8 @@ const App: React.FC<AppProps> = (props) => {
     getLocaleMessages('ja')
   )
   const footer = useDBCLSFooterOuterText()
+  const dispatch = useDispatch()
+  const query = useQuery()
 
   const [state, setState] = useState<AppState>(initialAppState)
   const [stateToDraw, setStateToDraw] = useState<AppState>(initialAppState)
@@ -148,6 +155,12 @@ const App: React.FC<AppProps> = (props) => {
     const localeShortString = getLocaleShortString()
     setLocale(localeShortString)
     setMessages(getLocaleMessages(localeShortString))
+
+    const entitiesLimit = Number(query.get('limit'))
+    if (Number.isInteger(entitiesLimit)) {
+      dispatch(FilterAction.filterClasses(entitiesLimit))
+    }
+
     ApiClient.checkHealthy().then((res) => {
       if (res.data.ok) {
         // set content
@@ -178,9 +191,9 @@ const App: React.FC<AppProps> = (props) => {
   }, [content, footer]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const restrictNoChildClass = true
-  const { lowerLimitOfClassInstances } = useSelector(selector)
+  const { lowerLimitOfClassEntities } = useSelector(selector)
   useEffect(() => {
-    if (lowerLimitOfClassInstances === 0) {
+    if (lowerLimitOfClassEntities === 0) {
       setStateToDraw(state)
       return
     }
@@ -198,13 +211,13 @@ const App: React.FC<AppProps> = (props) => {
       .map((elem) => elem.uri)
     const urisToHide = urisToFilter.filter((uri) => {
       const { entities } = state.classes[uri]
-      return entities === undefined || entities < lowerLimitOfClassInstances
+      return entities === undefined || entities < lowerLimitOfClassEntities
     })
 
     const shouldHideElement = (uri: string) => urisToHide.includes(uri)
     const filteredState = filterContent(_.cloneDeep(state), shouldHideElement)
     setStateToDraw(filteredState)
-  }, [state, lowerLimitOfClassInstances])
+  }, [state, lowerLimitOfClassEntities])
 
   return (
     <IntlProvider locale={locale} messages={messages}>
