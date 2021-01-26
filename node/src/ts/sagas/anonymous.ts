@@ -2,7 +2,7 @@ import moment from 'moment'
 import { push } from 'connected-react-router'
 import { put, takeEvery, call } from 'redux-saga/effects'
 import { reset, startSubmit, stopSubmit } from 'redux-form'
-import * as firebase from 'firebase/app'
+import firebase from 'firebase/app'
 
 import { FormAttributes, Url } from '../constants'
 import { SignUpActionNames } from '../actions/signup'
