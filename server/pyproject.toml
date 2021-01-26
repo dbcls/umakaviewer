@@ -21,7 +21,7 @@ umakaviewer = "0.0.12"
 PyMySQL = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.1"
+pytest = "^6.2"
 pytest-mock = "^1.10"
 
 [build-system]
