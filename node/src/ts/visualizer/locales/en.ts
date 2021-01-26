@@ -49,6 +49,10 @@ const messages = {
   'tree.number.of.classes': '{count} Classes',
   'tree.display': 'Display',
   'tree.return.to.selected.class': 'Return to the selected class',
+  'filter.display.condition': 'Display condition',
+  'filter.show.more.than.specified.entities.prefix':
+    'Show classes that have more than',
+  'filter.show.more.than.specified.entities.suffix': 'entities',
 }
 
 export default messages

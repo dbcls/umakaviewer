@@ -1022,6 +1022,14 @@ class GraphRepository {
       })
     }
   }
+
+  removeCircles() {
+    this.circles?.data([]).exit().remove()
+    Object.values(this.paths).forEach((path) => path?.data([]).exit().remove())
+    this.texts?.data([]).exit().remove()
+    this.gtexts?.data([]).exit().remove()
+    this.popups?.data([]).exit().remove()
+  }
 }
 
 export default new GraphRepository()

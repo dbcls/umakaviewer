@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom'
 import locales from '../locales'
 import { Classes } from '../types/class'
 
@@ -44,3 +45,7 @@ export const readTextFileContent = (filePath: string) => {
 }
 
 export const isIE11 = window.document.documentMode === 11
+
+export const useQuery = () => {
+  return new URLSearchParams(useLocation().search)
+}

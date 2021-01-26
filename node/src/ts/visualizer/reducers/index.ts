@@ -5,6 +5,7 @@ import legend from './legend'
 import search from './search'
 import tooltip from './tooltip'
 import ui from './ui'
+import filter from './filter'
 
 const rootReducer = combineReducers({
   property,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   search,
   tooltip,
   ui,
+  filter,
 })
 
 export type RootState = ReturnType<typeof rootReducer>

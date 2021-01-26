@@ -139,6 +139,7 @@ html {
   text-align: center;
   color: #fff;
   margin-right: 8px;
+  padding: 0 4px;
 }
 
 .arrow-line-base {
@@ -178,6 +179,18 @@ body {
   vertical-align: middle;
   width: 65px;
   white-space: nowrap;
+}
+
+.hidden-toggle {
+  cursor: pointer;
+  pointer-events: auto;
+  right: 16px;
+  position: absolute;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  min-height: 0;
+  background-image: url("../images/icon-hanrei-arrow.png");
 }
 
 #content::after {
@@ -371,7 +384,7 @@ body {
         position: fixed;
         top: calc(#{$header-height} + 8px);
         left: calc(279px + 16px);
-        max-width: calc(100% - 293px - 332px - 1em);
+        max-width: calc(100% - 293px - 332px - 1em - 180px);
         padding: calc((30px - 1em) / 2);
         height: $breadcrumbs-height;
         font-size: 13px;
@@ -396,6 +409,52 @@ body {
           &:last-of-type {
             font-weight: bold;
             text-decoration: none;
+          }
+        }
+      }
+
+      #filter-wrapper {
+        width: 376px;
+        top: calc(#{$header-height} + 8px);
+        right: calc(332px + 16px);
+        position: fixed;
+        z-index: 5;
+
+        #filter {
+          background-color: rgba(255, 255, 255, 0.8);
+          border: 1px solid #dddee2;
+          padding: 16px 8px 8px 16px;
+          font-size: 14px;
+        }
+
+        #filter.close {
+          width: 164px;
+          float: right;
+        }
+
+        .filter-header {
+          margin-bottom: 8px;
+        }
+
+        .filter-conditions {
+          input[type="number"] {
+            border: 1px solid #adb0bb;
+            width: 48px;
+            height: 24px;
+            border-radius: 4px;
+            padding: 8px 4px 8px 4px;
+            margin: 0 4px;
+            background-color: #fff;
+            color: #444;
+            pointer-events: auto;
+            text-align: right;
+        
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+              -webkit-appearance: none;
+              margin: 0;
+              -moz-appearance:textfield;
+            }
           }
         }
       }
@@ -1058,16 +1117,6 @@ body {
 
         .legend-label {
           margin-bottom: 8px;
-        }
-        .hidden-toggle {
-          cursor: pointer;
-          pointer-events: auto;
-          right: 16px;
-          position: absolute;
-          display: inline-block;
-          width: 20px;
-          height: 20px;
-          background-image: url("../images/icon-hanrei-arrow.png");
         }
         ul {
           li {
