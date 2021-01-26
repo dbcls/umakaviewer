@@ -13,7 +13,7 @@ import {
 } from 'redux-saga/effects'
 import { reset, startSubmit, stopSubmit } from 'redux-form'
 import { toast } from 'react-toastify'
-import * as firebase from 'firebase/app'
+import firebase from 'firebase/app'
 import * as localforage from 'localforage'
 import { FormattedMessage } from 'react-intl'
 
