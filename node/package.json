@@ -95,7 +95,7 @@
     "postcss-preset-env": "6.7.0",
     "postcss-simple-vars": "6.0.2",
     "postcss-size": "4.0.1",
-    "precss": "1.4.0",
+    "precss": "4.0.0",
     "prettier": "2.2.1",
     "sass-loader": "10.1.1",
     "style-loader": "2.0.0",
