@@ -111,19 +111,18 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "firebase-admin"
-version = "2.18.0"
+version = "4.5.1"
 description = "Firebase Admin Python SDK"
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+python-versions = ">=3.5"
 
 [package.dependencies]
-cachecontrol = ">=0.12.4"
-google-api-core = {version = ">=1.7.0,<2.0.0dev", extras = ["grpc"], markers = "platform_python_implementation != \"PyPy\""}
+cachecontrol = ">=0.12.6"
+google-api-core = {version = ">=1.14.0,<2.0.0dev", extras = ["grpc"], markers = "platform_python_implementation != \"PyPy\""}
 google-api-python-client = ">=1.7.8"
-google-cloud-firestore = {version = ">=0.31.0", markers = "platform_python_implementation != \"PyPy\""}
-google-cloud-storage = ">=1.13.0"
-six = ">=1.6.1"
+google-cloud-firestore = {version = ">=1.4.0", markers = "platform_python_implementation != \"PyPy\""}
+google-cloud-storage = ">=1.18.0"
 
 [[package]]
 name = "flask"
@@ -784,7 +783,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "00fce1d2f5063437e6a2afc8dcbc0aa0540b16fb37bbb3730e4274615c2b23be"
+content-hash = "ad890515f6c28e6921ed874b1952d67d35d93d40c0910271517d00141fca10d8"
 
 [metadata.files]
 alembic = [
@@ -857,8 +856,8 @@ colorama = [
     {file = "colorama-0.4.3.tar.gz", hash = "sha256:e96da0d330793e2cb9485e9ddfd918d456036c7149416295932478192f4436a1"},
 ]
 firebase-admin = [
-    {file = "firebase_admin-2.18.0-py2.7.egg", hash = "sha256:257484993cf0fa6a486106dbe5e0a674f9f77939bec2b1922b2780a32dc444b2"},
-    {file = "firebase_admin-2.18.0-py2.py3-none-any.whl", hash = "sha256:18dcbafaada4cfc970ab2ff7e3c3da5454d5a6bd97abca42c2e968cd47a3d161"},
+    {file = "firebase_admin-4.5.1-py3-none-any.whl", hash = "sha256:da27e214da814f21d3f1473a31a107c9abc2bb50a297ef1036286b5ad2169d49"},
+    {file = "firebase_admin-4.5.1.tar.gz", hash = "sha256:561a6e91804501a0cab94d446fc7562db2590fa1ee10db164df14a8c922a33f8"},
 ]
 flask = [
     {file = "Flask-1.1.2-py2.py3-none-any.whl", hash = "sha256:8a4fdd8936eba2512e9c85df320a37e694c93945b33ef33c89946a340a238557"},
