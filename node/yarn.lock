@@ -8220,12 +8220,10 @@ postcss-selector-parser@^6.0.2, postcss-selector-parser@^6.0.4:
     uniq "^1.0.1"
     util-deprecate "^1.0.2"
 
-postcss-simple-vars@3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/postcss-simple-vars/-/postcss-simple-vars-3.1.0.tgz#62c0657214ef1f43a3c5893ade89de414f31b6ff"
-  integrity sha1-YsBlchTvH0OjxYk63oneQU8xtv8=
-  dependencies:
-    postcss "^5.2.16"
+postcss-simple-vars@6.0.2, postcss-simple-vars@^6.0.1:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/postcss-simple-vars/-/postcss-simple-vars-6.0.2.tgz#cc0cc7745fb53c83245df99aaf4452475b454eda"
+  integrity sha512-tABK0OVtCa88TgJjgosa/1aLgiF4hTJBJxUjVE5idTGA0597OVdzWZvbySAF+HKo/sZidxSSpnWhUycDrxO8LA==
 
 postcss-simple-vars@^1.0.1:
   version "1.2.0"
@@ -8233,11 +8231,6 @@ postcss-simple-vars@^1.0.1:
   integrity sha1-LmaJkhFEt0EU52U1MnWjwyFD8VA=
   dependencies:
     postcss "^5.0.13"
-
-postcss-simple-vars@^6.0.1:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/postcss-simple-vars/-/postcss-simple-vars-6.0.2.tgz#cc0cc7745fb53c83245df99aaf4452475b454eda"
-  integrity sha512-tABK0OVtCa88TgJjgosa/1aLgiF4hTJBJxUjVE5idTGA0597OVdzWZvbySAF+HKo/sZidxSSpnWhUycDrxO8LA==
 
 postcss-size@1.1.1:
   version "1.1.1"
@@ -8293,7 +8286,7 @@ postcss-values-parser@^2.0.0, postcss-values-parser@^2.0.1:
     indexes-of "^1.0.1"
     uniq "^1.0.1"
 
-postcss@^5.0.0, postcss@^5.0.10, postcss@^5.0.13, postcss@^5.0.19, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.2.16, postcss@^5.2.17, postcss@^5.2.6:
+postcss@^5.0.0, postcss@^5.0.10, postcss@^5.0.13, postcss@^5.0.19, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.2.17, postcss@^5.2.6:
   version "5.2.18"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-5.2.18.tgz#badfa1497d46244f6390f58b319830d9107853c5"
   integrity sha512-zrUjRRe1bpXKsX1qAJNJjqZViErVuyEkMTRrwu4ud4sbTtIBRmtaYDrHmcGgmrbsW3MHfmtIf+vJumgQn+PrXg==
