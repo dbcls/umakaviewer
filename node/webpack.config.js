@@ -121,11 +121,10 @@ module.exports = (env, args) => {
         filename: path.join(DEST_DIR, 'index.html'),
         timestamp: (new Date()).getTime(),
       }),
-      new CopyPlugin({
-        patterns: [
-          { from: 'src/images', to: 'static/images' },
-          { from: 'src/blacklists', to: 'static/blacklists' },
-      ]}),
+      new CopyPlugin([
+        { from: 'src/images', to: 'static/images' },
+        { from: 'src/blacklists', to: 'static/blacklists' },
+      ]),
       new MiniCssExtractPlugin({
         filename: 'static/css/[name].css',
         chunkFilename: '[id].css',
