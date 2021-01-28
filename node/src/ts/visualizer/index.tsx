@@ -205,7 +205,6 @@ const App: React.FC<AppProps> = (props) => {
     })
   }, [content, rawState]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const restrictNoChildClass = true
   const { lowerLimitOfClassEntities } = useSelector(selector)
   useEffect(() => {
     if (isEmptyContent(rawState)) {
@@ -224,14 +223,18 @@ const App: React.FC<AppProps> = (props) => {
       return _.flatMap(elem.children, flattenChildren).concat([elem])
     }
 
-    const urisToFilter = rawState.structure
+    const urisToHide = rawState.structure
       .flatMap((elem) => flattenChildren(elem))
-      .filter((elem) => !restrictNoChildClass || !elem.children)
+      .filter((elem) => {
+        const classDetail = rawState.classes[elem.uri]
+        return (
+          elem.children === undefined &&
+          (classDetail === undefined ||
+            classDetail.entities === undefined ||
+            classDetail.entities < lowerLimitOfClassEntities)
+        )
+      })
       .map((elem) => elem.uri)
-    const urisToHide = urisToFilter.filter((uri) => {
-      const { entities } = rawState.classes[uri]
-      return entities === undefined || entities < lowerLimitOfClassEntities
-    })
 
     const shouldHideElement = (uri: string) => urisToHide.includes(uri)
     const filteredState = filterContent(
