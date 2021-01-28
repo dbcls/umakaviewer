@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom'
 import { FormattedMessage } from 'react-intl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
-
 import { Url } from '../constants'
 import {
   DataSet,
   EditedDataSet,
   EditDataSetAction,
+  UpdateAction,
 } from '../actions/data-set-list'
 import { OpenModalAction as OpenDeleteModalAction } from '../actions/data-set-delete'
 
@@ -17,6 +17,7 @@ interface Props {
   dataSetList: DataSet[]
   actions: {
     editDataSet: (editedDataSet: EditedDataSet) => EditDataSetAction
+    update: () => UpdateAction
   }
   deleteModalActions: {
     openModal: (dataSet: DataSet) => OpenDeleteModalAction
@@ -31,6 +32,7 @@ export default class EditableDataSetList extends React.Component<Props, {}> {
 
     this.onClickDelete = this.onClickDelete.bind(this)
     this.onChangeTitle = this.onChangeTitle.bind(this)
+    this.onKeyPress = this.onKeyPress.bind(this)
   }
 
   private onClickDelete(
@@ -52,6 +54,15 @@ export default class EditableDataSetList extends React.Component<Props, {}> {
     }
   }
 
+  private onKeyPress(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const { actions } = this.props
+      actions.update()
+      e.currentTarget.blur()
+    }
+  }
+
   render() {
     const { dataSetList } = this.props
     const urlPrefix = `${window.location.protocol}//${window.location.host}${Url.VISUALIZER_PREFIX}`
@@ -63,6 +74,7 @@ export default class EditableDataSetList extends React.Component<Props, {}> {
         <ContentEditable
           innerRef={this.titleEditableRefs[index]}
           onChange={() => this.onChangeTitle(d.id, index)}
+          onKeyPress={this.onKeyPress}
           html={`<span>${d.title}</span>`}
           tagName="td"
         />
