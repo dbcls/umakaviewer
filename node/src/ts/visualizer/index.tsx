@@ -179,9 +179,9 @@ const App: React.FC<AppProps> = (props) => {
     setLocale(localeShortString)
     setMessages(getLocaleMessages(localeShortString))
 
-    const entitiesLimit = Number(query.get('limit'))
-    if (Number.isInteger(entitiesLimit)) {
-      dispatch(FilterAction.filterClasses(entitiesLimit))
+    const entitiesLowerLimit = Number(query.get('lower_limit'))
+    if (Number.isInteger(entitiesLowerLimit)) {
+      dispatch(FilterAction.filterClasses(entitiesLowerLimit))
     }
 
     ApiClient.checkHealthy().then((res) => {
@@ -216,6 +216,7 @@ const App: React.FC<AppProps> = (props) => {
       return
     }
 
+    query.set('lower_limit', String(lowerLimitOfClassEntities))
     const flattenChildren = (elem: Structure): Structure[] => {
       if (elem.children === undefined) {
         return [elem]
