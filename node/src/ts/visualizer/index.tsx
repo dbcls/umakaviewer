@@ -106,6 +106,18 @@ const filterContent = (
   }
 }
 
+const isEmptyContent = (content: AppState) => {
+  if (
+    content.structure.length === 0 &&
+    content.properties.length === 0 &&
+    Object.keys(content.classes).length === 0 &&
+    Object.keys(content.prefixes).length === 0
+  ) {
+    return true
+  }
+  return false
+}
+
 export type Content = {
   inheritance_structure: Structure[]
   classes: Classes
@@ -132,8 +144,8 @@ const App: React.FC<AppProps> = (props) => {
   const dispatch = useDispatch()
   const query = useQuery()
 
+  const [rawState, setRawState] = useState<AppState>(initialAppState)
   const [state, setState] = useState<AppState>(initialAppState)
-  const [stateToDraw, setStateToDraw] = useState<AppState>(initialAppState)
 
   // utility
   const getReferenceURL = useCallback(
@@ -151,6 +163,17 @@ const App: React.FC<AppProps> = (props) => {
     [state.prefixes]
   )
   useEffect(() => {
+    const preferredContent = {
+      structure: content.inheritance_structure,
+      classes: content.classes,
+      properties: content.properties,
+      prefixes: content.prefixes,
+    }
+
+    if (isEmptyContent(preferredContent) || !isEmptyContent(rawState)) {
+      return
+    }
+
     // set locale/messages
     const localeShortString = getLocaleShortString()
     setLocale(localeShortString)
@@ -163,14 +186,6 @@ const App: React.FC<AppProps> = (props) => {
 
     ApiClient.checkHealthy().then((res) => {
       if (res.data.ok) {
-        // set content
-        const preferredContent = {
-          structure: content.inheritance_structure,
-          classes: content.classes,
-          properties: content.properties,
-          prefixes: content.prefixes,
-        }
-
         // set blacklist
         Blacklist.configre({
           classes: '/static/blacklists/bcl.txt',
@@ -184,17 +199,21 @@ const App: React.FC<AppProps> = (props) => {
           preferredContent,
           existsInBlacklist
         )
+        setRawState(filteredContent)
         setState(filteredContent)
-        setStateToDraw(filteredContent)
       }
     })
-  }, [content, footer]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [content, rawState]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const restrictNoChildClass = true
   const { lowerLimitOfClassEntities } = useSelector(selector)
   useEffect(() => {
+    if (isEmptyContent(rawState)) {
+      return
+    }
+
     if (lowerLimitOfClassEntities === 0) {
-      setStateToDraw(state)
+      setState(rawState)
       return
     }
 
@@ -205,38 +224,35 @@ const App: React.FC<AppProps> = (props) => {
       return _.flatMap(elem.children, flattenChildren).concat([elem])
     }
 
-    const urisToFilter = state.structure
+    const urisToFilter = rawState.structure
       .flatMap((elem) => flattenChildren(elem))
       .filter((elem) => !restrictNoChildClass || !elem.children)
       .map((elem) => elem.uri)
     const urisToHide = urisToFilter.filter((uri) => {
-      const { entities } = state.classes[uri]
+      const { entities } = rawState.classes[uri]
       return entities === undefined || entities < lowerLimitOfClassEntities
     })
 
     const shouldHideElement = (uri: string) => urisToHide.includes(uri)
-    const filteredState = filterContent(_.cloneDeep(state), shouldHideElement)
-    setStateToDraw(filteredState)
-  }, [state, lowerLimitOfClassEntities])
+    const filteredState = filterContent(
+      _.cloneDeep(rawState),
+      shouldHideElement
+    )
+    setState(filteredState)
+  }, [rawState, lowerLimitOfClassEntities])
 
   return (
     <IntlProvider locale={locale} messages={messages}>
       <>
         <div id="main">
-          <PropertyList properties={stateToDraw.properties} />
-          <Graph
-            classes={stateToDraw.classes}
-            structure={stateToDraw.structure}
-          />
-          <Detail
-            classes={stateToDraw.classes}
-            getReferenceURL={getReferenceURL}
-          />
+          <PropertyList properties={state.properties} />
+          <Graph classes={state.classes} structure={state.structure} />
+          <Detail classes={state.classes} getReferenceURL={getReferenceURL} />
           <div id="header-right">
-            <SearchBox classes={stateToDraw.classes} />
-            <Prefix prefixes={stateToDraw.prefixes} />
+            <SearchBox classes={state.classes} />
+            <Prefix prefixes={state.prefixes} />
           </div>
-          <Tooltip classes={stateToDraw.classes} />
+          <Tooltip classes={state.classes} />
         </div>
         <div
           // eslint-disable-next-line react/no-danger
