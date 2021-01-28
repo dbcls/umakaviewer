@@ -53,22 +53,9 @@ export default class DataSetList extends React.Component<Props, {}> {
   }
 
   private renderDataSetList() {
-    const { didEdit, isLoading } = this.props
+    const { isLoading } = this.props
     if (isLoading) {
       return <Loading />
-    }
-
-    let updateButton = null
-    if (didEdit) {
-      updateButton = (
-        <a
-          onClick={this.onClickUpdate}
-          href="/"
-          className="layout-datalist__titlesavebtn"
-        >
-          <FormattedMessage id="dataSetList.updateTitle" />
-        </a>
-      )
     }
     return (
       <section className="layout-datalist">
@@ -77,7 +64,6 @@ export default class DataSetList extends React.Component<Props, {}> {
             <tr>
               <th>
                 <FormattedMessage id="dataSetList.tableTitle" />
-                {updateButton}
               </th>
               <th>
                 <FormattedMessage id="dataSetList.tableUrl" />
