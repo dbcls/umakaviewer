@@ -16,6 +16,7 @@ import {
   useSelector,
 } from 'react-redux'
 import _ from 'lodash'
+import { useHistory } from 'react-router-dom'
 import { getLocaleMessages, getLocaleShortString, useQuery } from './utils'
 import { Property } from './types/property'
 import { Prefixes } from './types/prefix'
@@ -143,6 +144,7 @@ const App: React.FC<AppProps> = (props) => {
   const footer = useDBCLSFooterOuterText()
   const dispatch = useDispatch()
   const query = useQuery()
+  const history = useHistory()
 
   const [rawState, setRawState] = useState<AppState>(initialAppState)
   const [state, setState] = useState<AppState>(initialAppState)
@@ -212,11 +214,18 @@ const App: React.FC<AppProps> = (props) => {
     }
 
     if (lowerLimitOfClassEntities === 0) {
+      history.push({
+        pathname: history.location.pathname,
+      })
       setState(rawState)
       return
     }
 
-    query.set('lower_limit', String(lowerLimitOfClassEntities))
+    history.push({
+      pathname: history.location.pathname,
+      search: `?lower_limit=${lowerLimitOfClassEntities}`,
+    })
+
     const flattenChildren = (elem: Structure): Structure[] => {
       if (elem.children === undefined) {
         return [elem]
