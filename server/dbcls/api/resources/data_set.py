@@ -238,7 +238,7 @@ class DataSetDetail(Resource):
 
         # DataSet更新
         if args.get('title') is not None:
-            data_set.title = args['title'][:32]
+            data_set.title = args['title'][:64]
         if args.get('is_public') is not None:
             data_set.is_public = args['is_public']
         db.session.add(data_set)

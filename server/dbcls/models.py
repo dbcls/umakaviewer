@@ -16,7 +16,6 @@ class User(db.Model):
     firebase_uid = db.Column(db.String(255), unique=True, nullable=False)
     display_name = db.Column(db.String(30), default='', nullable=False)
     contact_uri = db.Column(db.String(255), default='', nullable=False)
-
     def __repr__(self):
         return f'<User id={self.id} firebase_uid={self.firebase_uid}>'
 
@@ -60,7 +59,7 @@ class DataSet(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    title = db.Column(db.String(32), default='', nullable=False)
+    title = db.Column(db.String(64), default='', nullable=False)
     path = db.Column(db.String(255), unique=True, nullable=False)
     content = deferred(db.Column(db.JSON))
     upload_at = db.Column(db.DateTime, nullable=False)
