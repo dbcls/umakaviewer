@@ -586,6 +586,9 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
     onResize(nonNullWidth, nonNullHeight, nonNullDiameter)
 
+    GraphRepository.manuallyZoomed = false
+    update(detail, true)
+
     if (isIE11) {
       setInterval(GraphRepository.forceRedrawLines, 10)
     }
