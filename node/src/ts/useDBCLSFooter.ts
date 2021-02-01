@@ -15,7 +15,7 @@ export const useDBCLSFooter = () => {
       elm.style.display = 'block'
     }
     setElement(elm)
-  }, [location])
+  }, [location.pathname])
   return footerElement
 }
 

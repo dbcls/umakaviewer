@@ -16,7 +16,7 @@ const Filter: React.FC = () => {
   const query = useQuery()
 
   const defaultEntitiesLimit = useMemo(() => {
-    const limit = Number(query.get('limit'))
+    const limit = Number(query.get('lower_limit'))
     if (Number.isInteger(limit)) {
       return limit
     }
