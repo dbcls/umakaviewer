@@ -62,49 +62,45 @@ const initialAppState: AppState = {
 }
 
 const filterContent = (
-  { structure, classes, properties, prefixes }: AppState,
+  state: AppState,
   condition: (uri: string) => boolean
-): AppState => {
+) => {
+  const { structure, classes, properties } = state
+
   const filterStructure = (children: Structure[]) => {
-    for (let i = 0; i < children.length; i += 1) {
-      const node = children[i]
+    const childSet = new Set(children)
+    childSet.forEach((node) => {
       if (condition(node.uri)) {
-        children.splice(i, 1)
-        i -= 1
+        childSet.delete(node)
       } else if (node.children !== undefined) {
-        filterStructure(node.children)
+        // eslint-disable-next-line no-param-reassign
+        node.children = filterStructure(node.children)
       }
-    }
+    })
+    return Array.from(childSet)
   }
-  filterStructure(structure)
+  // eslint-disable-next-line no-param-reassign
+  state.structure = filterStructure(structure)
 
-  const filteredClasses = Object.entries(classes).reduce<Classes>(
-    (prev, [key, val]) => {
-      if (condition(key)) {
-        return prev
-      }
-      prev[key] = val // eslint-disable-line no-param-reassign
-      return prev
-    },
-    {}
-  )
-
-  properties.forEach(({ class_relations: relations }) => {
-    for (let i = 0; i < relations.length; i += 1) {
-      const { subject_class: s, object_class: o } = relations[i]
-      if ((s && condition(s)) || (o && condition(o))) {
-        relations.splice(i, 1)
-        i -= 1
-      }
+  Object.keys(classes).forEach((key) => {
+    if (condition(key)) {
+      // eslint-disable-next-line no-param-reassign
+      delete classes[key]
     }
   })
 
-  return {
-    structure,
-    classes: filteredClasses,
-    properties,
-    prefixes,
-  }
+  properties.forEach((property) => {
+    const { class_relations: relations } = property
+    const relationSet = new Set(relations)
+    relationSet.forEach((relation) => {
+      const { subject_class: s, object_class: o } = relation
+      if ((s && condition(s)) || (o && condition(o))) {
+        relationSet.delete(relation)
+      }
+    })
+    // eslint-disable-next-line no-param-reassign
+    property.class_relations = Array.from(relationSet)
+  })
 }
 
 const isEmptyContent = (content: AppState) => {
@@ -197,12 +193,8 @@ const App: React.FC<AppProps> = (props) => {
         // filter content
         const existsInBlacklist = (uri: string) =>
           Blacklist.has(uri, preferredContent.prefixes)
-        const filteredContent = filterContent(
-          preferredContent,
-          existsInBlacklist
-        )
-        setRawState(filteredContent)
-        setState(filteredContent)
+        filterContent(preferredContent, existsInBlacklist)
+        setRawState(preferredContent)
       }
     })
   }, [content, rawState]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -247,11 +239,9 @@ const App: React.FC<AppProps> = (props) => {
       .map((elem) => elem.uri)
 
     const shouldHideElement = (uri: string) => urisToHide.includes(uri)
-    const filteredState = filterContent(
-      _.cloneDeep(rawState),
-      shouldHideElement
-    )
-    setState(filteredState)
+    const nextState = _.cloneDeep(rawState)
+    filterContent(nextState, shouldHideElement)
+    setState(nextState)
   }, [rawState, lowerLimitOfClassEntities])
 
   return (
