@@ -236,9 +236,13 @@ const App: React.FC<AppProps> = (props) => {
             classDetail.entities < lowerLimitOfClassEntities)
         )
       })
-      .map((elem) => elem.uri)
+      .reduce<{ [key: string]: true }>((prev, cur) => {
+        // eslint-disable-next-line no-param-reassign
+        prev[cur.uri] = true
+        return prev
+      }, {})
 
-    const shouldHideElement = (uri: string) => urisToHide.includes(uri)
+    const shouldHideElement = (uri: string) => urisToHide[uri]
     const nextState = _.cloneDeep(rawState)
     filterContent(nextState, shouldHideElement)
     setState(nextState)
