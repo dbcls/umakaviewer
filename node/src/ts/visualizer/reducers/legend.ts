@@ -6,7 +6,7 @@ export interface LegendState {
 }
 
 const initialState: LegendState = {
-  showingLegend: true,
+  showingLegend: false,
 }
 
 export default function legend(
