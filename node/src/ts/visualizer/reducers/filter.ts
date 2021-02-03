@@ -8,7 +8,7 @@ export interface FilterState {
 
 const initialState: FilterState = {
   lowerLimitOfClassEntities: 0,
-  showingConditions: true,
+  showingConditions: false,
 }
 
 export default function legend(
