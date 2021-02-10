@@ -8,8 +8,11 @@ export const getPreferredLabel = (
   locale: string
 ): string => {
   const detail = classes[uri]
-  const label = detail?.label ? detail.label[locale] || detail.label[''] : null
-
+  const labels = detail?.label
+  if (!labels) {
+    return uri
+  }
+  const label = labels[locale] || labels.en || labels[''] || null
   return label || uri
 }
 
