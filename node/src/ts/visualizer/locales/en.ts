@@ -7,7 +7,7 @@ const messages = {
   'detail.class.selecting': 'Selected Class',
   'detail.no.selecting.classes': 'No classes currently selected.',
   'focusClassDetail.class.selecting': 'Selected Class',
-  'classRelationsDetail.class.relates': 'Relating Class',
+  'classRelationsDetail.class.relates': 'Related Class',
   'classRelationsDetail.class.relates.of': 'Class relating to {target}',
   'classRelationsDetail.triple.with.this.class.as.subject':
     'Triples whose subjects are this class',
