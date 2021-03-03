@@ -270,6 +270,7 @@ const Visualizer: React.FC<AppProps> = (props) => {
   }, [])
 
   const footerElement = useMemo(() => {
+    console.log(footer)
     // eslint-disable-next-line react/no-danger
     return <div dangerouslySetInnerHTML={{ __html: footer }} />
   }, [footer])
