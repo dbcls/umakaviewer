@@ -9,6 +9,7 @@ export const useDBCLSFooter = () => {
     if (!elm) {
       return
     }
+    console.log(location.pathname, elm)
     if (location.pathname.startsWith('/v')) {
       elm.style.display = 'none'
     } else {
