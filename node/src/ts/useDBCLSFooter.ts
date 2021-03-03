@@ -6,10 +6,11 @@ export const useDBCLSFooter = () => {
   const [footerElement, setElement] = useState<HTMLElement | null>(null)
   useEffect(() => {
     const elm = document.getElementById('dbcls-common-footer')
+    console.log(elm)
     if (!elm) {
       return
     }
-    console.log(location.pathname, elm)
+    console.log(location.pathname)
     if (location.pathname.startsWith('/v')) {
       elm.style.display = 'none'
     } else {
