@@ -32,7 +32,7 @@ import Graph from './components/Graph'
 
 import configureStore from './store/store'
 import ApiClient from '../ApiClient'
-import { useDBCLSFooterOuterText } from '../useDBCLSFooter'
+import { useDBCLSFooter } from '../useDBCLSFooter'
 import { RootState } from './reducers'
 import { FilterAction } from './actions/filter'
 
@@ -261,7 +261,7 @@ const Visualizer: React.FC<AppProps> = (props) => {
   const [messages, setMessages] = useState<{ [key: string]: string }>(
     getLocaleMessages('en')
   )
-  const footer = useDBCLSFooterOuterText()
+  const { copyElement } = useDBCLSFooter()
 
   useEffect(() => {
     const localeShortString = getLocaleShortString()
@@ -270,10 +270,9 @@ const Visualizer: React.FC<AppProps> = (props) => {
   }, [])
 
   const footerElement = useMemo(() => {
-    console.log(footer)
     // eslint-disable-next-line react/no-danger
-    return <div dangerouslySetInnerHTML={{ __html: footer }} />
-  }, [footer])
+    return <div dangerouslySetInnerHTML={{__html: copyElement ? copyElement.outerHTML : ''}}/>
+  }, [copyElement])
 
   return (
     <ReduxProvider store={store}>

@@ -1,35 +1,36 @@
-import { useEffect, useState } from 'react'
+import ReactDOM from 'react-dom'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 export const useDBCLSFooter = () => {
   const location = useLocation()
-  const [footerElement, setElement] = useState<HTMLElement | null>(null)
-  useEffect(() => {
+  const [copyElement, setCopyElement] = useState<HTMLElement | null>(null)
+  const [resetToken, setReset] = useState<number>(0)
+
+  const footerElement = useMemo(() => {
     const elm = document.getElementById('dbcls-common-footer')
-    console.log(elm)
     if (!elm) {
+      setTimeout(() => {
+        setReset((val) => val + 1)
+      }, 200)
+    }
+    return elm
+}, [resetToken])
+
+  useEffect(() => {
+    if (!footerElement) {
       return
     }
-    console.log(location.pathname)
+    ReactDOM.unstable_batchedUpdates(() => {
+      const cloneNode = footerElement.cloneNode(true) as HTMLElement
+      cloneNode.style.display = 'block'
+      setCopyElement(cloneNode)
+    })
     if (location.pathname.startsWith('/v')) {
-      elm.style.display = 'none'
+      footerElement.style.display = 'none'
     } else {
-      elm.style.display = 'block'
+      footerElement.style.display = 'block'
     }
-    setElement(elm)
-  }, [location.pathname])
-  return footerElement
-}
-
-export const useDBCLSFooterOuterText = () => {
-  const [footerOuterText, setText] = useState<string>('')
-  useEffect(() => {
-    if (footerOuterText === '') {
-      const footerElement = document.getElementById('dbcls-common-footer')
-      if (footerElement) {
-        setText(footerElement.outerHTML)
-      }
-    }
-  }, [footerOuterText])
-  return footerOuterText
+  }, [location.pathname, footerElement])
+  return {footerElement, copyElement}
 }
