@@ -22,7 +22,7 @@ export const getLocaleShortString = (): string => {
     window.navigator.language ||
     window.navigator.userLanguage ||
     window.navigator.browserLanguage ||
-    'ja' // default
+    'en'
   const locale = language.substring(0, 2)
 
   return locale
