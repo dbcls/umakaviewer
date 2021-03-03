@@ -133,10 +133,6 @@ const selector = ({ filter: { lowerLimitOfClassEntities } }: RootState) => ({
 
 const App: React.FC<AppProps> = (props) => {
   const { content } = props
-  const [locale, setLocale] = useState('ja')
-  const [messages, setMessages] = useState<{ [key: string]: string }>(
-    getLocaleMessages('ja')
-  )
   const dispatch = useDispatch()
   const query = useQuery()
   const history = useHistory()
@@ -170,11 +166,6 @@ const App: React.FC<AppProps> = (props) => {
     if (isEmptyContent(preferredContent) || !isEmptyContent(rawState)) {
       return
     }
-
-    // set locale/messages
-    const localeShortString = getLocaleShortString()
-    setLocale(localeShortString)
-    setMessages(getLocaleMessages(localeShortString))
 
     const entitiesLowerLimit = Number(query.get('lower_limit'))
     if (Number.isInteger(entitiesLowerLimit)) {
@@ -248,20 +239,16 @@ const App: React.FC<AppProps> = (props) => {
   }, [rawState, lowerLimitOfClassEntities])
 
   return (
-    <IntlProvider locale={locale} messages={messages}>
-      <>
-        <div id="main">
-          <PropertyList properties={state.properties} />
-          <Graph classes={state.classes} structure={state.structure} />
-          <Detail classes={state.classes} getReferenceURL={getReferenceURL} />
-          <div id="header-right">
-            <SearchBox classes={state.classes} />
-            <Prefix prefixes={state.prefixes} />
-          </div>
-          <Tooltip classes={state.classes} />
-        </div>
-      </>
-    </IntlProvider>
+    <div id="main">
+      <PropertyList properties={state.properties} />
+      <Graph classes={state.classes} structure={state.structure} />
+      <Detail classes={state.classes} getReferenceURL={getReferenceURL} />
+      <div id="header-right">
+        <SearchBox classes={state.classes} />
+        <Prefix prefixes={state.prefixes} />
+      </div>
+      <Tooltip classes={state.classes} />
+    </div>
   )
 }
 
@@ -270,15 +257,29 @@ App.displayName = 'App'
 const store = configureStore()
 const Visualizer: React.FC<AppProps> = (props) => {
   const { content } = props
+  const [locale, setLocale] = useState('en')
+  const [messages, setMessages] = useState<{ [key: string]: string }>(
+    getLocaleMessages('en')
+  )
   const footer = useDBCLSFooterOuterText()
+
+  useEffect(() => {
+    const localeShortString = getLocaleShortString()
+    setLocale(localeShortString)
+    setMessages(getLocaleMessages(localeShortString))
+  }, [])
+
   const footerElement = useMemo(() => {
     // eslint-disable-next-line react/no-danger
     return <div dangerouslySetInnerHTML={{ __html: footer }} />
   }, [footer])
+
   return (
     <ReduxProvider store={store}>
-      <App content={content} />
-      {footerElement}
+      <IntlProvider locale={locale} messages={messages}>
+        <App content={content} />
+        {footerElement}
+      </IntlProvider>
     </ReduxProvider>
   )
 }
