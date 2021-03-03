@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { IntlProvider } from 'react-intl'
 
 import '@formatjs/intl-pluralrules/polyfill'
@@ -137,7 +137,6 @@ const App: React.FC<AppProps> = (props) => {
   const [messages, setMessages] = useState<{ [key: string]: string }>(
     getLocaleMessages('ja')
   )
-  const footer = useDBCLSFooterOuterText()
   const dispatch = useDispatch()
   const query = useQuery()
   const history = useHistory()
@@ -261,10 +260,6 @@ const App: React.FC<AppProps> = (props) => {
           </div>
           <Tooltip classes={state.classes} />
         </div>
-        <div
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: footer }}
-        />
       </>
     </IntlProvider>
   )
@@ -275,9 +270,15 @@ App.displayName = 'App'
 const store = configureStore()
 const Visualizer: React.FC<AppProps> = (props) => {
   const { content } = props
+  const footer = useDBCLSFooterOuterText()
+  const footerElement = useMemo(() => {
+    // eslint-disable-next-line react/no-danger
+    return <div dangerouslySetInnerHTML={{ __html: footer }} />
+  }, [footer])
   return (
     <ReduxProvider store={store}>
       <App content={content} />
+      {footerElement}
     </ReduxProvider>
   )
 }
