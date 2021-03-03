@@ -448,12 +448,12 @@ body {
             color: #444;
             pointer-events: auto;
             text-align: right;
-        
+
+            -moz-appearance:textfield;
             &::-webkit-inner-spin-button,
             &::-webkit-outer-spin-button {
               -webkit-appearance: none;
               margin: 0;
-              -moz-appearance:textfield;
             }
           }
         }
