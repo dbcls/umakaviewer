@@ -414,13 +414,13 @@ body {
       }
 
       #filter-wrapper {
-        width: 376px;
         top: calc(#{$header-height} + 8px);
         right: calc(332px + 16px);
         position: fixed;
         z-index: 5;
 
         #filter {
+          width: 376px;
           background-color: rgba(255, 255, 255, 0.8);
           border: 1px solid #dddee2;
           padding: 16px 8px 8px 16px;
@@ -1064,6 +1064,7 @@ body {
             text-decoration: underline;
             color: #a567a7;
             cursor: pointer;
+            text-align: left;
           }
         }
       }

@@ -1,13 +1,14 @@
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useSelector } from 'react-redux'
-import { ClassDetail } from '../types/class'
+import { Classes } from '../types/class'
 import { RootState } from '../reducers'
 import ClassRelationsDetail from './ClassRelationsDetail'
 import SubjectDetail from './SubjectDetail'
 
 type FocusClassDetailProps = {
-  classDetail: ClassDetail
+  classes: Classes
+  uri: string | null
   referenceURL: string | null
 }
 
@@ -20,7 +21,7 @@ const selector = ({
 })
 
 const FocusClassDetail: React.FC<FocusClassDetailProps> = (props) => {
-  const { classDetail, referenceURL } = props
+  const { classes, uri, referenceURL } = props
   const { focusingURI, showLeftHand, showRightHand } = useSelector(selector)
   const intl = useIntl()
 
@@ -37,14 +38,14 @@ const FocusClassDetail: React.FC<FocusClassDetailProps> = (props) => {
         <a href={referenceURL || '#'} target="_blank" rel="noopener noreferrer">
           {focusingURI}
         </a>
-        <SubjectDetail classDetail={classDetail} />
+        <SubjectDetail classes={classes} uri={uri} />
       </div>
       <ClassRelationsDetail
         title={intl.formatMessage({ id: 'classRelationsDetail.class.relates' })}
         focusingURI={focusingURI}
         showLeftHand={showLeftHand}
         showRightHand={showRightHand}
-        classDetail={classDetail}
+        classes={classes}
       />
     </div>
   )

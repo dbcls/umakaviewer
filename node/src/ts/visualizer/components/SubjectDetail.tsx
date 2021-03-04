@@ -1,23 +1,23 @@
-import React, { useCallback } from 'react'
+import React, { useMemo } from 'react'
+import { useIntl } from 'react-intl'
 import { useDispatch } from 'react-redux'
 import { SearchAction } from '../actions/search'
-import { ClassDetail } from '../types/class'
+import { Classes } from '../types/class'
+import { getPreferredLabel } from '../utils'
 
 type SubjectDetailProps = {
-  classDetail: ClassDetail | undefined
+  classes: Classes
+  uri: string | null
 }
 
 const SubjectDetail: React.FC<SubjectDetailProps> = (props) => {
-  const { classDetail } = props
+  const { classes, uri } = props
   const dispatch = useDispatch()
+  const intl = useIntl()
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const uri = e.currentTarget.textContent
-      dispatch(SearchAction.confirmCandidate(uri))
-    },
-    [dispatch]
-  )
+  const classDetail = useMemo(() => {
+    return classes[uri || '']
+  }, [classes, uri])
 
   return (
     <>
@@ -41,14 +41,24 @@ const SubjectDetail: React.FC<SubjectDetailProps> = (props) => {
         <div className="subject">
           <h4>rdfs:subClassOf</h4>
           <ul>
-            {classDetail.subClassOf.map((uri, idx) => (
-              <li key={`component-subjectdetail-list-subclassof-${idx}`}>
-                →&nbsp;
-                <button type="button" className="object" onClick={handleClick}>
-                  {uri}
-                </button>
-              </li>
-            ))}
+            {classDetail.subClassOf.map((superClass, idx) => {
+              const handleClick = () => {
+                dispatch(SearchAction.confirmCandidate(superClass))
+              }
+              return (
+                <li key={`component-subjectdetail-list-subclassof-${idx}`}>
+                  →&nbsp;
+                  <button
+                    type="button"
+                    className="object"
+                    title={getPreferredLabel(superClass, classes, intl.locale)}
+                    onClick={handleClick}
+                  >
+                    {superClass}
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         </div>
       )}
