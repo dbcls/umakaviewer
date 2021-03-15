@@ -7,12 +7,12 @@ const messages = {
   'detail.class.selecting': 'Selected Class',
   'detail.no.selecting.classes': 'No classes currently selected.',
   'focusClassDetail.class.selecting': 'Selected Class',
-  'classRelationsDetail.class.relates': 'Related Class',
+  'classRelationsDetail.class.relates': 'Related Classes',
   'classRelationsDetail.class.relates.of': 'Class relating to {target}',
   'classRelationsDetail.triple.with.this.class.as.subject':
-    'Triples whose subjects are this class',
+    'Predicate and object classes where instances of the class are used as subjects',
   'classRelationsDetail.triple.with.this.class.as.object':
-    'Triples whose objects are this class',
+    'Predicate and object classes where instances of the class are used as objects',
   'hideableWrapper.toggle.open': 'Open {target}',
   'hideableWrapper.toggle.close': 'Close {target}',
   'legend.label.legend': 'Legend',

@@ -10,9 +10,9 @@ const messages = {
   'classRelationsDetail.class.relates': '関連するクラス',
   'classRelationsDetail.class.relates.of': '{target}の関連するクラス',
   'classRelationsDetail.triple.with.this.class.as.subject':
-    'このクラスを主語とするトリプル',
+    '本クラスのインスタンスが主語に使われている述語と目的語のクラス',
   'classRelationsDetail.triple.with.this.class.as.object':
-    'このクラスを目的語とするトリプル',
+    '本クラスのインスタンスが目的語に使われている述語と目的語のクラス',
   'hideableWrapper.toggle.open': '{target}を開く',
   'hideableWrapper.toggle.close': '{target}を閉じる',
   'legend.label.legend': '凡例',

@@ -126,7 +126,7 @@ html {
   display: inline-block;
   vertical-align: middle;
   background-image: url("../images/nav_icon-arrow.png");
-  width: 12px;
+  min-width: 12px;
   height: 8px;
 }
 .legend-label {
@@ -1021,18 +1021,19 @@ body {
       }
       h3 {
         font-size: 14px;
-        line-height: 14px;
+        line-height: 1.2;
         padding: 8px 0;
         border-bottom: 1px solid #dddee2;
         .open-toggle {
-          float: right;
-          text-align: right;
+          display: inline-block;
         }
         button {
           width: 100%;
           text-align: left;
           color: inherit;
           cursor: pointer;
+          display: flex;
+          align-items: center;
         }
       }
       .open {
