@@ -9,10 +9,12 @@ const messages = {
   'focusClassDetail.class.selecting': 'Selected Class',
   'classRelationsDetail.class.relates': 'Related Classes',
   'classRelationsDetail.class.relates.of': 'Class relating to {target}',
+  'classRelationsDetail.triple.with.this.class.as.triple':
+    'Patterns of triples',
   'classRelationsDetail.triple.with.this.class.as.subject':
-    'Predicate and object classes where instances of the class are used as subjects',
+    'The instance of this class is the subject',
   'classRelationsDetail.triple.with.this.class.as.object':
-    'Predicate and object classes where instances of the class are used as objects',
+    'The instance of this class is the object',
   'hideableWrapper.toggle.open': 'Open {target}',
   'hideableWrapper.toggle.close': 'Close {target}',
   'legend.label.legend': 'Legend',

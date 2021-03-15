@@ -215,6 +215,11 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
   return (
     <div className="section">
       {headerElement}
+      <h4>
+        {intl.formatMessage({
+          id: 'classRelationsDetail.triple.with.this.class.as.triple',
+        })}
+      </h4>
       {subjectElement}
       {objectElement}
     </div>

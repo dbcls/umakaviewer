@@ -1014,6 +1014,7 @@ body {
         button {
           cursor: pointer;
           text-decoration: underline;
+          text-align: left;
         }
       }
       h2.relation-class:hover {
@@ -1023,6 +1024,7 @@ body {
         font-size: 14px;
         line-height: 1.2;
         padding: 8px 0;
+        padding-left: 8px;
         border-bottom: 1px solid #dddee2;
         .open-toggle {
           display: inline-block;
@@ -1034,6 +1036,7 @@ body {
           cursor: pointer;
           display: flex;
           align-items: center;
+          justify-content: space-between;
         }
       }
       .open {
@@ -1047,8 +1050,9 @@ body {
       }
 
       h4 {
-        line-height: 13px;
-        font-size: 13px;
+        line-height: 14px;
+        font-size: 14px;
+        margin: 4px 0;
         a {
           color: inherit;
         }
