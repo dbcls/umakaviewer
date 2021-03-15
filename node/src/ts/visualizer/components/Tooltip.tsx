@@ -71,7 +71,7 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
     >
       <h4>URI</h4>
       <p>{uri}</p>
-      <SubjectDetail classDetail={uri ? classes[uri] : undefined} />
+      <SubjectDetail classes={classes} uri={uri} />
       <div className={`arrow ${state.isOnBottom ? 'upward' : 'downward'}`} />
     </div>
   )

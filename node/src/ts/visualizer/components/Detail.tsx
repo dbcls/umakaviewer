@@ -41,10 +41,10 @@ type DetailSectionProps = {
   title: string
   referenceURL: string | null
   uri: string | null
-  classDetail: ClassDetail
+  classes: Classes
 }
 const DetailSection: React.FC<DetailSectionProps> = (props) => {
-  const { sectionType, title, referenceURL, uri, classDetail } = props
+  const { sectionType, title, referenceURL, uri, classes } = props
 
   return (
     <div
@@ -59,7 +59,7 @@ const DetailSection: React.FC<DetailSectionProps> = (props) => {
       <a href={referenceURL || '#'} target="_blank" rel="noopener noreferrer">
         {uri}
       </a>
-      <SubjectDetail classDetail={classDetail} />
+      <SubjectDetail classes={classes} uri={uri} />
     </div>
   )
 }
@@ -80,24 +80,23 @@ const Detail: React.FC<DetailProps> = (props) => {
   const intl = useIntl()
 
   const focusedClassElement = useMemo(() => {
-    const classDetail = classes[focusingURI || '']
     return (
       <FocusClassDetail
-        classDetail={classDetail}
+        classes={classes}
+        uri={focusingURI}
         referenceURL={getReferenceURL(focusingURI)}
       />
     )
   }, [classes, focusingURI, getReferenceURL])
 
   const sameDomainRangeElement = useMemo(() => {
-    const classDetail = classes[domain || '']
     return (
       <DetailSection
         sectionType={SectionType.BOTH}
         title={intl.formatMessage({ id: 'detail.class.subject.or.object' })}
         referenceURL={getReferenceURL(domain)}
         uri={domain}
-        classDetail={classDetail}
+        classes={classes}
       />
     )
   }, [classes, domain, getReferenceURL, intl])
@@ -116,7 +115,7 @@ const Detail: React.FC<DetailProps> = (props) => {
             title={intl.formatMessage({ id: 'detail.class.subject' })}
             referenceURL={getReferenceURL(domain)}
             uri={domain}
-            classDetail={domainClassDetail}
+            classes={classes}
           />
         )}
         {canDrawTriple(domainClassDetail) && (
@@ -129,7 +128,7 @@ const Detail: React.FC<DetailProps> = (props) => {
             fromPropertySelection
             showLeftHand={domain === focusingURI && showLeftHand}
             showRightHand={domain === focusingURI && showRightHand}
-            classDetail={domainClassDetail}
+            classes={classes}
           />
         )}
         {range && (
@@ -138,7 +137,7 @@ const Detail: React.FC<DetailProps> = (props) => {
             title={intl.formatMessage({ id: 'detail.class.object' })}
             referenceURL={getReferenceURL(range)}
             uri={range}
-            classDetail={rangeClassDetail}
+            classes={classes}
           />
         )}
         {canDrawTriple(rangeClassDetail) && (
@@ -151,7 +150,7 @@ const Detail: React.FC<DetailProps> = (props) => {
             fromPropertySelection
             showLeftHand={range === focusingURI && showLeftHand}
             showRightHand={range === focusingURI && showRightHand}
-            classDetail={rangeClassDetail}
+            classes={classes}
           />
         )}
       </>

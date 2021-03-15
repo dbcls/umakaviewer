@@ -2,12 +2,13 @@ import React, { useCallback, useMemo } from 'react'
 import { useIntl } from 'react-intl'
 import { useDispatch } from 'react-redux'
 import { DetailAction } from '../actions/detail'
-import { ClassDetail } from '../types/class'
+import { Classes } from '../types/class'
+import { getPreferredLabel } from '../utils'
 import GraphRepository from '../utils/GraphRepository'
 
 type ClassRelationsDetailProps = {
   title: string
-  classDetail: ClassDetail
+  classes: Classes
   fromPropertySelection?: boolean
   focusingURI: string | null
   showLeftHand: boolean
@@ -17,7 +18,7 @@ type ClassRelationsDetailProps = {
 const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
   const {
     title,
-    classDetail,
+    classes,
     fromPropertySelection,
     focusingURI,
     showLeftHand,
@@ -25,6 +26,23 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
   } = props
   const dispatch = useDispatch()
   const intl = useIntl()
+  const classDetail = useMemo(() => classes[focusingURI || ''], [
+    classes,
+    focusingURI,
+  ])
+
+  const getPreferredTriple = useCallback(
+    (triple: string[]) => {
+      if (triple.length < 3) {
+        return '<><><>'
+      }
+      const subject = getPreferredLabel(triple[0], classes, intl.locale)
+      const predicate = getPreferredLabel(triple[1], classes, intl.locale)
+      const object = getPreferredLabel(triple[2], classes, intl.locale)
+      return `<${subject}><${predicate}><${object}>`
+    },
+    [classes, intl.locale]
+  )
 
   const focusPropertyClass = useCallback(() => {
     const target = GraphRepository.findUriNode(focusingURI)
@@ -100,17 +118,22 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
                 e.preventDefault()
                 dispatch(DetailAction.showRelation(rhs))
               }
+              const triple = [focusingURI || '', rhs[0], rhs[1]]
               return (
                 <li key={`component-classrelationdetail-list-rhs-${index}`}>
-                  <button type="button" onClick={relationClass}>
+                  <button
+                    type="button"
+                    title={getPreferredTriple(triple)}
+                    onClick={relationClass}
+                  >
                     <span className="focusing">
-                      {`<${focusingURI}>`}
+                      {`<${triple[0]}>`}
                       &nbsp;
                     </span>
-                    <span>{`<${rhs[0]}>`}</span>
+                    <span>{`<${triple[1]}>`}</span>
                     <span className="object">
                       &nbsp;
-                      {`<${rhs[1]}>`}
+                      {`<${triple[2]}>`}
                     </span>
                     &nbsp;.
                   </button>
@@ -128,6 +151,7 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
       handleClickRightHandSideClasses,
       intl,
       showRightHand,
+      getPreferredTriple,
     ]
   )
 
@@ -151,17 +175,22 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
                 e.preventDefault()
                 dispatch(DetailAction.showRelation(lhs))
               }
+              const triple = [lhs[0], lhs[1], focusingURI || '']
               return (
                 <li key={index}>
-                  <button type="button" onClick={relationClass}>
+                  <button
+                    type="button"
+                    title={getPreferredTriple(triple)}
+                    onClick={relationClass}
+                  >
                     <span className="subject">
-                      {`<${lhs[0]}>`}
+                      {`<${triple[0]}>`}
                       &nbsp;
                     </span>
-                    <span>{`<${lhs[1]}>`}</span>
+                    <span>{`<${triple[1]}>`}</span>
                     <span className="focusing">
                       &nbsp;
-                      {`<${focusingURI}>`}
+                      {`<${triple[2]}>`}
                     </span>
                     &nbsp;.
                   </button>
@@ -179,6 +208,7 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
       handleClickLeftHandSideClasses,
       intl,
       showLeftHand,
+      getPreferredTriple,
     ]
   )
 
