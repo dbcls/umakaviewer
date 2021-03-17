@@ -105,7 +105,7 @@ const Detail: React.FC<DetailProps> = (props) => {
     const domainClassDetail = classes[domain || '']
     const rangeClassDetail = classes[range || '']
     const canDrawTriple = (node: ClassDetail | undefined) =>
-      node?.subClassOf?.length === 1
+      !node?.subClassOf || node?.subClassOf?.length === 1
 
     return (
       <>
