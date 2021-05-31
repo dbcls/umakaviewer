@@ -145,7 +145,7 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
       </>
     ),
     [
-      classDetail.rhs,
+      classDetail,
       dispatch,
       focusingURI,
       handleClickRightHandSideClasses,
@@ -202,7 +202,7 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
       </>
     ),
     [
-      classDetail.lhs,
+      classDetail,
       dispatch,
       focusingURI,
       handleClickLeftHandSideClasses,
@@ -211,7 +211,9 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
       getPreferredTriple,
     ]
   )
-
+  if (!classDetail) {
+    return null
+  }
   return (
     <div className="section">
       {headerElement}
