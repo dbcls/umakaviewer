@@ -5,7 +5,7 @@ from flask_restful import Resource, reqparse
 
 from dbcls import db
 from dbcls.utils import localize_as_jst
-from dbcls.models import DataSet
+from dbcls.models import DataSet, User
 
 
 parser = reqparse.RequestParser()
@@ -31,11 +31,9 @@ class AdminDataSetList(Resource):
 
     def get(self):
         args = self._parse_args()
-
-        query = DataSet.query.order_by(DataSet.upload_at.desc())
+        query = DataSet.query.join(DataSet.user).with_entities(DataSet.id, DataSet.title, DataSet.path, DataSet.is_public, DataSet.upload_at, User.display_name, User.contact_uri).order_by(DataSet.upload_at.desc())
         count = query.count()
         query = query.offset(args['offset']).limit(SIZE_PER_PAGE)
-
         # 前ページ
         previousUrl = None
         if args['offset'] >= 1:
@@ -49,7 +47,6 @@ class AdminDataSetList(Resource):
             params = {'page': args['page'] + 1}
             params_string = urllib.parse.urlencode(params)
             nextUrl = f'{request.path}?{params_string}'
-
         return {
             'count': count,
             'previous': previousUrl,
@@ -64,8 +61,8 @@ class AdminDataSetList(Resource):
                         localize_as_jst(data_set.upload_at).isoformat()
                     ),
                     'user': {
-                        'display_name': data_set.user.display_name,
-                        'contact_uri': data_set.user.contact_uri,
+                        'display_name': data_set.display_name,
+                        'contact_uri': data_set.contact_uri,
                     }
                 }
                 for data_set in query
