@@ -599,20 +599,22 @@ class GraphRepository {
     // Firefoxはdisplay:noneな要素にgetBoundingClientRectできない
     const { scale } = this
 
-    const visibilityTexts = ctx.gtexts
-      .style('visibility', 'hidden')
-      .style('opacity', 0)
-      ?.filter((d) => {
-        return (
-          this.targetKey === d.data.key ||
-          !d.children ||
-          !(d.children[0].data.key in this.visibleNodesSet) ||
-          d.r * scale <= SHOW_TEXT_MAX_CIRCLE_DIAMETER
-        )
-      })
-      .filter((d) => this.isShowNodeText(d))
+    // ctxがd3.Transitionを返すときにvisibilityTexts.dataがundefinedになるので、アクセサを呼び分ける
+    const filterVisibilityTexts = (accessor: SVGElementsAccessor) =>
+      accessor.gtexts
+        ?.filter((d) => {
+          return (
+            this.targetKey === d.data.key ||
+            !d.children ||
+            !(d.children[0].data.key in this.visibleNodesSet) ||
+            d.r * scale <= SHOW_TEXT_MAX_CIRCLE_DIAMETER
+          )
+        })
+        .filter((d) => this.isShowNodeText(d))
 
-    visibilityTexts
+    ctx.gtexts.style('visibility', 'hidden').style('opacity', 0)
+
+    filterVisibilityTexts(ctx)
       .attr('class', '')
       .style('visibility', 'visible')
       .style('opacity', 1)
@@ -620,6 +622,7 @@ class GraphRepository {
       .selectAll('tspan')
       .attr('x', 0)
 
+    const visibilityTexts = filterVisibilityTexts(this.svgAccessor)
     if (typeof visibilityTexts?.data === 'function') {
       // Leafノードでない && クラス単位で最上位にあたるノードを強調表示
       const data = visibilityTexts.data()
@@ -638,9 +641,9 @@ class GraphRepository {
         (acc, d) => acc.concat([getUpperParent(d)]),
         []
       )
-      const upperParentUris: string[] = _.uniq(_.map(upperParents, 'data.uri'))
+      const upperParentUris = new Set(upperParents.map((v) => v.data.uri))
       visibilityTexts
-        .filter((d) => !!d.children && upperParentUris.includes(d.data.uri))
+        .filter((d) => !!d.children && upperParentUris.has(d.data.uri))
         .attr('class', 'emphasized-class')
     }
 
