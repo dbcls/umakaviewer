@@ -577,58 +577,53 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     GraphRepository.setSearching()
     GraphRepository.setArrowHead()
 
-    const [nonNullWidth, nonNullHeight, nonNullDiameter] = [
-      width || 0,
-      height || 0,
-      circleDiameter || 1,
-    ]
-    GraphRepository.initialRootCircleSize = nonNullDiameter
-
-    onResize(nonNullWidth, nonNullHeight, nonNullDiameter)
-
-    GraphRepository.manuallyZoomed = false
-    update(detail, true)
-
     if (isIE11) {
       setInterval(GraphRepository.forceRedrawLines, 10)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classes, nodes])
+  }, [isIE11, classes, nodes])
 
   const oldPropsRef = useRef({ oldWidth: width, oldHeight: height })
   const mounted = React.useRef(false)
+  const updating = React.useRef(false)
   React.useEffect(() => {
-    if (mounted.current) {
-      const [nonNullWidth, nonNullHeight, nonNullDiameter] = [
-        width || 0,
-        height || 0,
-        circleDiameter || 1,
-      ]
-      const { oldWidth, oldHeight } = oldPropsRef.current
+    if (updating.current) {
+      return
+    }
 
+    if (mounted.current) {
+      const { oldWidth, oldHeight } = oldPropsRef.current
       if (width !== oldWidth || height !== oldHeight) {
-        onResize(nonNullWidth, nonNullHeight, nonNullDiameter)
+        onResize(width ?? 0, height ?? 0, circleDiameter ?? 1)
       }
 
       const { current: oldDetail } = oldDetailStateRef
-      if (classes) {
-        if (
-          width !== oldWidth ||
-          height !== oldHeight ||
-          detail.focusingCircleKey !== oldDetail.focusingCircleKey ||
-          detail.showRightHand !== oldDetail.showRightHand ||
-          detail.showLeftHand !== oldDetail.showLeftHand ||
-          detail.showingRelation !== oldDetail.showingRelation ||
-          detail.propertyClass.domain !== oldDetail.propertyClass.domain ||
-          detail.propertyClass.range !== oldDetail.propertyClass.range ||
-          detail.searchingURI !== oldDetail.searchingURI
-        ) {
-          GraphRepository.manuallyZoomed = false
-          update(detail, true)
-        }
+      if (
+        classes ||
+        width !== oldWidth ||
+        height !== oldHeight ||
+        detail.focusingCircleKey !== oldDetail.focusingCircleKey ||
+        detail.showRightHand !== oldDetail.showRightHand ||
+        detail.showLeftHand !== oldDetail.showLeftHand ||
+        detail.showingRelation !== oldDetail.showingRelation ||
+        detail.propertyClass.domain !== oldDetail.propertyClass.domain ||
+        detail.propertyClass.range !== oldDetail.propertyClass.range ||
+        detail.searchingURI !== oldDetail.searchingURI
+      ) {
+        updating.current = true
+        GraphRepository.manuallyZoomed = false
+        update(detail, true)
+        updating.current = false
       }
     } else {
       mounted.current = true
+
+      GraphRepository.initialRootCircleSize = circleDiameter ?? 1
+      onResize(width ?? 0, height ?? 0, circleDiameter ?? 1)
+
+      updating.current = true
+      GraphRepository.manuallyZoomed = false
+      update(detail, true)
+      updating.current = false
     }
 
     oldPropsRef.current = { oldWidth: width, oldHeight: height }
