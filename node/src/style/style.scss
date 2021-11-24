@@ -620,15 +620,15 @@ body {
           height: 20px;
           overflow: hidden;
           tspan {
-            fill: #444;
+            fill: $white-color;
             font-size: 18px;
             font-weight: bold;
             line-height: 1.8;
             text-shadow:
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color;
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444;
           }
         }
       }
