@@ -613,8 +613,9 @@ class GraphRepository {
         .filter((d) => this.isShowNodeText(d))
 
     ctx.gtexts.style('visibility', 'hidden').style('opacity', 0)
+    const visibilityTextsCtx = filterVisibilityTexts(ctx)
 
-    filterVisibilityTexts(ctx)
+    visibilityTextsCtx
       .attr('class', '')
       .style('visibility', 'visible')
       .style('opacity', 1)
@@ -642,8 +643,13 @@ class GraphRepository {
         []
       )
       const upperParentUris = new Set(upperParents.map((v) => v.data.uri))
-      visibilityTexts
-        .filter((d) => !!d.children && upperParentUris.has(d.data.uri))
+      visibilityTextsCtx
+        .filter(
+          (d) =>
+            this.targetKey !== d.data.key &&
+            !!d.children &&
+            upperParentUris.has(d.data.uri)
+        )
         .attr('class', 'emphasized-class')
     }
 
