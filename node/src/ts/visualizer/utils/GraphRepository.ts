@@ -683,102 +683,75 @@ class GraphRepository {
 
     // lines
     // const { paths } = this
-    const minSpaceBetweenCircles = (10 / scale) * 2
-    ctx.paths.rightHand.attr('d', (d) => {
-      const dist = distance(f.x, f.y, d.x, d.y)
-      // 小数点精度の問題か何かでまれに誤って判定されることがあったので余白を設ける
-      if (dist < f.r + d.r + minSpaceBetweenCircles) {
-        // 中心から中心を指す
-        return [
-          `M ${this.x(f.x)},${this.y(f.y)}`,
-          `${this.x(d.x)},${this.y(d.y)}`,
-        ].join(' ')
-      }
-      // 辺から辺を指す
-      const cut1 = (dist - f.r) / dist
-      const cut2 = (dist - d.r) / dist
-      return [
-        `M ${this.x((f.x - d.x) * cut1 + d.x)},${this.y(
-          (f.y - d.y) * cut1 + d.y
-        )}`,
-        `${this.x((d.x - f.x) * cut2 + f.x)},${this.y(
-          (d.y - f.y) * cut2 + f.y
-        )}`,
-      ].join(' ')
-    })
+    const makeArrowLineToCenter = (from: NodeType, to: NodeType) => {
+      // 中心から中心を指す
+      const fromX = this.x(from.x)
+      const fromY = this.y(from.y)
+      const toX = this.x(to.x)
+      const toY = this.y(to.y)
+      return `M ${fromX},${fromY} ${toX},${toY}`
+    }
 
+    const makeArrowLineToSide = (
+      from: NodeType,
+      to: NodeType,
+      calculatedDistance?: number
+    ) => {
+      const dist = calculatedDistance ?? distance(from.x, from.y, to.x, to.y)
+
+      // 辺から辺を指す
+      const cutFrom = (dist - from.r) / dist
+      const fromX = this.x((from.x - to.x) * cutFrom + to.x)
+      const fromY = this.y((from.y - to.y) * cutFrom + to.y)
+      const cutTo = (dist - to.r) / dist
+      const toX = this.x((to.x - from.x) * cutTo + from.x)
+      const toY = this.y((to.y - from.y) * cutTo + from.y)
+      return `M ${fromX},${fromY} ${toX},${toY}`
+    }
+
+    const minSpaceBetweenCircles = (10 / scale) * 2
+    const makeArrowLine = (from: NodeType, to: NodeType) => {
+      const dist = distance(from.x, from.y, to.x, to.y)
+
+      // 小数点精度の問題か何かでまれに誤って判定されることがあったので余白を設ける
+      const shouldPointToCenter = dist < from.r + to.r + minSpaceBetweenCircles
+      if (shouldPointToCenter) {
+        return makeArrowLineToCenter(from, to)
+      }
+
+      return makeArrowLineToSide(from, to, dist)
+    }
+
+    ctx.paths.rightHand.attr('d', (d) => {
+      return makeArrowLine(f, d)
+    })
     ctx.paths.leftHand.attr('d', (d) => {
       d.data.pointToCenter = true
-      const dist = distance(f.x, f.y, d.x, d.y)
-      if (dist < f.r + d.r + minSpaceBetweenCircles) {
-        return [
-          `M ${this.x(d.x)},${this.y(d.y)}`,
-          `${this.x(f.x)},${this.y(f.y)}`,
-        ].join(' ')
-      }
-      const cut1 = (dist - d.r) / dist
-      const cut2 = (dist - f.r) / dist
-      return [
-        `M ${this.x((d.x - f.x) * cut1 + f.x)},${this.y(
-          (d.y - f.y) * cut1 + f.y
-        )}`,
-        `${this.x((f.x - d.x) * cut2 + d.x)},${this.y(
-          (f.y - d.y) * cut2 + d.y
-        )}`,
-      ].join(' ')
+      return makeArrowLine(d, f)
     })
-
     ctx.paths.both.attr('d', (d) => {
       d.data.pointToCenter = true
-      const dist = distance(f.x, f.y, d.x, d.y)
-      if (dist < f.r + d.r + minSpaceBetweenCircles) {
-        return [
-          `M ${this.x(f.x)},${this.y(f.y)}`,
-          `${this.x(d.x)},${this.y(d.y)}`,
-        ].join(' ')
-      }
-      const cut1 = (dist - f.r) / dist
-      const cut2 = (dist - d.r) / dist
-      return [
-        `M ${this.x((f.x - d.x) * cut1 + d.x)},${this.y(
-          (f.y - d.y) * cut1 + d.y
-        )}`,
-        `${this.x((d.x - f.x) * cut2 + f.x)},${this.y(
-          (d.y - f.y) * cut2 + f.y
-        )}`,
-      ].join(' ')
+      return makeArrowLine(f, d)
     })
+    ctx.paths.same.attr('d', (d) => {
+      return makeArrowLineToSide(f, d)
+    })
+
+    const makeArrowLineToSelf = (node: NodeType) => {
+      // 4時から11時の方向を指す
+      const lineR = this.r(node.r * 1.1)
+      const nodeR = node.r * 1.02
+      const fourOclock = Math.PI / 6
+      const fromX = this.x(node.x + nodeR * Math.cos(fourOclock))
+      const fromY = this.y(node.y + nodeR * Math.sin(fourOclock))
+      const elevenOclock = (-Math.PI * 4) / 6
+      const toX = this.x(node.x + nodeR * Math.cos(elevenOclock))
+      const toY = this.y(node.y + nodeR * Math.sin(elevenOclock))
+      return `M ${fromX},${fromY} A ${lineR},${lineR} 0,1,0 ${toX},${toY}`
+    }
 
     ctx.paths.self.attr('d', (d) => {
-      const fourOclock = Math.PI / 6
-      const elevenOclock = (-Math.PI * 4) / 6
-      const r = d.r * 1.02
-      const r2 = this.r(f.r * 1.1)
-      return [
-        `M ${this.x(d.x + r * Math.cos(fourOclock))},${this.y(
-          d.y + r * Math.sin(fourOclock)
-        )}`,
-        `A ${r2},${r2}`,
-        '0',
-        '1,0',
-        `${this.x(d.x + r * Math.cos(elevenOclock))},${this.y(
-          d.y + r * Math.sin(elevenOclock)
-        )}`,
-      ].join(' ')
-    })
-
-    ctx.paths.same.attr('d', (d) => {
-      const dist = distance(f.x, f.y, d.x, d.y)
-      const cut1 = (dist - f.r) / dist
-      const cut2 = (dist - d.r) / dist
-      return [
-        `M ${this.x((f.x - d.x) * cut1 + d.x)},${this.y(
-          (f.y - d.y) * cut1 + d.y
-        )}`,
-        `${this.x((d.x - f.x) * cut2 + f.x)},${this.y(
-          (d.y - f.y) * cut2 + f.y
-        )}`,
-      ].join(' ')
+      return makeArrowLineToSelf(d)
     })
   }
 
