@@ -21,6 +21,8 @@ import {
 import { getPreferredLabel, isIE11 } from '.'
 import SVGElementsAccessor from './SVGElementsAccessor'
 
+export type Point = { x: number; y: number }
+
 export type NodeType = d3.HierarchyCircularNode<NodeStructure>
 export type SVGGElementType = d3.Selection<
   SVGGElement,
@@ -35,7 +37,6 @@ export type SVGEventHandlerType = (
 type HTMLElementType = d3.Selection<d3.BaseType, NodeType, HTMLElement, any>
 type ScaleLinearType = d3.ScaleLinear<number, number>
 type ZoomType = d3.ZoomBehavior<SVGGElement, NodeType>
-export type PopupDataType = { x1: number; x2: number; y1: number; y2: number }
 
 const distance = (x1: number, y1: number, x2: number, y2: number) => {
   return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
@@ -43,6 +44,60 @@ const distance = (x1: number, y1: number, x2: number, y2: number) => {
 
 const calcMoveCenter = (diameter: number, scale: number) => {
   return (diameter * scale) / 2 - diameter / 2
+}
+
+// 2点と半径から円の中心座標を求める (2点ある)
+const calcCenterFromPoints = (
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  r: number
+) => {
+  const x3 = (x1 + x2) / 2
+  const y3 = (y1 + y2) / 2
+  const r2 = r ** 2
+  const l1 = (x2 - x3) ** 2 + (y2 - y3) ** 2
+
+  if (r2 < l1) {
+    throw Error('Cannot calculate center of circle.')
+  }
+
+  const d = Math.sqrt(r2 / l1 - 1.0)
+  const dx = d * (y2 - y3)
+  const dy = d * (x2 - x3)
+
+  const p1 = [x3 + dx, y3 - dy]
+  const p2 = [x3 - dx, y3 + dy]
+
+  return [p1, p2].sort((a, b) => b[0] - a[0] || b[1] - a[1])
+}
+
+// 円の中心座標と円周上の2点から中心角を求める
+const calcCenterAngleFromPoints = (
+  r: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+) => {
+  const theta = 2 * Math.asin(distance(x1, y1, x2, y2) / (2 * r))
+  return theta
+}
+
+// 基点を中心に座標を反時計回りにθ度回転させる
+const rotateCoordinate = (
+  x: number,
+  y: number,
+  refX: number,
+  refY: number,
+  theta: number
+) => {
+  const adjustedX = x - refX
+  const adjustedY = y - refY
+  const roratedX = Math.cos(theta) * adjustedX + -Math.sin(theta) * adjustedY
+  const roratedY = Math.sin(theta) * adjustedX + Math.cos(theta) * adjustedY
+  return [roratedX + refX, roratedY + refY]
 }
 
 const textBeforeEdgePolyfill = (
@@ -284,7 +339,7 @@ class GraphRepository {
   }
 
   get popups() {
-    return this.svg?.selectAll<HTMLElement, PopupDataType>('.popup')
+    return this.svg?.selectAll<HTMLElement, Point>('.popup')
   }
 
   // accesor modoki
@@ -495,15 +550,8 @@ class GraphRepository {
       .on('click', handleClick)
   }
 
-  addPopup(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    predicates: string[],
-    message: string
-  ) {
-    const popup = this.popups?.data([{ x1, y1, x2, y2 }])
+  addPopup(x: number, y: number, predicates: string[], message: string) {
+    const popup = this.popups?.data([{ x, y }])
     const div = popup
       ?.enter()
       .append('foreignObject')
@@ -674,22 +722,32 @@ class GraphRepository {
       .attr('y', (d) => (d.data.isLabelOnTop ? 0 : -imageSize / 2))
 
     // popup
-    this.popups
-      ?.attr('x', ({ x1, x2 }) => (x1 + x2) / 2)
-      .attr('y', ({ y1, y2 }) => (y1 + y2) / 2)
+    this.popups?.attr('x', ({ x }) => x).attr('y', ({ y }) => y)
 
     const f = this.targetNode
     if (!f) return
 
     // lines
     // const { paths } = this
+    const makeArrowNode = (x: number, y: number) => {
+      const r = 3.5
+      const moveToStart = `M${x - r},${y}`
+      const drawUppperHalf = `A${r},${r} 0,1,0 ${x + r},${y}`
+      const drawBottomHalf = `A${r},${r} 0,1,0 ${x - r},${y}`
+      const moveToOrigin = `M${x},${y}`
+      return `${moveToStart} ${drawUppperHalf} ${drawBottomHalf} ${moveToOrigin}`
+    }
+
     const makeArrowLineToCenter = (from: NodeType, to: NodeType) => {
       // 中心から中心を指す
       const fromX = this.x(from.x)
       const fromY = this.y(from.y)
       const toX = this.x(to.x)
       const toY = this.y(to.y)
-      return `M ${fromX},${fromY} ${toX},${toY}`
+      const midX = (fromX + toX) / 2
+      const midY = (fromY + toY) / 2
+      const drawNode = makeArrowNode(midX, midY)
+      return `M${fromX},${fromY} ${midX},${midY} ${drawNode} ${toX},${toY}`
     }
 
     const makeArrowLineToSide = (
@@ -706,7 +764,10 @@ class GraphRepository {
       const cutTo = (dist - to.r) / dist
       const toX = this.x((to.x - from.x) * cutTo + from.x)
       const toY = this.y((to.y - from.y) * cutTo + from.y)
-      return `M ${fromX},${fromY} ${toX},${toY}`
+      const midX = (fromX + toX) / 2
+      const midY = (fromY + toY) / 2
+      const drawNode = makeArrowNode(midX, midY)
+      return `M${fromX},${fromY} ${midX},${midY} ${drawNode} ${toX},${toY}`
     }
 
     const minSpaceBetweenCircles = (10 / scale) * 2
@@ -739,7 +800,6 @@ class GraphRepository {
 
     const makeArrowLineToSelf = (node: NodeType) => {
       // 4時から11時の方向を指す
-      const lineR = this.r(node.r * 1.1)
       const nodeR = node.r * 1.02
       const fourOclock = Math.PI / 6
       const fromX = this.x(node.x + nodeR * Math.cos(fourOclock))
@@ -747,7 +807,20 @@ class GraphRepository {
       const elevenOclock = (-Math.PI * 4) / 6
       const toX = this.x(node.x + nodeR * Math.cos(elevenOclock))
       const toY = this.y(node.y + nodeR * Math.sin(elevenOclock))
-      return `M ${fromX},${fromY} A ${lineR},${lineR} 0,1,0 ${toX},${toY}`
+
+      // 節を描画するために矢印の中点を求める
+      const lineR = this.r(node.r * 1.1)
+      const lineC = calcCenterFromPoints(fromX, fromY, toX, toY, lineR)[0]
+      const angle = calcCenterAngleFromPoints(lineR, fromX, fromY, toX, toY)
+      const theta = angle / 2 + Math.PI
+      const lineMid = rotateCoordinate(fromX, fromY, lineC[0], lineC[1], theta)
+
+      const moveToStart = `M${fromX},${fromY}`
+      const drawUppperHalf = `A${lineR},${lineR} 0,0,0 ${lineMid[0]},${lineMid[1]}`
+      const drawNode = makeArrowNode(lineMid[0], lineMid[1])
+      const drawBottomHalf = `A${lineR},${lineR} 0,0,0 ${toX},${toY}`
+
+      return `${moveToStart} ${drawUppperHalf} ${drawNode} ${drawBottomHalf}`
     }
 
     ctx.paths.self.attr('d', (d) => {

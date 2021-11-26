@@ -255,25 +255,16 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         if (!event || !d) return
 
         const targetElement = event.currentTarget
-
-        let [x1, y1] = [0, 0]
-        let [x2, y2] = [0, 0]
-        if (targetElement?.getAttribute('class')?.includes('self-line')) {
-          x1 = GraphRepository.x(d.x)
-          y1 = GraphRepository.y(d.y)
-          x2 = GraphRepository.x(d.x)
-          y2 = GraphRepository.y(d.y)
-        } else {
-          // eslint-disable-next-line no-extra-semi
-          ;[[x1, y1], [x2, y2]] = targetElement
-            ?.getAttribute('d')
-            ?.split(' ')
-            .slice(1, 3)
-            .map((xy) => xy.split(',').map(Number)) || [
-            [0, 0],
-            [0, 0],
-          ]
-        }
+        const isSelfLine = !!targetElement
+          ?.getAttribute('class')
+          ?.includes('self-line')
+        const [x, y] = isSelfLine
+          ? [GraphRepository.x(d.x), GraphRepository.y(d.y)]
+          : targetElement
+              ?.getAttribute('d')
+              ?.split(' ')[1]
+              .split(',')
+              .map((v) => Number(v)) ?? [0, 0]
 
         const predicates: string[] = []
         if (showRhs && targetClassDetail.rhs) {
@@ -304,7 +295,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         const predicateMessage = intl.formatMessage({
           id: 'classStructure.text.predicate',
         })
-        GraphRepository.addPopup(x1, y1, x2, y2, predicates, predicateMessage)
+        GraphRepository.addPopup(x, y, predicates, predicateMessage)
 
         GraphRepository.updatePosition()
       }
