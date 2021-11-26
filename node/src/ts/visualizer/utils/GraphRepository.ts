@@ -98,6 +98,8 @@ class GraphRepository {
 
   ignoreEvent: Boolean
 
+  transparentLabel: boolean
+
   pos: {
     top: number
     bottom: number
@@ -147,6 +149,7 @@ class GraphRepository {
     this.zoom = undefined
     this.timer = undefined
     this.ignoreEvent = false
+    this.transparentLabel = false
   }
 
   // public accessor
@@ -348,6 +351,7 @@ class GraphRepository {
         this.manuallyZoomed = true
         this.scale = event.transform.k
         this.translate = [event.transform.x, event.transform.y]
+        this.transparentLabel = false
 
         this.updateScale()
         this.updatePosition()
@@ -597,7 +601,7 @@ class GraphRepository {
 
     // texts
     // Firefoxはdisplay:noneな要素にgetBoundingClientRectできない
-    const { scale } = this
+    const { scale, transparentLabel } = this
 
     // ctxがd3.Transitionを返すときにvisibilityTexts.dataがundefinedになるので、アクセサを呼び分ける
     const filterVisibilityTexts = (accessor: SVGElementsAccessor) =>
@@ -613,12 +617,15 @@ class GraphRepository {
         .filter((d) => this.isShowNodeText(d))
 
     ctx.gtexts.style('visibility', 'hidden').style('opacity', 0)
-    const visibilityTextsCtx = filterVisibilityTexts(ctx)
 
+    const visibilityTextsCtx = filterVisibilityTexts(ctx)
+    const labelOpacity = transparentLabel ? 0.6 : 1
+    const shouldBeOpaqueLabel = (d: NodeType) =>
+      d.data.key === this.targetKey || this.urisToHighlight.includes(d.data.uri)
     visibilityTextsCtx
       .attr('class', '')
       .style('visibility', 'visible')
-      .style('opacity', 1)
+      .style('opacity', (d) => (shouldBeOpaqueLabel(d) ? 1 : labelOpacity))
       .attr('transform', (d) => `translate(${this.x(d.x)}, ${this.textY(d)})`)
       .selectAll('tspan')
       .attr('x', 0)

@@ -355,7 +355,12 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
   )
 
   const showCircles = React.useCallback(
-    (circles: NodeType[], animate: boolean, updateScale: boolean = true) => {
+    (
+      circles: NodeType[],
+      animate: boolean,
+      updateScale: boolean = true,
+      transparentLabel: boolean = false
+    ) => {
       if (circles.length === 0) {
         return
       }
@@ -364,6 +369,8 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         GraphRepository.calcCircleScale(circles)
         GraphRepository.updateScale()
       }
+
+      GraphRepository.transparentLabel = transparentLabel
       if (animate) {
         GraphRepository.updatePositionWithAnimate()
       } else {
@@ -488,19 +495,23 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         if (showingRelation) {
           showCircles(
             focus(focusingCircleKey, true, true, showingRelation),
-            animate
+            animate,
+            true,
+            true
           )
           return
         }
         if (showRightHand || showLeftHand) {
           showCircles(
             focus(focusingCircleKey, showRightHand, showLeftHand),
-            animate
+            animate,
+            true,
+            true
           )
           return
         }
 
-        showCircles(focus(focusingCircleKey), animate)
+        showCircles(focus(focusingCircleKey), animate, true, true)
         return
       }
       if (domain || range) {
@@ -527,7 +538,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
             GraphRepository.updateSelfLines([object])
           }
         }
-        showCircles(showPropertyClass(domain, range), animate)
+        showCircles(showPropertyClass(domain, range), animate, true, true)
         return
       }
       if (searchingURI) {
@@ -542,7 +553,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
           )
           return
         }
-        showCircles(matchedNodes, animate)
+        showCircles(matchedNodes, animate, true, true)
         return
       }
 
