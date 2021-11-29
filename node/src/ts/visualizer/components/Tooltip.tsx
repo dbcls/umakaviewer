@@ -32,33 +32,31 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
   useEffect(() => {
     if (mounted.current) {
       const { uri: oldUri } = oldTooltipStateRef.current
-
-      if (uri !== oldUri) {
-        setState({ ...state, visible: false })
-
-        if (uri && !state.visible) {
-          const tooltip = tooltipRef.current?.getBoundingClientRect()
-
-          if (tooltip && pos) {
-            const dbclsHeaderHeight = 24 + 8
-            const arrowSize = 25
-            const topMarginRequired =
-              tooltip.height + arrowSize + dbclsHeaderHeight
-            const onBottom = pos.top < topMarginRequired
-
-            setState({
-              x: (pos.left + pos.right - tooltip.width) / 2,
-              y: onBottom
-                ? pos.bottom + arrowSize
-                : pos.top - (tooltip.height + arrowSize),
-              visible: true,
-              isOnBottom: onBottom,
-            })
-          }
-        }
+      if (uri === oldUri) {
+        return
       }
 
+      setState({ ...state, visible: false })
       oldTooltipStateRef.current = { uri }
+
+      const tooltip = tooltipRef.current?.getBoundingClientRect()
+      if (!uri || !tooltip || !pos) {
+        return
+      }
+
+      const dbclsHeaderHeight = 24 + 8
+      const arrowSize = 25
+      const topMarginRequired = tooltip.height + arrowSize + dbclsHeaderHeight
+      const onBottom = pos.top < topMarginRequired
+
+      setState({
+        x: (pos.left + pos.right - tooltip.width) / 2,
+        y: onBottom
+          ? pos.bottom + arrowSize
+          : pos.top - (tooltip.height + arrowSize),
+        visible: true,
+        isOnBottom: onBottom,
+      })
     } else {
       mounted.current = true
     }
