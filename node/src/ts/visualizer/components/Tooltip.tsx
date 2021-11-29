@@ -40,14 +40,17 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
           const tooltip = tooltipRef.current?.getBoundingClientRect()
 
           if (tooltip && pos) {
-            const onBottom = pos.bottom < tooltip.height
+            const dbclsHeaderHeight = 24 + 8
             const arrowSize = 25
+            const topMarginRequired =
+              tooltip.height + arrowSize + dbclsHeaderHeight
+            const onBottom = pos.top < topMarginRequired
 
             setState({
               x: (pos.left + pos.right - tooltip.width) / 2,
               y: onBottom
                 ? pos.bottom + arrowSize
-                : pos.top - tooltip.height - arrowSize,
+                : pos.top - (tooltip.height + arrowSize),
               visible: true,
               isOnBottom: onBottom,
             })
