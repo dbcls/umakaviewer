@@ -141,7 +141,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
   const handleShowTooltip: SVGEventHandlerType = React.useCallback(
     (event?: React.MouseEvent<SVGCircleElement, MouseEvent>, d?: NodeType) => {
-      if (!d || !event || GraphRepository.isShowNodeText(d)) {
+      if (!d || !event) {
         return
       }
 

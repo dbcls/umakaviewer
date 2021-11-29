@@ -1015,12 +1015,7 @@ class GraphRepository {
     handleHideTooltip: SVGEventHandlerType
   ) {
     this.circles
-      ?.on('mouseenter', null)
-      .on('mousemove', null)
-      .on('wheel', null)
-      .on('mouseleave', null)
-      .filter((d) => this.urisToHighlight.includes(d.data.uri))
-      .on('mouseenter', handleShowTooltip)
+      ?.on('mouseenter', handleShowTooltip)
       .on('mousemove', handleShowTooltip)
       .on('wheel', handleShowTooltip)
       .on('mouseleave', handleHideTooltip)

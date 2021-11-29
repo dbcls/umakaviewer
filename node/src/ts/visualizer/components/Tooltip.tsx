@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { useIntl } from 'react-intl'
 import { RootState } from '../reducers'
 import { Classes } from '../types/class'
 import SubjectDetail from './SubjectDetail'
+import { getPreferredLabel } from '../utils'
 
 type TooltipProps = {
   classes: Classes
@@ -59,22 +61,41 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
     }
   }, [classes, pos, uri])
 
-  return (
-    <div
-      ref={tooltipRef}
-      id="tooltip"
-      style={{
-        top: state.y,
-        left: state.x,
-        visibility: state.visible ? 'visible' : 'hidden',
-      }}
-    >
-      <h4>URI</h4>
-      <p>{uri}</p>
-      <SubjectDetail classes={classes} uri={uri} />
-      <div className={`arrow ${state.isOnBottom ? 'upward' : 'downward'}`} />
-    </div>
-  )
+  const intl = useIntl()
+  const { x, y, visible, isOnBottom } = state
+  const tooltipElement = useMemo(() => {
+    if (!uri) {
+      return null
+    }
+
+    const detail = classes[uri]
+    const entities = detail?.entities
+    const preferredLabel = getPreferredLabel(uri, classes, intl.locale)
+    return (
+      <div
+        ref={tooltipRef}
+        id="tooltip"
+        style={{
+          top: y,
+          left: x,
+          visibility: visible ? 'visible' : 'hidden',
+        }}
+      >
+        <div className="detail">
+          <h4>{preferredLabel}</h4>
+          <p>{entities !== undefined ? `(${entities} entities)` : null}</p>
+        </div>
+        <div className="uri">
+          <h4>URI</h4>
+          <p>{uri}</p>
+        </div>
+        <SubjectDetail classes={classes} uri={uri} />
+        <div className={`arrow ${isOnBottom ? 'upward' : 'downward'}`} />
+      </div>
+    )
+  }, [uri, intl.locale, classes, x, y, visible, isOnBottom])
+
+  return tooltipElement
 }
 
 export default Tooltip
