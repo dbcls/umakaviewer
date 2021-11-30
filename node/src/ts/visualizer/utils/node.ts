@@ -2,6 +2,13 @@ import _ from 'lodash'
 import { Structure, NodeStructure } from '../types/structure'
 import { NodeType } from './GraphRepository'
 
+export const flattenStructure = (elem: Structure): Structure[] => {
+  if (elem.children === undefined) {
+    return [elem]
+  }
+  return _.flatMap(elem.children, flattenStructure).concat([elem])
+}
+
 const falsyStructure: NodeStructure = {
   key: 0,
   originalR: 0,
