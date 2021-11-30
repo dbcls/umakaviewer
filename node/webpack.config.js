@@ -124,6 +124,7 @@ module.exports = (env, args) => {
       new CopyPlugin([
         { from: 'src/images', to: 'static/images' },
         { from: 'src/blacklists', to: 'static/blacklists' },
+        { from: 'src/html/yasgui.html', to: 'yasgui.html'}
       ]),
       new MiniCssExtractPlugin({
         filename: 'static/css/[name].css',
