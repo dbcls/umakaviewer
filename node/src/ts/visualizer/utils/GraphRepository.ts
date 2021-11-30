@@ -876,24 +876,27 @@ class GraphRepository {
 
   showNodes(
     nodes: NodeType[],
-    handleClickClass: SVGEventHandlerType,
+    handleMouseDownClass: SVGEventHandlerType,
     locale: string
   ) {
-    this.showCircleNodes(nodes, handleClickClass)
+    this.showCircleNodes(nodes, handleMouseDownClass)
     this.updateScale()
-    this.showTextNodes(nodes, handleClickClass, locale)
+    this.showTextNodes(nodes, handleMouseDownClass, locale)
     this.updatePosition()
   }
 
-  showCircleNodes(nodes: NodeType[], handleClickClass: SVGEventHandlerType) {
+  showCircleNodes(
+    nodes: NodeType[],
+    handleMouseDownClass: SVGEventHandlerType
+  ) {
     const circles = this.circles?.data(nodes, nodeKeyFn)
-    circles?.enter().append('svg:circle').on('click', handleClickClass)
+    circles?.enter().append('svg:circle').on('mousedown', handleMouseDownClass)
     circles?.exit().remove()
   }
 
   showTextNodes(
     nodes: NodeType[],
-    handleClickClass: SVGEventHandlerType,
+    handleMouseDownClass: SVGEventHandlerType,
     locale: string
   ) {
     const { classes } = this
@@ -909,7 +912,7 @@ class GraphRepository {
       .attr('transform', (d) => `translate(${this.x(d.x)}, ${this.textY(d)})`)
     const texts = textAndButton
       ?.append('svg:text')
-      .on('click', handleClickClass)
+      .on('mousedown', handleMouseDownClass)
       .attr('y', (d) => (d.data.isLabelOnTop && isIE11 ? '1em' : 0))
     // IE11はdominant-baselineをサポートしない
 

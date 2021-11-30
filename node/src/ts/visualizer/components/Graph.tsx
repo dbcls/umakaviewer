@@ -15,10 +15,13 @@ import ClassStructure from './ClassStructure'
 import { Tree } from './Tree'
 import LoadingSpinner from './LoadingSpinner'
 import Filter from './Filter'
+import { Metadata } from '../types/metadata'
 
 type GraphProps = {
   classes: Classes
   structure: Structure[]
+  metadata: Metadata | null
+  getReferenceURL: (uri: string | null) => string | null
 }
 
 const selector = ({
@@ -92,7 +95,7 @@ const avoidStackedCircle = (
 }
 
 const Graph: React.FC<GraphProps> = (props) => {
-  const { classes, structure } = props
+  const { classes, structure, metadata, getReferenceURL } = props
   const { circleDiameter, svgWidth, svgHeight, showTree } = useSelector(
     selector
   )
@@ -144,9 +147,11 @@ const Graph: React.FC<GraphProps> = (props) => {
           <ClassStructure
             nodes={sortedNodes}
             classes={classes}
+            metadata={metadata}
             circleDiameter={circleDiameter}
             width={svgWidth}
             height={svgHeight}
+            getReferenceURL={getReferenceURL}
           />
         )}
       </svg>

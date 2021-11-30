@@ -15,6 +15,8 @@ import { getChildrenRecursive } from '../utils/node'
 
 import { ClassNames } from '../constants/ClassStructure'
 import { TooltipAction } from '../actions/tooltip'
+import { Metadata } from '../types/metadata'
+import useDblClickHandler from '../hooks/useDblClickHandler'
 
 function decideNormalClass(
   d: NodeType,
@@ -115,12 +117,22 @@ type ClassStructureProps = {
   nodes: NodeType[]
   width: number | null
   height: number | null
+  metadata: Metadata | null
+  getReferenceURL: (uri: string | null) => string | null
 }
 
 const selector = ({ detail }: RootState) => detail
 
 const ClassStructure: React.FC<ClassStructureProps> = (props) => {
-  const { classes, circleDiameter, nodes, width, height } = props
+  const {
+    classes,
+    metadata,
+    circleDiameter,
+    nodes,
+    width,
+    height,
+    getReferenceURL,
+  } = props
   const dispatch = useDispatch()
   const intl = useIntl()
 
@@ -128,7 +140,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     dispatch(DetailAction.showTree())
   }, [dispatch])
 
-  const handleClickClass: SVGEventHandlerType = React.useCallback(
+  const handleSingleClickClass = React.useCallback(
     (event?: React.MouseEvent<SVGGElement, MouseEvent>, d?: NodeType) => {
       if (!d || !event || event.defaultPrevented) {
         return
@@ -137,6 +149,36 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       dispatch(TooltipAction.hide())
     },
     [dispatch]
+  )
+  const handleDoubleClickClass = React.useCallback(
+    (event?: React.MouseEvent<SVGGElement, MouseEvent>, d?: NodeType) => {
+      const refUri = d ? getReferenceURL(d.data.uri) : ''
+      if (!refUri || !event) {
+        return
+      }
+
+      const query = `
+        SELECT ?i
+        WHERE {
+          ?i a <${refUri}> .
+        }
+        LIMIT 20
+      `.replace(/^\n|\s+$|^ {8}/gm, '')
+
+      const params = new URLSearchParams()
+      params.append('endpoint', metadata?.endpoint ?? '')
+      params.append('query', query)
+      window.open(
+        `/yasgui?${params.toString()}`,
+        '_brank',
+        'noopener,noreferrer'
+      )
+    },
+    [metadata?.endpoint]
+  )
+  const [handleMouseDownClass] = useDblClickHandler(
+    handleDoubleClickClass,
+    handleSingleClickClass
   )
 
   const handleShowTooltip: SVGEventHandlerType = React.useCallback(
@@ -311,7 +353,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
       GraphRepository.avoidColidedLabel()
 
-      GraphRepository.showNodes(visibleNodes, handleClickClass, intl.locale)
+      GraphRepository.showNodes(visibleNodes, handleMouseDownClass, intl.locale)
 
       const decideClass = (d: NodeType) => {
         if (_.includes(both, d.data.uri)) {
@@ -342,7 +384,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
       return [target].concat(rhsNodes, lhsNodes, bothNodes)
     },
-    [classes, handleClickClass, handleClickTreeImg, intl]
+    [classes, handleMouseDownClass, handleClickTreeImg, intl]
   )
 
   const showCircles = React.useCallback(
@@ -393,7 +435,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       const visibleNodesSet = getNodeSet(visibleNodes)
 
       GraphRepository.visibleNodesSet = visibleNodesSet
-      GraphRepository.showNodes(visibleNodes, handleClickClass, intl.locale)
+      GraphRepository.showNodes(visibleNodes, handleMouseDownClass, intl.locale)
       GraphRepository.avoidColidedLabel()
 
       let decideClass
@@ -433,7 +475,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       GraphRepository.addClass(visibleNodes, decideClass)
       return _.union(domainNodes, rangeNodes, focusRootNodes)
     },
-    [handleClickClass, intl.locale]
+    [handleMouseDownClass, intl.locale]
   )
 
   const search = React.useCallback(
@@ -449,7 +491,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       const visibleNodesSet = getNodeSet(visibleNodes)
 
       GraphRepository.visibleNodesSet = visibleNodesSet
-      GraphRepository.showNodes(visibleNodes, handleClickClass, intl.locale)
+      GraphRepository.showNodes(visibleNodes, handleMouseDownClass, intl.locale)
       GraphRepository.avoidColidedLabel()
 
       const decideClass = (d: NodeType) => {
@@ -462,7 +504,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       GraphRepository.addClass(visibleNodes, decideClass)
       return matchedNodes
     },
-    [handleClickClass, intl.locale]
+    [handleMouseDownClass, intl.locale]
   )
 
   const detail = useSelector(selector)

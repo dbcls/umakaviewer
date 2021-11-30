@@ -204,7 +204,12 @@ const App: React.FC<AppProps> = (props) => {
   return (
     <div id="main">
       <PropertyList properties={properties} />
-      <Graph classes={classes} structure={structure} />
+      <Graph
+        classes={classes}
+        structure={structure}
+        metadata={metadata}
+        getReferenceURL={getReferenceURL}
+      />
       <Detail classes={classes} getReferenceURL={getReferenceURL} />
       <div id="header-right">
         <SearchBox classes={classes} />
