@@ -21,7 +21,13 @@ const Visualize = (props: Props) => {
     classes: {},
     properties: [],
     prefixes: {},
-    meta_data: {},
+    meta_data: {
+      properties: 0,
+      triples: 0,
+      classes: 0,
+      endpoint: '',
+      crawl_date: '',
+    },
   })
 
   React.useEffect(() => {
