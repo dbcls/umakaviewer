@@ -18,9 +18,6 @@ import {
 import _ from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { getLocaleMessages, getLocaleShortString, useQuery } from './utils'
-import { Property } from './types/property'
-import { Prefixes } from './types/prefix'
-import { Classes } from './types/class'
 import { Structure } from './types/structure'
 import Prefix from './components/Prefix'
 import Tooltip from './components/Tooltip'
@@ -35,24 +32,8 @@ import ApiClient from '../ApiClient'
 import { useDBCLSFooter } from '../useDBCLSFooter'
 import { RootState } from './reducers'
 import { FilterAction } from './actions/filter'
-
-declare global {
-  interface Document {
-    documentMode?: number
-  }
-
-  interface Navigator {
-    userLanguage?: string
-    browserLanguage?: string
-  }
-}
-
-export type AppState = {
-  structure: Structure[]
-  classes: Classes
-  properties: Property[]
-  prefixes: Prefixes
-}
+import { flattenStructure } from './utils/node'
+import { AppState, Content } from './types'
 
 const initialAppState: AppState = {
   structure: [],
@@ -61,7 +42,7 @@ const initialAppState: AppState = {
   prefixes: {},
 }
 
-const filterContent = (
+const filterStateDestructive = (
   state: AppState,
   condition: (uri: string) => boolean
 ) => {
@@ -103,24 +84,16 @@ const filterContent = (
   })
 }
 
-const isEmptyContent = (content: AppState) => {
+const isEmptyState = (state: AppState) => {
   if (
-    content.structure.length === 0 &&
-    content.properties.length === 0 &&
-    Object.keys(content.classes).length === 0 &&
-    Object.keys(content.prefixes).length === 0
+    state.structure.length === 0 &&
+    state.properties.length === 0 &&
+    Object.keys(state.classes).length === 0 &&
+    Object.keys(state.prefixes).length === 0
   ) {
     return true
   }
   return false
-}
-
-export type Content = {
-  inheritance_structure: Structure[]
-  classes: Classes
-  properties: Property[]
-  prefixes: Prefixes
-  meta_data: any
 }
 
 type AppProps = {
@@ -140,7 +113,6 @@ const App: React.FC<AppProps> = (props) => {
   const [rawState, setRawState] = useState<AppState>(initialAppState)
   const [state, setState] = useState<AppState>(initialAppState)
 
-  // utility
   const getReferenceURL = useCallback(
     (uri: string | null) => {
       if (uri === null) {
@@ -155,15 +127,16 @@ const App: React.FC<AppProps> = (props) => {
     },
     [state.prefixes]
   )
+
   useEffect(() => {
-    const preferredContent = {
+    const nextState = {
       structure: content.inheritance_structure,
       classes: content.classes,
       properties: content.properties,
       prefixes: content.prefixes,
     }
 
-    if (isEmptyContent(preferredContent) || !isEmptyContent(rawState)) {
+    if (isEmptyState(nextState) || !isEmptyState(rawState)) {
       return
     }
 
@@ -174,24 +147,23 @@ const App: React.FC<AppProps> = (props) => {
 
     ApiClient.checkHealthy().then((res) => {
       if (res.data.ok) {
-        // set blacklist
         Blacklist.configre({
           classes: '/static/blacklists/bcl.txt',
           prefixes: '/static/blacklists/bpr.txt',
         })
 
-        // filter content
         const existsInBlacklist = (uri: string) =>
-          Blacklist.has(uri, preferredContent.prefixes)
-        filterContent(preferredContent, existsInBlacklist)
-        setRawState(preferredContent)
+          Blacklist.has(uri, content.prefixes)
+        filterStateDestructive(nextState, existsInBlacklist)
+
+        setRawState(nextState)
       }
     })
   }, [content, rawState]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { lowerLimitOfClassEntities } = useSelector(selector)
   useEffect(() => {
-    if (isEmptyContent(rawState)) {
+    if (isEmptyState(rawState)) {
       return
     }
 
@@ -208,46 +180,34 @@ const App: React.FC<AppProps> = (props) => {
       search: `?lower_limit=${lowerLimitOfClassEntities}`,
     })
 
-    const flattenChildren = (elem: Structure): Structure[] => {
-      if (elem.children === undefined) {
-        return [elem]
-      }
-      return _.flatMap(elem.children, flattenChildren).concat([elem])
-    }
-
     const urisToHide = rawState.structure
-      .flatMap((elem) => flattenChildren(elem))
-      .filter((elem) => {
-        const classDetail = rawState.classes[elem.uri]
-        return (
-          elem.children === undefined &&
-          (classDetail === undefined ||
-            classDetail.entities === undefined ||
-            classDetail.entities < lowerLimitOfClassEntities)
-        )
+      .flatMap((e) => flattenStructure(e))
+      .filter((e) => {
+        const detail = rawState.classes[e.uri]
+        const hasNoChildren = e.children === undefined
+        const entityUndefined = !detail || detail.entities === undefined
+        const lessThanLimit = (detail.entities ?? 0) < lowerLimitOfClassEntities
+        return hasNoChildren && (entityUndefined || lessThanLimit)
       })
-      .reduce<{ [key: string]: true }>((prev, cur) => {
-        // eslint-disable-next-line no-param-reassign
-        prev[cur.uri] = true
-        return prev
-      }, {})
+      .reduce((prev, cur) => prev.add(cur.uri), new Set<string>())
 
-    const shouldHideElement = (uri: string) => urisToHide[uri]
+    const shouldHideElement = (uri: string) => urisToHide.has(uri)
     const nextState = _.cloneDeep(rawState)
-    filterContent(nextState, shouldHideElement)
+    filterStateDestructive(nextState, shouldHideElement)
     setState(nextState)
   }, [rawState, lowerLimitOfClassEntities])
 
+  const { structure, classes, properties, prefixes } = state
   return (
     <div id="main">
-      <PropertyList properties={state.properties} />
-      <Graph classes={state.classes} structure={state.structure} />
-      <Detail classes={state.classes} getReferenceURL={getReferenceURL} />
+      <PropertyList properties={properties} />
+      <Graph classes={classes} structure={structure} />
+      <Detail classes={classes} getReferenceURL={getReferenceURL} />
       <div id="header-right">
-        <SearchBox classes={state.classes} />
-        <Prefix prefixes={state.prefixes} />
+        <SearchBox classes={classes} />
+        <Prefix prefixes={prefixes} />
       </div>
-      <Tooltip classes={state.classes} />
+      <Tooltip classes={classes} />
     </div>
   )
 }
@@ -270,8 +230,14 @@ const Visualizer: React.FC<AppProps> = (props) => {
   }, [])
 
   const footerElement = useMemo(() => {
-    // eslint-disable-next-line react/no-danger
-    return <div dangerouslySetInnerHTML={{__html: copyElement ? copyElement.outerHTML : ''}}/>
+    return (
+      <div
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: copyElement ? copyElement.outerHTML : '',
+        }}
+      />
+    )
   }, [copyElement])
 
   return (

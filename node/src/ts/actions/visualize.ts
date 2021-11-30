@@ -1,5 +1,5 @@
 import { Action } from 'redux'
-import { Content } from '../visualizer'
+import { Content } from '../visualizer/types'
 
 export enum VisualizeActionNames {
   GET_DATA_SET = 'visualize/get-data-set',
