@@ -19,6 +19,7 @@ import _ from 'lodash'
 import { useHistory } from 'react-router-dom'
 import { getLocaleMessages, getLocaleShortString, useQuery } from './utils'
 import { Structure } from './types/structure'
+import { Metadata } from './types/metadata'
 import Prefix from './components/Prefix'
 import Tooltip from './components/Tooltip'
 import SearchBox from './components/SearchBox'
@@ -112,6 +113,7 @@ const App: React.FC<AppProps> = (props) => {
 
   const [rawState, setRawState] = useState<AppState>(initialAppState)
   const [state, setState] = useState<AppState>(initialAppState)
+  const [metadata, setMetadata] = useState<Metadata | null>(null)
 
   const getReferenceURL = useCallback(
     (uri: string | null) => {
@@ -157,6 +159,7 @@ const App: React.FC<AppProps> = (props) => {
         filterStateDestructive(nextState, existsInBlacklist)
 
         setRawState(nextState)
+        setMetadata(content.meta_data)
       }
     })
   }, [content, rawState]) // eslint-disable-line react-hooks/exhaustive-deps

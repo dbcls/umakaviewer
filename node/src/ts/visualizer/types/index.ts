@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { Classes } from './class'
+import { Metadata } from './metadata'
 import { Prefixes } from './prefix'
 import { Property } from './property'
 import { Structure } from './structure'
@@ -27,5 +28,5 @@ export type Content = {
   classes: Classes
   properties: Property[]
   prefixes: Prefixes
-  meta_data: any
+  meta_data: Metadata
 }
