@@ -522,7 +522,8 @@ class GraphRepository {
   updateSelfLines(
     nodes: NodeType[],
     handleMouseOver: SVGEventHandlerType = () => {},
-    handleMouseOut: SVGEventHandlerType = () => {}
+    handleMouseOut: SVGEventHandlerType = () => {},
+    handleDblClick: SVGEventHandlerType = () => {}
   ) {
     const selfLines = this.paths.self?.data(nodes, nodeKeyFn)
     selfLines
@@ -532,6 +533,7 @@ class GraphRepository {
       .attr('marker-end', 'url(#arrow-head)')
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut)
+      .on('dblclick', handleDblClick)
     selfLines?.exit().remove()
   }
 
@@ -830,12 +832,14 @@ class GraphRepository {
 
   addArrowLineEvent(
     handleMouseOver: SVGEventHandlerType,
-    handleMouseOut: SVGEventHandlerType
+    handleMouseOut: SVGEventHandlerType,
+    handleDblClick: SVGEventHandlerType
   ) {
     this.svg
       ?.selectAll<SVGLineElement, NodeType>('.arrow-line-base')
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut)
+      .on('dblclick', handleDblClick)
   }
 
   avoidColidedLabel() {

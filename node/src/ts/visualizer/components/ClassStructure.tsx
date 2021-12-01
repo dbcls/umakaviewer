@@ -347,10 +347,65 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         GraphRepository.removePopup()
       }
 
-      GraphRepository.addArrowLineEvent(arrowMouseover, arrowMouseout)
+      const arrowDblClick = (
+        event?: React.MouseEvent<SVGGElement, MouseEvent>,
+        d?: NodeType
+      ) => {
+        if (!event || !d) return
+
+        const focusingUri = getReferenceURL(target.data.uri)!
+        const targetUri = getReferenceURL(d.data.uri)!
+        const predicateUris = getPredicates(d).map((p) => getReferenceURL(p)!)
+
+        const targetElement = event.currentTarget
+        const pathClass = targetElement?.getAttribute('class')
+        const isLeftLine = pathClass?.includes('left-line')
+        const isSelfLine = pathClass?.includes('self-line')
+
+        const createTripe = (): [string, string[], string] => {
+          if (isLeftLine) {
+            return [targetUri, predicateUris, focusingUri]
+          }
+          if (isSelfLine) {
+            return [targetUri, predicateUris, targetUri]
+          }
+          return [focusingUri, predicateUris, targetUri]
+        }
+
+        const [sbj, prds, obj] = createTripe()
+        const query = `
+          SELECT ?sbj ?obj
+          WHERE {
+            ?sbj ${prds.map((p) => `<${p}>`).join('|')} ?obj .
+            ?sbj a <${sbj}> .
+            ?obj a <${obj}> .
+          }
+          LIMIT 20
+        `.replace(/^\n|\s+$|^ {10}/gm, '')
+
+        const params = new URLSearchParams()
+        params.append('endpoint', metadata?.endpoint ?? '')
+        params.append('query', query)
+        window.open(
+          `/yasgui?${params.toString()}`,
+          '_brank',
+          'noopener,noreferrer'
+        )
+      }
+
+      GraphRepository.addArrowLineEvent(
+        arrowMouseover,
+        arrowMouseout,
+        arrowDblClick
+      )
 
       const selfPath: NodeType[] = isOneself ? [target] : []
-      GraphRepository.updateSelfLines(selfPath, arrowMouseover, arrowMouseout)
+      GraphRepository.updateSelfLines(
+        selfPath,
+        arrowMouseover,
+        arrowMouseout,
+        arrowDblClick
+      )
 
       GraphRepository.avoidColidedLabel()
 
