@@ -34,7 +34,6 @@ export type SVGEventHandlerType = (
   e?: React.MouseEvent<SVGElement, MouseEvent>,
   d?: NodeType
 ) => void
-type HTMLElementType = d3.Selection<d3.BaseType, NodeType, HTMLElement, any>
 type ScaleLinearType = d3.ScaleLinear<number, number>
 type ZoomType = d3.ZoomBehavior<SVGGElement, NodeType>
 
@@ -115,19 +114,9 @@ const textBeforeEdgePolyfill = (
 }
 
 class GraphRepository {
-  // private instance field
   private _nodes: NodeType[]
 
   private _svg: SVGGElementType | null
-
-  private elements: {
-    shadow: HTMLElementType | null
-    searching: HTMLElementType | null
-    both: HTMLElementType | null
-    arrowHead: HTMLElementType | null
-  }
-
-  // public instance field
 
   classes: Classes
 
@@ -179,12 +168,6 @@ class GraphRepository {
   constructor() {
     this._nodes = []
     this._svg = null
-    this.elements = {
-      shadow: null,
-      searching: null,
-      both: null,
-      arrowHead: null,
-    }
 
     this.classes = {}
 
@@ -237,57 +220,46 @@ class GraphRepository {
   }
 
   setShadow() {
-    this.elements.shadow = d3.select('#shadow')
+    const shadow = this.svg?.select('#shadow')
 
-    this.shadow
+    shadow
       ?.append('feGaussianBlur')
       .attr('in', 'SourceAlpha')
       .attr('result', 'blur')
       .attr('stdDeviation', 5)
-    this.shadow
-      ?.append('feBlend')
-      .attr('in', 'SourceGraphic')
-      .attr('mode', 'normal')
-  }
-
-  get shadow() {
-    return this.elements.shadow
+    shadow?.append('feBlend').attr('in', 'SourceGraphic').attr('mode', 'normal')
   }
 
   setSearching() {
-    this.elements.searching = d3.select('#searching')
+    const searching = this.svg?.select('#searching')
 
-    this.searching
+    searching
       ?.append('feGaussianBlur')
       .attr('stdDeviation', 9.5)
       .attr('in', 'SourceAlpha')
-    this.searching
+    searching
       ?.append('feOffset')
       .attr('dx', 0.5)
       .attr('dy', 0.5)
       .attr('result', 'offsetblur')
-    this.searching
+    searching
       ?.append('feFlood')
       .attr('flood-color', '#FF4F20')
       .attr('flood-opacity', 0.76)
-    this.searching
+    searching
       ?.append('feComposite')
       .attr('in2', 'offsetblur')
       .attr('operator', 'in')
 
-    const merge = this.searching?.append('feMerge')
+    const merge = searching?.append('feMerge')
     merge?.append('feMergeNode')
     merge?.append('feMergeNode').attr('in', 'SourceGraphic')
   }
 
-  get searching() {
-    return this.elements.searching
-  }
-
   setArrowHead() {
-    this.elements.arrowHead = d3.select('#arrow-head')
+    const arrowHead = this.svg?.select('#arrow-head')
 
-    this.arrowHead
+    arrowHead
       ?.attr('orient', 'auto-start-reverse')
       .attr('markerUnits', 'strokeWidth')
       .attr('markerWidth', '10')
@@ -295,10 +267,6 @@ class GraphRepository {
       .attr('refX', '5')
       .attr('refY', '5')
       .attr('viewBox', '0 0 10 10')
-  }
-
-  get arrowHead() {
-    return this.elements.arrowHead
   }
 
   // custom accessor
