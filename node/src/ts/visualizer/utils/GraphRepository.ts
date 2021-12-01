@@ -21,6 +21,8 @@ import {
 import { getPreferredLabel, isIE11 } from '.'
 import SVGElementsAccessor from './SVGElementsAccessor'
 
+export type Point = { x: number; y: number }
+
 export type NodeType = d3.HierarchyCircularNode<NodeStructure>
 export type SVGGElementType = d3.Selection<
   SVGGElement,
@@ -35,7 +37,6 @@ export type SVGEventHandlerType = (
 type HTMLElementType = d3.Selection<d3.BaseType, NodeType, HTMLElement, any>
 type ScaleLinearType = d3.ScaleLinear<number, number>
 type ZoomType = d3.ZoomBehavior<SVGGElement, NodeType>
-export type PopupDataType = { x1: number; x2: number; y1: number; y2: number }
 
 const distance = (x1: number, y1: number, x2: number, y2: number) => {
   return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
@@ -43,6 +44,60 @@ const distance = (x1: number, y1: number, x2: number, y2: number) => {
 
 const calcMoveCenter = (diameter: number, scale: number) => {
   return (diameter * scale) / 2 - diameter / 2
+}
+
+// 2点と半径から円の中心座標を求める (2点ある)
+const calcCenterFromPoints = (
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  r: number
+) => {
+  const x3 = (x1 + x2) / 2
+  const y3 = (y1 + y2) / 2
+  const r2 = r ** 2
+  const l1 = (x2 - x3) ** 2 + (y2 - y3) ** 2
+
+  if (r2 < l1) {
+    throw Error('Cannot calculate center of circle.')
+  }
+
+  const d = Math.sqrt(r2 / l1 - 1.0)
+  const dx = d * (y2 - y3)
+  const dy = d * (x2 - x3)
+
+  const p1 = [x3 + dx, y3 - dy]
+  const p2 = [x3 - dx, y3 + dy]
+
+  return [p1, p2].sort((a, b) => b[0] - a[0] || b[1] - a[1])
+}
+
+// 円の中心座標と円周上の2点から中心角を求める
+const calcCenterAngleFromPoints = (
+  r: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+) => {
+  const theta = 2 * Math.asin(distance(x1, y1, x2, y2) / (2 * r))
+  return theta
+}
+
+// 基点を中心に座標を反時計回りにθ度回転させる
+const rotateCoordinate = (
+  x: number,
+  y: number,
+  refX: number,
+  refY: number,
+  theta: number
+) => {
+  const adjustedX = x - refX
+  const adjustedY = y - refY
+  const roratedX = Math.cos(theta) * adjustedX + -Math.sin(theta) * adjustedY
+  const roratedY = Math.sin(theta) * adjustedX + Math.cos(theta) * adjustedY
+  return [roratedX + refX, roratedY + refY]
 }
 
 const textBeforeEdgePolyfill = (
@@ -98,6 +153,8 @@ class GraphRepository {
 
   ignoreEvent: Boolean
 
+  transparentLabel: boolean
+
   pos: {
     top: number
     bottom: number
@@ -147,6 +204,7 @@ class GraphRepository {
     this.zoom = undefined
     this.timer = undefined
     this.ignoreEvent = false
+    this.transparentLabel = false
   }
 
   // public accessor
@@ -281,7 +339,7 @@ class GraphRepository {
   }
 
   get popups() {
-    return this.svg?.selectAll<HTMLElement, PopupDataType>('.popup')
+    return this.svg?.selectAll<HTMLElement, Point>('.popup')
   }
 
   // accesor modoki
@@ -348,6 +406,7 @@ class GraphRepository {
         this.manuallyZoomed = true
         this.scale = event.transform.k
         this.translate = [event.transform.x, event.transform.y]
+        this.transparentLabel = false
 
         this.updateScale()
         this.updatePosition()
@@ -491,15 +550,8 @@ class GraphRepository {
       .on('click', handleClick)
   }
 
-  addPopup(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    predicates: string[],
-    message: string
-  ) {
-    const popup = this.popups?.data([{ x1, y1, x2, y2 }])
+  addPopup(x: number, y: number, predicates: string[], message: string) {
+    const popup = this.popups?.data([{ x, y }])
     const div = popup
       ?.enter()
       .append('foreignObject')
@@ -597,29 +649,36 @@ class GraphRepository {
 
     // texts
     // Firefoxはdisplay:noneな要素にgetBoundingClientRectできない
-    const { scale } = this
+    const { scale, transparentLabel } = this
 
-    const visibilityTexts = ctx.gtexts
-      .style('visibility', 'hidden')
-      .style('opacity', 0)
-      ?.filter((d) => {
-        return (
-          this.targetKey === d.data.key ||
-          !d.children ||
-          !(d.children[0].data.key in this.visibleNodesSet) ||
-          d.r * scale <= SHOW_TEXT_MAX_CIRCLE_DIAMETER
-        )
-      })
-      .filter((d) => this.isShowNodeText(d))
+    // ctxがd3.Transitionを返すときにvisibilityTexts.dataがundefinedになるので、アクセサを呼び分ける
+    const filterVisibilityTexts = (accessor: SVGElementsAccessor) =>
+      accessor.gtexts
+        ?.filter((d) => {
+          return (
+            this.targetKey === d.data.key ||
+            !d.children ||
+            !(d.children[0].data.key in this.visibleNodesSet) ||
+            d.r * scale <= SHOW_TEXT_MAX_CIRCLE_DIAMETER
+          )
+        })
+        .filter((d) => this.isShowNodeText(d))
 
-    visibilityTexts
+    ctx.gtexts.style('visibility', 'hidden').style('opacity', 0)
+
+    const visibilityTextsCtx = filterVisibilityTexts(ctx)
+    const labelOpacity = transparentLabel ? 0.6 : 1
+    const shouldBeOpaqueLabel = (d: NodeType) =>
+      d.data.key === this.targetKey || this.urisToHighlight.includes(d.data.uri)
+    visibilityTextsCtx
       .attr('class', '')
       .style('visibility', 'visible')
-      .style('opacity', 1)
+      .style('opacity', (d) => (shouldBeOpaqueLabel(d) ? 1 : labelOpacity))
       .attr('transform', (d) => `translate(${this.x(d.x)}, ${this.textY(d)})`)
       .selectAll('tspan')
       .attr('x', 0)
 
+    const visibilityTexts = filterVisibilityTexts(this.svgAccessor)
     if (typeof visibilityTexts?.data === 'function') {
       // Leafノードでない && クラス単位で最上位にあたるノードを強調表示
       const data = visibilityTexts.data()
@@ -638,9 +697,14 @@ class GraphRepository {
         (acc, d) => acc.concat([getUpperParent(d)]),
         []
       )
-      const upperParentUris: string[] = _.uniq(_.map(upperParents, 'data.uri'))
-      visibilityTexts
-        .filter((d) => !!d.children && upperParentUris.includes(d.data.uri))
+      const upperParentUris = new Set(upperParents.map((v) => v.data.uri))
+      visibilityTextsCtx
+        .filter(
+          (d) =>
+            this.targetKey !== d.data.key &&
+            !!d.children &&
+            upperParentUris.has(d.data.uri)
+        )
         .attr('class', 'emphasized-class')
     }
 
@@ -658,111 +722,109 @@ class GraphRepository {
       .attr('y', (d) => (d.data.isLabelOnTop ? 0 : -imageSize / 2))
 
     // popup
-    this.popups
-      ?.attr('x', ({ x1, x2 }) => (x1 + x2) / 2)
-      .attr('y', ({ y1, y2 }) => (y1 + y2) / 2)
+    this.popups?.attr('x', ({ x }) => x).attr('y', ({ y }) => y)
 
     const f = this.targetNode
     if (!f) return
 
     // lines
     // const { paths } = this
-    const minSpaceBetweenCircles = (10 / scale) * 2
-    ctx.paths.rightHand.attr('d', (d) => {
-      const dist = distance(f.x, f.y, d.x, d.y)
-      // 小数点精度の問題か何かでまれに誤って判定されることがあったので余白を設ける
-      if (dist < f.r + d.r + minSpaceBetweenCircles) {
-        // 中心から中心を指す
-        return [
-          `M ${this.x(f.x)},${this.y(f.y)}`,
-          `${this.x(d.x)},${this.y(d.y)}`,
-        ].join(' ')
-      }
-      // 辺から辺を指す
-      const cut1 = (dist - f.r) / dist
-      const cut2 = (dist - d.r) / dist
-      return [
-        `M ${this.x((f.x - d.x) * cut1 + d.x)},${this.y(
-          (f.y - d.y) * cut1 + d.y
-        )}`,
-        `${this.x((d.x - f.x) * cut2 + f.x)},${this.y(
-          (d.y - f.y) * cut2 + f.y
-        )}`,
-      ].join(' ')
-    })
+    const makeArrowNode = (x: number, y: number) => {
+      const r = 3.5
+      const moveToStart = `M${x - r},${y}`
+      const drawUppperHalf = `A${r},${r} 0,1,0 ${x + r},${y}`
+      const drawBottomHalf = `A${r},${r} 0,1,0 ${x - r},${y}`
+      const moveToOrigin = `M${x},${y}`
+      return `${moveToStart} ${drawUppperHalf} ${drawBottomHalf} ${moveToOrigin}`
+    }
 
+    const makeArrowLineToCenter = (from: NodeType, to: NodeType) => {
+      // 中心から中心を指す
+      const fromX = this.x(from.x)
+      const fromY = this.y(from.y)
+      const toX = this.x(to.x)
+      const toY = this.y(to.y)
+      const midX = (fromX + toX) / 2
+      const midY = (fromY + toY) / 2
+      const drawNode = makeArrowNode(midX, midY)
+      return `M${fromX},${fromY} ${midX},${midY} ${drawNode} ${toX},${toY}`
+    }
+
+    const makeArrowLineToSide = (
+      from: NodeType,
+      to: NodeType,
+      calculatedDistance?: number
+    ) => {
+      const dist = calculatedDistance ?? distance(from.x, from.y, to.x, to.y)
+
+      // 辺から辺を指す
+      const cutFrom = (dist - from.r) / dist
+      const fromX = this.x((from.x - to.x) * cutFrom + to.x)
+      const fromY = this.y((from.y - to.y) * cutFrom + to.y)
+      const cutTo = (dist - to.r) / dist
+      const toX = this.x((to.x - from.x) * cutTo + from.x)
+      const toY = this.y((to.y - from.y) * cutTo + from.y)
+      const midX = (fromX + toX) / 2
+      const midY = (fromY + toY) / 2
+      const drawNode = makeArrowNode(midX, midY)
+      return `M${fromX},${fromY} ${midX},${midY} ${drawNode} ${toX},${toY}`
+    }
+
+    const minSpaceBetweenCircles = (10 / scale) * 2
+    const makeArrowLine = (from: NodeType, to: NodeType) => {
+      const dist = distance(from.x, from.y, to.x, to.y)
+
+      // 小数点精度の問題か何かでまれに誤って判定されることがあったので余白を設ける
+      const shouldPointToCenter = dist < from.r + to.r + minSpaceBetweenCircles
+      if (shouldPointToCenter) {
+        return makeArrowLineToCenter(from, to)
+      }
+
+      return makeArrowLineToSide(from, to, dist)
+    }
+
+    ctx.paths.rightHand.attr('d', (d) => {
+      return makeArrowLine(f, d)
+    })
     ctx.paths.leftHand.attr('d', (d) => {
       d.data.pointToCenter = true
-      const dist = distance(f.x, f.y, d.x, d.y)
-      if (dist < f.r + d.r + minSpaceBetweenCircles) {
-        return [
-          `M ${this.x(d.x)},${this.y(d.y)}`,
-          `${this.x(f.x)},${this.y(f.y)}`,
-        ].join(' ')
-      }
-      const cut1 = (dist - d.r) / dist
-      const cut2 = (dist - f.r) / dist
-      return [
-        `M ${this.x((d.x - f.x) * cut1 + f.x)},${this.y(
-          (d.y - f.y) * cut1 + f.y
-        )}`,
-        `${this.x((f.x - d.x) * cut2 + d.x)},${this.y(
-          (f.y - d.y) * cut2 + d.y
-        )}`,
-      ].join(' ')
+      return makeArrowLine(d, f)
     })
-
     ctx.paths.both.attr('d', (d) => {
       d.data.pointToCenter = true
-      const dist = distance(f.x, f.y, d.x, d.y)
-      if (dist < f.r + d.r + minSpaceBetweenCircles) {
-        return [
-          `M ${this.x(f.x)},${this.y(f.y)}`,
-          `${this.x(d.x)},${this.y(d.y)}`,
-        ].join(' ')
-      }
-      const cut1 = (dist - f.r) / dist
-      const cut2 = (dist - d.r) / dist
-      return [
-        `M ${this.x((f.x - d.x) * cut1 + d.x)},${this.y(
-          (f.y - d.y) * cut1 + d.y
-        )}`,
-        `${this.x((d.x - f.x) * cut2 + f.x)},${this.y(
-          (d.y - f.y) * cut2 + f.y
-        )}`,
-      ].join(' ')
+      return makeArrowLine(f, d)
     })
+    ctx.paths.same.attr('d', (d) => {
+      return makeArrowLineToSide(f, d)
+    })
+
+    const makeArrowLineToSelf = (node: NodeType) => {
+      // 4時から11時の方向を指す
+      const nodeR = node.r * 1.02
+      const fourOclock = Math.PI / 6
+      const fromX = this.x(node.x + nodeR * Math.cos(fourOclock))
+      const fromY = this.y(node.y + nodeR * Math.sin(fourOclock))
+      const elevenOclock = (-Math.PI * 4) / 6
+      const toX = this.x(node.x + nodeR * Math.cos(elevenOclock))
+      const toY = this.y(node.y + nodeR * Math.sin(elevenOclock))
+
+      // 節を描画するために矢印の中点を求める
+      const lineR = this.r(node.r * 1.1)
+      const lineC = calcCenterFromPoints(fromX, fromY, toX, toY, lineR)[0]
+      const angle = calcCenterAngleFromPoints(lineR, fromX, fromY, toX, toY)
+      const theta = angle / 2 + Math.PI
+      const lineMid = rotateCoordinate(fromX, fromY, lineC[0], lineC[1], theta)
+
+      const moveToStart = `M${fromX},${fromY}`
+      const drawUppperHalf = `A${lineR},${lineR} 0,0,0 ${lineMid[0]},${lineMid[1]}`
+      const drawNode = makeArrowNode(lineMid[0], lineMid[1])
+      const drawBottomHalf = `A${lineR},${lineR} 0,0,0 ${toX},${toY}`
+
+      return `${moveToStart} ${drawUppperHalf} ${drawNode} ${drawBottomHalf}`
+    }
 
     ctx.paths.self.attr('d', (d) => {
-      const fourOclock = Math.PI / 6
-      const elevenOclock = (-Math.PI * 4) / 6
-      const r = d.r * 1.02
-      const r2 = this.r(f.r * 1.1)
-      return [
-        `M ${this.x(d.x + r * Math.cos(fourOclock))},${this.y(
-          d.y + r * Math.sin(fourOclock)
-        )}`,
-        `A ${r2},${r2}`,
-        '0',
-        '1,0',
-        `${this.x(d.x + r * Math.cos(elevenOclock))},${this.y(
-          d.y + r * Math.sin(elevenOclock)
-        )}`,
-      ].join(' ')
-    })
-
-    ctx.paths.same.attr('d', (d) => {
-      const dist = distance(f.x, f.y, d.x, d.y)
-      const cut1 = (dist - f.r) / dist
-      const cut2 = (dist - d.r) / dist
-      return [
-        `M ${this.x((f.x - d.x) * cut1 + d.x)},${this.y(
-          (f.y - d.y) * cut1 + d.y
-        )}`,
-        `${this.x((d.x - f.x) * cut2 + f.x)},${this.y(
-          (d.y - f.y) * cut2 + f.y
-        )}`,
-      ].join(' ')
+      return makeArrowLineToSelf(d)
     })
   }
 
@@ -999,12 +1061,7 @@ class GraphRepository {
     handleHideTooltip: SVGEventHandlerType
   ) {
     this.circles
-      ?.on('mouseenter', null)
-      .on('mousemove', null)
-      .on('wheel', null)
-      .on('mouseleave', null)
-      .filter((d) => this.urisToHighlight.includes(d.data.uri))
-      .on('mouseenter', handleShowTooltip)
+      ?.on('mouseenter', handleShowTooltip)
       .on('mousemove', handleShowTooltip)
       .on('wheel', handleShowTooltip)
       .on('mouseleave', handleHideTooltip)

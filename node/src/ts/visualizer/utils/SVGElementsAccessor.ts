@@ -1,4 +1,4 @@
-import { NodeType, SVGGElementType, PopupDataType } from './GraphRepository'
+import { NodeType, SVGGElementType, Point } from './GraphRepository'
 
 export default class SVGElementsAccessor {
   ctx: SVGGElementType
@@ -39,6 +39,6 @@ export default class SVGElementsAccessor {
   }
 
   get popups() {
-    return this.ctx.selectAll<HTMLElement, PopupDataType>('.popup')
+    return this.ctx.selectAll<HTMLElement, Point>('.popup')
   }
 }

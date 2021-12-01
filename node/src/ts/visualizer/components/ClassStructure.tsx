@@ -141,7 +141,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
   const handleShowTooltip: SVGEventHandlerType = React.useCallback(
     (event?: React.MouseEvent<SVGCircleElement, MouseEvent>, d?: NodeType) => {
-      if (!d || !event || GraphRepository.isShowNodeText(d)) {
+      if (!d || !event) {
         return
       }
 
@@ -255,25 +255,16 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         if (!event || !d) return
 
         const targetElement = event.currentTarget
-
-        let [x1, y1] = [0, 0]
-        let [x2, y2] = [0, 0]
-        if (targetElement?.getAttribute('class')?.includes('self-line')) {
-          x1 = GraphRepository.x(d.x)
-          y1 = GraphRepository.y(d.y)
-          x2 = GraphRepository.x(d.x)
-          y2 = GraphRepository.y(d.y)
-        } else {
-          // eslint-disable-next-line no-extra-semi
-          ;[[x1, y1], [x2, y2]] = targetElement
-            ?.getAttribute('d')
-            ?.split(' ')
-            .slice(1, 3)
-            .map((xy) => xy.split(',').map(Number)) || [
-            [0, 0],
-            [0, 0],
-          ]
-        }
+        const isSelfLine = !!targetElement
+          ?.getAttribute('class')
+          ?.includes('self-line')
+        const [x, y] = isSelfLine
+          ? [GraphRepository.x(d.x), GraphRepository.y(d.y)]
+          : targetElement
+              ?.getAttribute('d')
+              ?.split(' ')[1]
+              .split(',')
+              .map((v) => Number(v)) ?? [0, 0]
 
         const predicates: string[] = []
         if (showRhs && targetClassDetail.rhs) {
@@ -304,7 +295,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         const predicateMessage = intl.formatMessage({
           id: 'classStructure.text.predicate',
         })
-        GraphRepository.addPopup(x1, y1, x2, y2, predicates, predicateMessage)
+        GraphRepository.addPopup(x, y, predicates, predicateMessage)
 
         GraphRepository.updatePosition()
       }
@@ -355,7 +346,12 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
   )
 
   const showCircles = React.useCallback(
-    (circles: NodeType[], animate: boolean, updateScale: boolean = true) => {
+    (
+      circles: NodeType[],
+      animate: boolean,
+      updateScale: boolean = true,
+      transparentLabel: boolean = false
+    ) => {
       if (circles.length === 0) {
         return
       }
@@ -364,6 +360,8 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         GraphRepository.calcCircleScale(circles)
         GraphRepository.updateScale()
       }
+
+      GraphRepository.transparentLabel = transparentLabel
       if (animate) {
         GraphRepository.updatePositionWithAnimate()
       } else {
@@ -488,19 +486,23 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         if (showingRelation) {
           showCircles(
             focus(focusingCircleKey, true, true, showingRelation),
-            animate
+            animate,
+            true,
+            true
           )
           return
         }
         if (showRightHand || showLeftHand) {
           showCircles(
             focus(focusingCircleKey, showRightHand, showLeftHand),
-            animate
+            animate,
+            true,
+            true
           )
           return
         }
 
-        showCircles(focus(focusingCircleKey), animate)
+        showCircles(focus(focusingCircleKey), animate, true, true)
         return
       }
       if (domain || range) {
@@ -527,7 +529,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
             GraphRepository.updateSelfLines([object])
           }
         }
-        showCircles(showPropertyClass(domain, range), animate)
+        showCircles(showPropertyClass(domain, range), animate, true, true)
         return
       }
       if (searchingURI) {
@@ -542,7 +544,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
           )
           return
         }
-        showCircles(matchedNodes, animate)
+        showCircles(matchedNodes, animate, true, true)
         return
       }
 
@@ -577,58 +579,53 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     GraphRepository.setSearching()
     GraphRepository.setArrowHead()
 
-    const [nonNullWidth, nonNullHeight, nonNullDiameter] = [
-      width || 0,
-      height || 0,
-      circleDiameter || 1,
-    ]
-    GraphRepository.initialRootCircleSize = nonNullDiameter
-
-    onResize(nonNullWidth, nonNullHeight, nonNullDiameter)
-
-    GraphRepository.manuallyZoomed = false
-    update(detail, true)
-
     if (isIE11) {
       setInterval(GraphRepository.forceRedrawLines, 10)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classes, nodes])
+  }, [isIE11, classes, nodes])
 
   const oldPropsRef = useRef({ oldWidth: width, oldHeight: height })
   const mounted = React.useRef(false)
+  const updating = React.useRef(false)
   React.useEffect(() => {
-    if (mounted.current) {
-      const [nonNullWidth, nonNullHeight, nonNullDiameter] = [
-        width || 0,
-        height || 0,
-        circleDiameter || 1,
-      ]
-      const { oldWidth, oldHeight } = oldPropsRef.current
+    if (updating.current) {
+      return
+    }
 
+    if (mounted.current) {
+      const { oldWidth, oldHeight } = oldPropsRef.current
       if (width !== oldWidth || height !== oldHeight) {
-        onResize(nonNullWidth, nonNullHeight, nonNullDiameter)
+        onResize(width ?? 0, height ?? 0, circleDiameter ?? 1)
       }
 
       const { current: oldDetail } = oldDetailStateRef
-      if (classes) {
-        if (
-          width !== oldWidth ||
-          height !== oldHeight ||
-          detail.focusingCircleKey !== oldDetail.focusingCircleKey ||
-          detail.showRightHand !== oldDetail.showRightHand ||
-          detail.showLeftHand !== oldDetail.showLeftHand ||
-          detail.showingRelation !== oldDetail.showingRelation ||
-          detail.propertyClass.domain !== oldDetail.propertyClass.domain ||
-          detail.propertyClass.range !== oldDetail.propertyClass.range ||
-          detail.searchingURI !== oldDetail.searchingURI
-        ) {
-          GraphRepository.manuallyZoomed = false
-          update(detail, true)
-        }
+      if (
+        classes ||
+        width !== oldWidth ||
+        height !== oldHeight ||
+        detail.focusingCircleKey !== oldDetail.focusingCircleKey ||
+        detail.showRightHand !== oldDetail.showRightHand ||
+        detail.showLeftHand !== oldDetail.showLeftHand ||
+        detail.showingRelation !== oldDetail.showingRelation ||
+        detail.propertyClass.domain !== oldDetail.propertyClass.domain ||
+        detail.propertyClass.range !== oldDetail.propertyClass.range ||
+        detail.searchingURI !== oldDetail.searchingURI
+      ) {
+        updating.current = true
+        GraphRepository.manuallyZoomed = false
+        update(detail, true)
+        updating.current = false
       }
     } else {
       mounted.current = true
+
+      GraphRepository.initialRootCircleSize = circleDiameter ?? 1
+      onResize(width ?? 0, height ?? 0, circleDiameter ?? 1)
+
+      updating.current = true
+      GraphRepository.manuallyZoomed = false
+      update(detail, true)
+      updating.current = false
     }
 
     oldPropsRef.current = { oldWidth: width, oldHeight: height }
