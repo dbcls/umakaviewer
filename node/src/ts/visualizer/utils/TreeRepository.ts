@@ -33,9 +33,9 @@ export const shouldShowDisplayButton = (
     isLinealChildren(node, focusingNode))
 export const getTranslateX = (d: NodeType) => d.depth * Margin.X
 export const getTranslateY = (d: NodeType) =>
-  (d.data?.treeY || 0) + 35 + 12 * 2 + 6 + 20 + 8
+  (d.data?.treeY ?? 0) + 35 + 12 * 2 + 6 + 20 + 8
 export const getTranslateOldY = (d: NodeType) =>
-  (d.data?.oldTreeY || 0) + 35 + 12 * 2 + 6 + 20 + 8
+  (d.data?.oldTreeY ?? 0) + 35 + 12 * 2 + 6 + 20 + 8
 export const getFontSize = (e: SVGTextElement) =>
   Number(e.getAttribute('font-size') || '1')
 
@@ -391,7 +391,7 @@ class TreeRepository {
       )
       .each((d, i, g) => {
         const updateProgress = (progress: number) => {
-          const delta = (d.data.treeY || 0) - (d.data.oldTreeY || 0)
+          const delta = (d.data.treeY ?? 0) - (d.data.oldTreeY ?? 0)
           g[i].style.transform = `translate(${getTranslateX(d)}px, ${
             getTranslateOldY(d) + progress * delta
           }px)`
@@ -473,12 +473,12 @@ class TreeRepository {
           datum.data.delta > 0
             ? (progress: number) => {
                 group[index].style.strokeDashoffset = String(
-                  (datum.data.delta || 0) * (1 - progress)
+                  (datum.data.delta ?? 0) * (1 - progress)
                 )
               }
             : (progress: number) => {
                 group[index].style.strokeDashoffset = String(
-                  (datum.data.delta || 0) * -1 * progress
+                  (datum.data.delta ?? 0) * -1 * progress
                 )
               }
         this.animationFuncMap.set(group[index], updateProgress)
@@ -501,7 +501,7 @@ class TreeRepository {
           const lastChild = _.last(d.children)
           if (lastChild?.data.oldTreeY !== undefined) {
             d.data.delta =
-              (lastChild.data.treeY || 0) - (lastChild.data.oldTreeY || 0)
+              (lastChild.data.treeY ?? 0) - (lastChild.data.oldTreeY ?? 0)
           }
         }
       })
@@ -509,8 +509,8 @@ class TreeRepository {
         const lastChild = _.last(d.children)
         const y =
           d.data.delta !== undefined && d.data.delta < 0
-            ? (lastChild?.data.oldTreeY || 0) - (d.data.treeY || 0)
-            : (lastChild?.data.treeY || 0) - (d.data.treeY || 0)
+            ? (lastChild?.data.oldTreeY ?? 0) - (d.data.treeY ?? 0)
+            : (lastChild?.data.treeY ?? 0) - (d.data.treeY ?? 0)
         return `M 0 0 H ${Margin.X / 2} V ${y}`
       })
       .attr('stroke-dasharray', getDatumTotalLength)
@@ -583,7 +583,7 @@ class TreeRepository {
     const shouldBridgeMultipleInheritance =
       multipleInheritanceUris.length > 0 &&
       (_.max(focusingNode.parent?.children?.map((d) => d.data.treeY)) || [0]) >
-        (focusingNode.data.treeY || 0)
+        (focusingNode.data.treeY ?? 0)
 
     if (multipleInheritanceUris.length > 0) {
       const target = svgg?.filter(
@@ -655,7 +655,7 @@ class TreeRepository {
         const linealAscendant = children?.find((d) => isLinealAscendant(d))
         const childFocusingY = linealAscendant?.data.treeY
 
-        const y = (childFocusingY || 0) - (treeY || 0)
+        const y = (childFocusingY ?? 0) - (treeY ?? 0)
         focusingNodePositions.push({
           depth,
           shouldPolygonal: !!children && children.length > 1 && y > 0,
@@ -819,7 +819,7 @@ class TreeRepository {
   ) {
     const elapsed = window.performance.now() - start
     if (elapsed > ANIMATION_DURATION) {
-      this.finishAnimation(selection, this.animationKeyMap.get(selection) || 0)
+      this.finishAnimation(selection, this.animationKeyMap.get(selection) ?? 0)
       this.animationKeyMap.delete(selection)
       completion()
     } else {

@@ -73,7 +73,7 @@ export default function search(
 
         return _.orderBy(
           candidates,
-          ({ entities }) => entities || Infinity * -1,
+          ({ entities }) => entities ?? Infinity * -1,
           ['desc']
         )
       }

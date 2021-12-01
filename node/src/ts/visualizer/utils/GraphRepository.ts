@@ -326,15 +326,15 @@ class GraphRepository {
   }
 
   x(x: number) {
-    return (this.XLinear?.(x) || 0) + this.coordinate[0]
+    return (this.XLinear?.(x) ?? 0) + this.coordinate[0]
   }
 
   y(y: number) {
-    return (this.YLinear?.(y) || 0) + this.coordinate[1]
+    return (this.YLinear?.(y) ?? 0) + this.coordinate[1]
   }
 
   textY(d: NodeType) {
-    return this.y(d.y + (d.data.labelY || 0))
+    return this.y(d.y + (d.data.labelY ?? 0))
   }
 
   r(r: number) {
@@ -690,7 +690,7 @@ class GraphRepository {
         const textRect = g[i].parentElement
           ?.getElementsByTagName('text')[0]
           .getBoundingClientRect()
-        return (textRect?.width || 0) / 2 + imageSize
+        return (textRect?.width ?? 0) / 2 + imageSize
       })
       .attr('y', (d) => (d.data.isLabelOnTop ? 0 : -imageSize / 2))
 
@@ -844,7 +844,7 @@ class GraphRepository {
             .map((child) => child.data.labelY)
         )
 
-        node.data.labelY = (maxYInChildren || 0) + scale * -60
+        node.data.labelY = (maxYInChildren ?? 0) + scale * -60
       }
     })
   }

@@ -117,13 +117,13 @@ const Graph: React.FC<GraphProps> = (props) => {
 
   React.useEffect(() => {
     if (circleDiameter && structure.length > 0 && classes && structure) {
-      const diameter = circleDiameter || 0
+      const diameter = circleDiameter || 1
       const pack = (data: NodeStructure) => {
         return d3.pack<NodeStructure>().size([diameter, diameter])(
           d3
             .hierarchy(data)
-            .sum((d) => classes[d.uri]?.entities || 1)
-            .sort((a, b) => (a.value || 1) - (b.value || 1))
+            .sum((d) => classes[d.uri]?.entities || 0.5) // entityが1かfalsyかで差をつける
+            .sort((a, b) => (a.value ?? 0) - (b.value ?? 0))
         )
       }
       const root: NodeStructure = createNodeStructure(structure)
