@@ -1449,6 +1449,10 @@ body {
       bottom: -35px;
       border-width: 25px 25px 0 25px;
     }
+
+    &.none {
+      display: none;
+    }
   }
 }
 
