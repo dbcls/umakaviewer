@@ -155,6 +155,8 @@ class GraphRepository {
 
   transparentLabel: boolean
 
+  locale: string
+
   pos: {
     top: number
     bottom: number
@@ -205,6 +207,7 @@ class GraphRepository {
     this.timer = undefined
     this.ignoreEvent = false
     this.transparentLabel = false
+    this.locale = 'en'
   }
 
   // public accessor
@@ -878,14 +881,10 @@ class GraphRepository {
     })
   }
 
-  showNodes(
-    nodes: NodeType[],
-    handleMouseDownClass: SVGEventHandlerType,
-    locale: string
-  ) {
+  showNodes(nodes: NodeType[], handleMouseDownClass: SVGEventHandlerType) {
     this.showCircleNodes(nodes, handleMouseDownClass)
     this.updateScale()
-    this.showTextNodes(nodes, handleMouseDownClass, locale)
+    this.showTextNodes(nodes, handleMouseDownClass)
     this.updatePosition()
   }
 
@@ -898,12 +897,8 @@ class GraphRepository {
     circles?.exit().remove()
   }
 
-  showTextNodes(
-    nodes: NodeType[],
-    handleMouseDownClass: SVGEventHandlerType,
-    locale: string
-  ) {
-    const { classes } = this
+  showTextNodes(nodes: NodeType[], handleMouseDownClass: SVGEventHandlerType) {
+    const { classes, locale } = this
 
     const gtexts = this.gtexts?.data(
       _.sortBy(nodes, ({ depth }) => depth * -1),
