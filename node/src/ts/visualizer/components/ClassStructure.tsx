@@ -290,6 +290,31 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         GraphRepository.addTreeImg(targetKey, handleClickTreeImg)
       }
 
+      const getPredicates = (d: NodeType) => {
+        const detail = targetClassDetail
+        const rhsProps =
+          showRhs && detail.rhs
+            ? detail.rhs
+                .filter((r) =>
+                  relation
+                    ? relation[0] === r[0] && relation[1] === r[1]
+                    : r[1] === d.data.uri
+                )
+                .map((r) => r[0])
+            : []
+        const lhsProps =
+          showLhs && detail.lhs
+            ? detail.lhs
+                .filter((r) =>
+                  relation
+                    ? relation[0] === r[0] && relation[1] === r[1]
+                    : r[0] === d.data.uri
+                )
+                .map((r) => r[1])
+            : []
+        return [...rhsProps, ...lhsProps]
+      }
+
       function arrowMouseover(
         event?: React.MouseEvent<SVGGElement, MouseEvent>,
         d?: NodeType
@@ -308,31 +333,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
               .split(',')
               .map((v) => Number(v)) ?? [0, 0]
 
-        const predicates: string[] = []
-        if (showRhs && targetClassDetail.rhs) {
-          Array.prototype.push.apply(
-            predicates,
-            targetClassDetail.rhs
-              .filter((r) =>
-                relation
-                  ? relation[0] === r[0] && relation[1] === r[1]
-                  : r[1] === d.data.uri
-              )
-              .map((r) => r[0])
-          )
-        }
-        if (showLhs && targetClassDetail.lhs) {
-          Array.prototype.push.apply(
-            predicates,
-            targetClassDetail.lhs
-              .filter((r) =>
-                relation
-                  ? relation[0] === r[0] && relation[1] === r[1]
-                  : r[0] === d.data.uri
-              )
-              .map((r) => r[1])
-          )
-        }
+        const predicates = getPredicates(d)
 
         const predicateMessage = intl.formatMessage({
           id: 'classStructure.text.predicate',
