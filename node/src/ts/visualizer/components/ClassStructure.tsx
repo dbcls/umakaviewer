@@ -450,11 +450,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       updateScale: boolean = true,
       transparentLabel: boolean = false
     ) => {
-      if (circles.length === 0) {
-        return
-      }
-
-      if (updateScale) {
+      if (updateScale && circles.length > 0) {
         GraphRepository.calcCircleScale(circles)
         GraphRepository.updateScale()
       }
@@ -604,7 +600,6 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         return
       }
       if (domain || range) {
-        focus(0)
         const subject = GraphRepository.findUriNode(domain)
         const object = GraphRepository.findUriNode(range)
         GraphRepository.targetKey = subject ? subject.data.key : null
@@ -627,11 +622,14 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
             GraphRepository.updateSelfLines([object])
           }
         }
-        showCircles(showPropertyClass(domain, range), animate, true, true)
-        return
+
+        const targetNodes = showPropertyClass(domain, range)
+        if (targetNodes.length > 0) {
+          showCircles(targetNodes, animate, true, true)
+          return
+        }
       }
       if (searchingURI) {
-        focus(0)
         const matchedNodes = search(searchingURI)
         if (matchedNodes.length === 1) {
           dispatch(
@@ -642,8 +640,11 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
           )
           return
         }
-        showCircles(matchedNodes, animate, true, true)
-        return
+
+        if (matchedNodes.length > 0) {
+          showCircles(matchedNodes, animate, true, true)
+          return
+        }
       }
 
       showCircles(focus(0), animate)
