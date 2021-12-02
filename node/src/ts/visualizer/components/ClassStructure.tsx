@@ -409,7 +409,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
       GraphRepository.avoidColidedLabel()
 
-      GraphRepository.showNodes(visibleNodes, handleMouseDownClass, intl.locale)
+      GraphRepository.showNodes(visibleNodes, handleMouseDownClass)
 
       const decideClass = (d: NodeType) => {
         if (_.includes(both, d.data.uri)) {
@@ -450,11 +450,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       updateScale: boolean = true,
       transparentLabel: boolean = false
     ) => {
-      if (circles.length === 0) {
-        return
-      }
-
-      if (updateScale) {
+      if (updateScale && circles.length > 0) {
         GraphRepository.calcCircleScale(circles)
         GraphRepository.updateScale()
       }
@@ -491,7 +487,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       const visibleNodesSet = getNodeSet(visibleNodes)
 
       GraphRepository.visibleNodesSet = visibleNodesSet
-      GraphRepository.showNodes(visibleNodes, handleMouseDownClass, intl.locale)
+      GraphRepository.showNodes(visibleNodes, handleMouseDownClass)
       GraphRepository.avoidColidedLabel()
 
       let decideClass
@@ -531,7 +527,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       GraphRepository.addClass(visibleNodes, decideClass)
       return _.union(domainNodes, rangeNodes, focusRootNodes)
     },
-    [handleMouseDownClass, intl.locale]
+    [handleMouseDownClass]
   )
 
   const search = React.useCallback(
@@ -547,7 +543,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       const visibleNodesSet = getNodeSet(visibleNodes)
 
       GraphRepository.visibleNodesSet = visibleNodesSet
-      GraphRepository.showNodes(visibleNodes, handleMouseDownClass, intl.locale)
+      GraphRepository.showNodes(visibleNodes, handleMouseDownClass)
       GraphRepository.avoidColidedLabel()
 
       const decideClass = (d: NodeType) => {
@@ -560,7 +556,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       GraphRepository.addClass(visibleNodes, decideClass)
       return matchedNodes
     },
-    [handleMouseDownClass, intl.locale]
+    [handleMouseDownClass]
   )
 
   const detail = useSelector(selector)
@@ -604,7 +600,6 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         return
       }
       if (domain || range) {
-        focus(0)
         const subject = GraphRepository.findUriNode(domain)
         const object = GraphRepository.findUriNode(range)
         GraphRepository.targetKey = subject ? subject.data.key : null
@@ -627,11 +622,14 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
             GraphRepository.updateSelfLines([object])
           }
         }
-        showCircles(showPropertyClass(domain, range), animate, true, true)
-        return
+
+        const targetNodes = showPropertyClass(domain, range)
+        if (targetNodes.length > 0) {
+          showCircles(targetNodes, animate, true, true)
+          return
+        }
       }
       if (searchingURI) {
-        focus(0)
         const matchedNodes = search(searchingURI)
         if (matchedNodes.length === 1) {
           dispatch(
@@ -642,8 +640,11 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
           )
           return
         }
-        showCircles(matchedNodes, animate, true, true)
-        return
+
+        if (matchedNodes.length > 0) {
+          showCircles(matchedNodes, animate, true, true)
+          return
+        }
       }
 
       showCircles(focus(0), animate)
@@ -668,6 +669,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
   )
 
   React.useEffect(() => {
+    GraphRepository.locale = intl.locale
     GraphRepository.classes = classes
     GraphRepository.updateNode(nodes)
     GraphRepository.removeCircles()
@@ -680,7 +682,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     if (isIE11) {
       setInterval(GraphRepository.forceRedrawLines, 10)
     }
-  }, [isIE11, classes, nodes])
+  }, [isIE11, classes, nodes, intl.locale])
 
   const oldPropsRef = useRef({ oldWidth: width, oldHeight: height })
   const mounted = React.useRef(false)

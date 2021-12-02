@@ -15,6 +15,8 @@ const selector = ({ tooltip: { pos, uri } }: RootState) => ({
   uri,
 })
 
+type ArrowType = 'upward' | 'downward' | 'none'
+
 const Tooltip: React.FC<TooltipProps> = (props) => {
   const { classes } = props
   const { pos, uri } = useSelector(selector)
@@ -23,7 +25,7 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
     x: 0,
     y: 0,
     visible: false,
-    isOnBottom: false,
+    arrowType: 'none' as ArrowType,
   })
 
   const mounted = useRef(false)
@@ -40,30 +42,50 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
       oldTooltipStateRef.current = { uri }
 
       const tooltip = tooltipRef.current?.getBoundingClientRect()
-      if (!uri || !tooltip || !pos) {
+      const boundary = document
+        .getElementById('classes-structure')
+        ?.getBoundingClientRect()
+      if (!uri || !tooltip || !pos || !boundary) {
         return
       }
 
-      const dbclsHeaderHeight = 24 + 8
       const arrowSize = 25
-      const topMarginRequired = tooltip.height + arrowSize + dbclsHeaderHeight
-      const onBottom = pos.top < topMarginRequired
+      const [width, height] = [tooltip.width, tooltip.height + arrowSize]
 
-      setState({
-        x: (pos.left + pos.right - tooltip.width) / 2,
-        y: onBottom
-          ? pos.bottom + arrowSize
-          : pos.top - (tooltip.height + arrowSize),
-        visible: true,
-        isOnBottom: onBottom,
-      })
+      const canPlaceOnTop = boundary.top <= pos.top - height
+      const canPlaceOnBottom = pos.bottom + height <= boundary.bottom
+
+      const x = (pos.left + pos.right - width) / 2
+      const outOfLeftBoundary = x < boundary.left
+      const outOfRightBoundary = boundary.right < x + width
+
+      if (
+        (canPlaceOnTop || canPlaceOnBottom) &&
+        !outOfLeftBoundary &&
+        !outOfRightBoundary
+      ) {
+        setState({
+          x,
+          y: canPlaceOnTop ? pos.top - height : pos.bottom + arrowSize,
+          visible: true,
+          arrowType: canPlaceOnTop ? 'downward' : 'upward',
+        })
+      } else {
+        const margin = 16
+        setState({
+          x: boundary.left + margin,
+          y: boundary.bottom - (tooltip.height + margin),
+          visible: true,
+          arrowType: 'none',
+        })
+      }
     } else {
       mounted.current = true
     }
   }, [classes, pos, uri])
 
   const intl = useIntl()
-  const { x, y, visible, isOnBottom } = state
+  const { x, y, visible, arrowType } = state
   const tooltipElement = useMemo(() => {
     if (!uri) {
       return null
@@ -91,10 +113,10 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
           <p>{uri}</p>
         </div>
         <SubjectDetail classes={classes} uri={uri} />
-        <div className={`arrow ${isOnBottom ? 'upward' : 'downward'}`} />
+        <div className={`arrow ${arrowType}`} />
       </div>
     )
-  }, [uri, intl.locale, classes, x, y, visible, isOnBottom])
+  }, [uri, intl.locale, classes, x, y, visible, arrowType])
 
   return tooltipElement
 }

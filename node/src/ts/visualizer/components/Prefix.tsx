@@ -32,7 +32,7 @@ const Prefix: React.FC<PrefixProps> = (props) => {
             .sort()
             .map((key, idx) => [
               <dt key={`component-prefix-list-datatype-${idx}`}>
-                @prefix : {key}
+                @prefix {key}:
               </dt>,
               <dd key={`component-prefix-list-uri-${idx}`}>
                 &lt;

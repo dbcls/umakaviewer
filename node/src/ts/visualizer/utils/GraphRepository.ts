@@ -34,7 +34,6 @@ export type SVGEventHandlerType = (
   e?: React.MouseEvent<SVGElement, MouseEvent>,
   d?: NodeType
 ) => void
-type HTMLElementType = d3.Selection<d3.BaseType, NodeType, HTMLElement, any>
 type ScaleLinearType = d3.ScaleLinear<number, number>
 type ZoomType = d3.ZoomBehavior<SVGGElement, NodeType>
 
@@ -115,19 +114,9 @@ const textBeforeEdgePolyfill = (
 }
 
 class GraphRepository {
-  // private instance field
   private _nodes: NodeType[]
 
   private _svg: SVGGElementType | null
-
-  private elements: {
-    shadow: HTMLElementType | null
-    searching: HTMLElementType | null
-    both: HTMLElementType | null
-    arrowHead: HTMLElementType | null
-  }
-
-  // public instance field
 
   classes: Classes
 
@@ -155,6 +144,8 @@ class GraphRepository {
 
   transparentLabel: boolean
 
+  locale: string
+
   pos: {
     top: number
     bottom: number
@@ -177,12 +168,6 @@ class GraphRepository {
   constructor() {
     this._nodes = []
     this._svg = null
-    this.elements = {
-      shadow: null,
-      searching: null,
-      both: null,
-      arrowHead: null,
-    }
 
     this.classes = {}
 
@@ -205,6 +190,7 @@ class GraphRepository {
     this.timer = undefined
     this.ignoreEvent = false
     this.transparentLabel = false
+    this.locale = 'en'
   }
 
   // public accessor
@@ -234,57 +220,46 @@ class GraphRepository {
   }
 
   setShadow() {
-    this.elements.shadow = d3.select('#shadow')
+    const shadow = this.svg?.select('#shadow')
 
-    this.shadow
+    shadow
       ?.append('feGaussianBlur')
       .attr('in', 'SourceAlpha')
       .attr('result', 'blur')
       .attr('stdDeviation', 5)
-    this.shadow
-      ?.append('feBlend')
-      .attr('in', 'SourceGraphic')
-      .attr('mode', 'normal')
-  }
-
-  get shadow() {
-    return this.elements.shadow
+    shadow?.append('feBlend').attr('in', 'SourceGraphic').attr('mode', 'normal')
   }
 
   setSearching() {
-    this.elements.searching = d3.select('#searching')
+    const searching = this.svg?.select('#searching')
 
-    this.searching
+    searching
       ?.append('feGaussianBlur')
       .attr('stdDeviation', 9.5)
       .attr('in', 'SourceAlpha')
-    this.searching
+    searching
       ?.append('feOffset')
       .attr('dx', 0.5)
       .attr('dy', 0.5)
       .attr('result', 'offsetblur')
-    this.searching
+    searching
       ?.append('feFlood')
       .attr('flood-color', '#FF4F20')
       .attr('flood-opacity', 0.76)
-    this.searching
+    searching
       ?.append('feComposite')
       .attr('in2', 'offsetblur')
       .attr('operator', 'in')
 
-    const merge = this.searching?.append('feMerge')
+    const merge = searching?.append('feMerge')
     merge?.append('feMergeNode')
     merge?.append('feMergeNode').attr('in', 'SourceGraphic')
   }
 
-  get searching() {
-    return this.elements.searching
-  }
-
   setArrowHead() {
-    this.elements.arrowHead = d3.select('#arrow-head')
+    const arrowHead = this.svg?.select('#arrow-head')
 
-    this.arrowHead
+    arrowHead
       ?.attr('orient', 'auto-start-reverse')
       .attr('markerUnits', 'strokeWidth')
       .attr('markerWidth', '10')
@@ -292,10 +267,6 @@ class GraphRepository {
       .attr('refX', '5')
       .attr('refY', '5')
       .attr('viewBox', '0 0 10 10')
-  }
-
-  get arrowHead() {
-    return this.elements.arrowHead
   }
 
   // custom accessor
@@ -355,15 +326,15 @@ class GraphRepository {
   }
 
   x(x: number) {
-    return (this.XLinear?.(x) || 0) + this.coordinate[0]
+    return (this.XLinear?.(x) ?? 0) + this.coordinate[0]
   }
 
   y(y: number) {
-    return (this.YLinear?.(y) || 0) + this.coordinate[1]
+    return (this.YLinear?.(y) ?? 0) + this.coordinate[1]
   }
 
   textY(d: NodeType) {
-    return this.y(d.y + (d.data.labelY || 0))
+    return this.y(d.y + (d.data.labelY ?? 0))
   }
 
   r(r: number) {
@@ -719,7 +690,7 @@ class GraphRepository {
         const textRect = g[i].parentElement
           ?.getElementsByTagName('text')[0]
           .getBoundingClientRect()
-        return (textRect?.width || 0) / 2 + imageSize
+        return (textRect?.width ?? 0) / 2 + imageSize
       })
       .attr('y', (d) => (d.data.isLabelOnTop ? 0 : -imageSize / 2))
 
@@ -873,19 +844,15 @@ class GraphRepository {
             .map((child) => child.data.labelY)
         )
 
-        node.data.labelY = (maxYInChildren || 0) + scale * -60
+        node.data.labelY = (maxYInChildren ?? 0) + scale * -60
       }
     })
   }
 
-  showNodes(
-    nodes: NodeType[],
-    handleMouseDownClass: SVGEventHandlerType,
-    locale: string
-  ) {
+  showNodes(nodes: NodeType[], handleMouseDownClass: SVGEventHandlerType) {
     this.showCircleNodes(nodes, handleMouseDownClass)
     this.updateScale()
-    this.showTextNodes(nodes, handleMouseDownClass, locale)
+    this.showTextNodes(nodes, handleMouseDownClass)
     this.updatePosition()
   }
 
@@ -898,12 +865,8 @@ class GraphRepository {
     circles?.exit().remove()
   }
 
-  showTextNodes(
-    nodes: NodeType[],
-    handleMouseDownClass: SVGEventHandlerType,
-    locale: string
-  ) {
-    const { classes } = this
+  showTextNodes(nodes: NodeType[], handleMouseDownClass: SVGEventHandlerType) {
+    const { classes, locale } = this
 
     const gtexts = this.gtexts?.data(
       _.sortBy(nodes, ({ depth }) => depth * -1),

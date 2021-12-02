@@ -15,16 +15,12 @@ class Blacklist {
   }
 
   has(uri: string, prefixes: Prefixes) {
-    const [prefixKey, className] = uri.split(':')
-    const prefix = prefixes[prefixKey]
+    const [shorthand, className] = uri.split(':')
+    const longhand = prefixes[shorthand]
+    const rawUri = longhand ? `${longhand}${className}` : uri
     return (
-      prefix !== undefined &&
-      (('classes' in this.blacklist &&
-        this.blacklist.classes.includes(`${prefix}${className}`)) ||
-        ('prefixes' in this.blacklist &&
-          this.blacklist.prefixes.some(
-            (item) => prefix === item || prefix.startsWith(item)
-          )))
+      this.blacklist.classes.includes(rawUri) ||
+      this.blacklist.prefixes.some((item) => rawUri.indexOf(item) > -1)
     )
   }
 }
