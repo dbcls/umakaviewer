@@ -1,6 +1,7 @@
 version: "3"
 services:
   mysql:
+    image: mysql-dev
     build:
       context: mysql
     environment:
