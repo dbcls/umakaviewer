@@ -3,7 +3,7 @@ services:
   mysql:
     container_name: umaka-mysql-dev
     build:
-      context: mysql
+      context: ../mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
       MYSQL_USER: umaka_v
@@ -16,7 +16,7 @@ services:
     container_name: umaka-api-dev
     image: api-dev
     build:
-      context: server
+      context: ../server
     depends_on:
       - mysql
       - redis
@@ -28,7 +28,7 @@ services:
     container_name: umaka-nginx-dev
     image: nginx-dev
     build:
-      context: node
+      context: ../node
     ports:
       - 10080:80
     depends_on:
