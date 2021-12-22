@@ -14,7 +14,6 @@ services:
   redis:
     image: redis:5.0-alpine
   api:
-    image: dev-api
     build:
       context: server
     depends_on:
@@ -25,7 +24,6 @@ services:
     volumes:
       - /opt/services/umaka_v/firebase/adminsdk.json:/app/firebase-config.json
   nginx:
-    image: dev-nginx
     build:
       context: node
     ports:
