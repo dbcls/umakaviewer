@@ -15,6 +15,8 @@ import { getChildrenRecursive } from '../utils/node'
 
 import { ClassNames } from '../constants/ClassStructure'
 import { TooltipAction } from '../actions/tooltip'
+import { Metadata } from '../types/metadata'
+import useDblClickHandler from '../hooks/useDblClickHandler'
 
 function decideNormalClass(
   d: NodeType,
@@ -115,12 +117,22 @@ type ClassStructureProps = {
   nodes: NodeType[]
   width: number | null
   height: number | null
+  metadata: Metadata | null
+  getReferenceURL: (uri: string | null) => string | null
 }
 
 const selector = ({ detail }: RootState) => detail
 
 const ClassStructure: React.FC<ClassStructureProps> = (props) => {
-  const { classes, circleDiameter, nodes, width, height } = props
+  const {
+    classes,
+    metadata,
+    circleDiameter,
+    nodes,
+    width,
+    height,
+    getReferenceURL,
+  } = props
   const dispatch = useDispatch()
   const intl = useIntl()
 
@@ -128,7 +140,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     dispatch(DetailAction.showTree())
   }, [dispatch])
 
-  const handleClickClass: SVGEventHandlerType = React.useCallback(
+  const handleSingleClickClass = React.useCallback(
     (event?: React.MouseEvent<SVGGElement, MouseEvent>, d?: NodeType) => {
       if (!d || !event || event.defaultPrevented) {
         return
@@ -138,10 +150,40 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     },
     [dispatch]
   )
+  const handleDoubleClickClass = React.useCallback(
+    (event?: React.MouseEvent<SVGGElement, MouseEvent>, d?: NodeType) => {
+      const refUri = d ? getReferenceURL(d.data.uri) : ''
+      if (!refUri || !event) {
+        return
+      }
+
+      const query = `
+        SELECT ?i
+        WHERE {
+          ?i a <${refUri}> .
+        }
+        LIMIT 20
+      `.replace(/^\n|\s+$|^ {8}/gm, '')
+
+      const params = new URLSearchParams()
+      params.append('endpoint', metadata?.endpoint ?? '')
+      params.append('query', query)
+      window.open(
+        `/yasgui?${params.toString()}`,
+        '_brank',
+        'noopener,noreferrer'
+      )
+    },
+    [metadata?.endpoint]
+  )
+  const [handleMouseDownClass] = useDblClickHandler(
+    handleDoubleClickClass,
+    handleSingleClickClass
+  )
 
   const handleShowTooltip: SVGEventHandlerType = React.useCallback(
     (event?: React.MouseEvent<SVGCircleElement, MouseEvent>, d?: NodeType) => {
-      if (!d || !event || GraphRepository.isShowNodeText(d)) {
+      if (!d || !event) {
         return
       }
 
@@ -248,6 +290,31 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         GraphRepository.addTreeImg(targetKey, handleClickTreeImg)
       }
 
+      const getPredicates = (d: NodeType) => {
+        const detail = targetClassDetail
+        const rhsProps =
+          showRhs && detail.rhs
+            ? detail.rhs
+                .filter((r) =>
+                  relation
+                    ? relation[0] === r[0] && relation[1] === r[1]
+                    : r[1] === d.data.uri
+                )
+                .map((r) => r[0])
+            : []
+        const lhsProps =
+          showLhs && detail.lhs
+            ? detail.lhs
+                .filter((r) =>
+                  relation
+                    ? relation[0] === r[0] && relation[1] === r[1]
+                    : r[0] === d.data.uri
+                )
+                .map((r) => r[1])
+            : []
+        return [...rhsProps, ...lhsProps]
+      }
+
       function arrowMouseover(
         event?: React.MouseEvent<SVGGElement, MouseEvent>,
         d?: NodeType
@@ -255,56 +322,23 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         if (!event || !d) return
 
         const targetElement = event.currentTarget
+        const isSelfLine = !!targetElement
+          ?.getAttribute('class')
+          ?.includes('self-line')
+        const [x, y] = isSelfLine
+          ? [GraphRepository.x(d.x), GraphRepository.y(d.y)]
+          : targetElement
+              ?.getAttribute('d')
+              ?.split(' ')[1]
+              .split(',')
+              .map((v) => Number(v)) ?? [0, 0]
 
-        let [x1, y1] = [0, 0]
-        let [x2, y2] = [0, 0]
-        if (targetElement?.getAttribute('class')?.includes('self-line')) {
-          x1 = GraphRepository.x(d.x)
-          y1 = GraphRepository.y(d.y)
-          x2 = GraphRepository.x(d.x)
-          y2 = GraphRepository.y(d.y)
-        } else {
-          // eslint-disable-next-line no-extra-semi
-          ;[[x1, y1], [x2, y2]] = targetElement
-            ?.getAttribute('d')
-            ?.split(' ')
-            .slice(1, 3)
-            .map((xy) => xy.split(',').map(Number)) || [
-            [0, 0],
-            [0, 0],
-          ]
-        }
-
-        const predicates: string[] = []
-        if (showRhs && targetClassDetail.rhs) {
-          Array.prototype.push.apply(
-            predicates,
-            targetClassDetail.rhs
-              .filter((r) =>
-                relation
-                  ? relation[0] === r[0] && relation[1] === r[1]
-                  : r[1] === d.data.uri
-              )
-              .map((r) => r[0])
-          )
-        }
-        if (showLhs && targetClassDetail.lhs) {
-          Array.prototype.push.apply(
-            predicates,
-            targetClassDetail.lhs
-              .filter((r) =>
-                relation
-                  ? relation[0] === r[0] && relation[1] === r[1]
-                  : r[0] === d.data.uri
-              )
-              .map((r) => r[1])
-          )
-        }
+        const predicates = getPredicates(d)
 
         const predicateMessage = intl.formatMessage({
           id: 'classStructure.text.predicate',
         })
-        GraphRepository.addPopup(x1, y1, x2, y2, predicates, predicateMessage)
+        GraphRepository.addPopup(x, y, predicates, predicateMessage)
 
         GraphRepository.updatePosition()
       }
@@ -313,14 +347,69 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         GraphRepository.removePopup()
       }
 
-      GraphRepository.addArrowLineEvent(arrowMouseover, arrowMouseout)
+      const arrowDblClick = (
+        event?: React.MouseEvent<SVGGElement, MouseEvent>,
+        d?: NodeType
+      ) => {
+        if (!event || !d) return
+
+        const focusingUri = getReferenceURL(target.data.uri)!
+        const targetUri = getReferenceURL(d.data.uri)!
+        const predicateUris = getPredicates(d).map((p) => getReferenceURL(p)!)
+
+        const targetElement = event.currentTarget
+        const pathClass = targetElement?.getAttribute('class')
+        const isLeftLine = pathClass?.includes('left-line')
+        const isSelfLine = pathClass?.includes('self-line')
+
+        const createTripe = (): [string, string[], string] => {
+          if (isLeftLine) {
+            return [targetUri, predicateUris, focusingUri]
+          }
+          if (isSelfLine) {
+            return [targetUri, predicateUris, targetUri]
+          }
+          return [focusingUri, predicateUris, targetUri]
+        }
+
+        const [sbj, prds, obj] = createTripe()
+        const query = `
+          SELECT ?sbj ?obj
+          WHERE {
+            ?sbj ${prds.map((p) => `<${p}>`).join('|')} ?obj .
+            ?sbj a <${sbj}> .
+            ?obj a <${obj}> .
+          }
+          LIMIT 20
+        `.replace(/^\n|\s+$|^ {10}/gm, '')
+
+        const params = new URLSearchParams()
+        params.append('endpoint', metadata?.endpoint ?? '')
+        params.append('query', query)
+        window.open(
+          `/yasgui?${params.toString()}`,
+          '_brank',
+          'noopener,noreferrer'
+        )
+      }
+
+      GraphRepository.addArrowLineEvent(
+        arrowMouseover,
+        arrowMouseout,
+        arrowDblClick
+      )
 
       const selfPath: NodeType[] = isOneself ? [target] : []
-      GraphRepository.updateSelfLines(selfPath, arrowMouseover, arrowMouseout)
+      GraphRepository.updateSelfLines(
+        selfPath,
+        arrowMouseover,
+        arrowMouseout,
+        arrowDblClick
+      )
 
       GraphRepository.avoidColidedLabel()
 
-      GraphRepository.showNodes(visibleNodes, handleClickClass, intl.locale)
+      GraphRepository.showNodes(visibleNodes, handleMouseDownClass)
 
       const decideClass = (d: NodeType) => {
         if (_.includes(both, d.data.uri)) {
@@ -351,19 +440,22 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
       return [target].concat(rhsNodes, lhsNodes, bothNodes)
     },
-    [classes, handleClickClass, handleClickTreeImg, intl]
+    [classes, handleMouseDownClass, handleClickTreeImg, intl]
   )
 
   const showCircles = React.useCallback(
-    (circles: NodeType[], animate: boolean, updateScale: boolean = true) => {
-      if (circles.length === 0) {
-        return
-      }
-
-      if (updateScale) {
+    (
+      circles: NodeType[],
+      animate: boolean,
+      updateScale: boolean = true,
+      transparentLabel: boolean = false
+    ) => {
+      if (updateScale && circles.length > 0) {
         GraphRepository.calcCircleScale(circles)
         GraphRepository.updateScale()
       }
+
+      GraphRepository.transparentLabel = transparentLabel
       if (animate) {
         GraphRepository.updatePositionWithAnimate()
       } else {
@@ -395,7 +487,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       const visibleNodesSet = getNodeSet(visibleNodes)
 
       GraphRepository.visibleNodesSet = visibleNodesSet
-      GraphRepository.showNodes(visibleNodes, handleClickClass, intl.locale)
+      GraphRepository.showNodes(visibleNodes, handleMouseDownClass)
       GraphRepository.avoidColidedLabel()
 
       let decideClass
@@ -435,7 +527,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       GraphRepository.addClass(visibleNodes, decideClass)
       return _.union(domainNodes, rangeNodes, focusRootNodes)
     },
-    [handleClickClass, intl.locale]
+    [handleMouseDownClass]
   )
 
   const search = React.useCallback(
@@ -451,7 +543,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       const visibleNodesSet = getNodeSet(visibleNodes)
 
       GraphRepository.visibleNodesSet = visibleNodesSet
-      GraphRepository.showNodes(visibleNodes, handleClickClass, intl.locale)
+      GraphRepository.showNodes(visibleNodes, handleMouseDownClass)
       GraphRepository.avoidColidedLabel()
 
       const decideClass = (d: NodeType) => {
@@ -464,7 +556,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       GraphRepository.addClass(visibleNodes, decideClass)
       return matchedNodes
     },
-    [handleClickClass, intl.locale]
+    [handleMouseDownClass]
   )
 
   const detail = useSelector(selector)
@@ -488,23 +580,26 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         if (showingRelation) {
           showCircles(
             focus(focusingCircleKey, true, true, showingRelation),
-            animate
+            animate,
+            true,
+            true
           )
           return
         }
         if (showRightHand || showLeftHand) {
           showCircles(
             focus(focusingCircleKey, showRightHand, showLeftHand),
-            animate
+            animate,
+            true,
+            true
           )
           return
         }
 
-        showCircles(focus(focusingCircleKey), animate)
+        showCircles(focus(focusingCircleKey), animate, true, true)
         return
       }
       if (domain || range) {
-        focus(0)
         const subject = GraphRepository.findUriNode(domain)
         const object = GraphRepository.findUriNode(range)
         GraphRepository.targetKey = subject ? subject.data.key : null
@@ -527,11 +622,14 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
             GraphRepository.updateSelfLines([object])
           }
         }
-        showCircles(showPropertyClass(domain, range), animate)
-        return
+
+        const targetNodes = showPropertyClass(domain, range)
+        if (targetNodes.length > 0) {
+          showCircles(targetNodes, animate, true, true)
+          return
+        }
       }
       if (searchingURI) {
-        focus(0)
         const matchedNodes = search(searchingURI)
         if (matchedNodes.length === 1) {
           dispatch(
@@ -542,8 +640,11 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
           )
           return
         }
-        showCircles(matchedNodes, animate)
-        return
+
+        if (matchedNodes.length > 0) {
+          showCircles(matchedNodes, animate, true, true)
+          return
+        }
       }
 
       showCircles(focus(0), animate)
@@ -568,6 +669,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
   )
 
   React.useEffect(() => {
+    GraphRepository.locale = intl.locale
     GraphRepository.classes = classes
     GraphRepository.updateNode(nodes)
     GraphRepository.removeCircles()
@@ -577,58 +679,53 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     GraphRepository.setSearching()
     GraphRepository.setArrowHead()
 
-    const [nonNullWidth, nonNullHeight, nonNullDiameter] = [
-      width || 0,
-      height || 0,
-      circleDiameter || 1,
-    ]
-    GraphRepository.initialRootCircleSize = nonNullDiameter
-
-    onResize(nonNullWidth, nonNullHeight, nonNullDiameter)
-
-    GraphRepository.manuallyZoomed = false
-    update(detail, true)
-
     if (isIE11) {
       setInterval(GraphRepository.forceRedrawLines, 10)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classes, nodes])
+  }, [isIE11, classes, nodes, intl.locale])
 
   const oldPropsRef = useRef({ oldWidth: width, oldHeight: height })
   const mounted = React.useRef(false)
+  const updating = React.useRef(false)
   React.useEffect(() => {
-    if (mounted.current) {
-      const [nonNullWidth, nonNullHeight, nonNullDiameter] = [
-        width || 0,
-        height || 0,
-        circleDiameter || 1,
-      ]
-      const { oldWidth, oldHeight } = oldPropsRef.current
+    if (updating.current) {
+      return
+    }
 
+    if (mounted.current) {
+      const { oldWidth, oldHeight } = oldPropsRef.current
       if (width !== oldWidth || height !== oldHeight) {
-        onResize(nonNullWidth, nonNullHeight, nonNullDiameter)
+        onResize(width ?? 0, height ?? 0, circleDiameter ?? 1)
       }
 
       const { current: oldDetail } = oldDetailStateRef
-      if (classes) {
-        if (
-          width !== oldWidth ||
-          height !== oldHeight ||
-          detail.focusingCircleKey !== oldDetail.focusingCircleKey ||
-          detail.showRightHand !== oldDetail.showRightHand ||
-          detail.showLeftHand !== oldDetail.showLeftHand ||
-          detail.showingRelation !== oldDetail.showingRelation ||
-          detail.propertyClass.domain !== oldDetail.propertyClass.domain ||
-          detail.propertyClass.range !== oldDetail.propertyClass.range ||
-          detail.searchingURI !== oldDetail.searchingURI
-        ) {
-          GraphRepository.manuallyZoomed = false
-          update(detail, true)
-        }
+      if (
+        classes ||
+        width !== oldWidth ||
+        height !== oldHeight ||
+        detail.focusingCircleKey !== oldDetail.focusingCircleKey ||
+        detail.showRightHand !== oldDetail.showRightHand ||
+        detail.showLeftHand !== oldDetail.showLeftHand ||
+        detail.showingRelation !== oldDetail.showingRelation ||
+        detail.propertyClass.domain !== oldDetail.propertyClass.domain ||
+        detail.propertyClass.range !== oldDetail.propertyClass.range ||
+        detail.searchingURI !== oldDetail.searchingURI
+      ) {
+        updating.current = true
+        GraphRepository.manuallyZoomed = false
+        update(detail, true)
+        updating.current = false
       }
     } else {
       mounted.current = true
+
+      GraphRepository.initialRootCircleSize = circleDiameter ?? 1
+      onResize(width ?? 0, height ?? 0, circleDiameter ?? 1)
+
+      updating.current = true
+      GraphRepository.manuallyZoomed = false
+      update(detail, true)
+      updating.current = false
     }
 
     oldPropsRef.current = { oldWidth: width, oldHeight: height }

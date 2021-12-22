@@ -14,7 +14,7 @@ module.exports = (env, args) => {
   let FIREBASE_CONFIG
   switch (args.mode) {
   case 'development':
-    API_ENDPOINT = 'http://localhost/api/v1'
+    API_ENDPOINT = 'http://127.0.0.1:5000/api/v1'
     FIREBASE_CONFIG = {
       apiKey: "AIzaSyB3GMmRd9JWGVvDlEtgpemtYZPo-WRkNpc",
       authDomain: "fabled-alchemy-246207.firebaseapp.com",
@@ -38,7 +38,7 @@ module.exports = (env, args) => {
     }
     break
   default:
-    API_ENDPOINT = 'http://localhost/api/v1'
+    API_ENDPOINT = 'http://127.0.0.1:5000/api/v1'
     FIREBASE_CONFIG = {
       apiKey: "",
       authDomain: "",
@@ -124,6 +124,7 @@ module.exports = (env, args) => {
       new CopyPlugin([
         { from: 'src/images', to: 'static/images' },
         { from: 'src/blacklists', to: 'static/blacklists' },
+        { from: 'src/html/yasgui.html', to: 'yasgui.html'}
       ]),
       new MiniCssExtractPlugin({
         filename: 'static/css/[name].css',

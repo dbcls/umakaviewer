@@ -620,15 +620,15 @@ body {
           height: 20px;
           overflow: hidden;
           tspan {
-            fill: #444;
+            fill: $white-color;
             font-size: 18px;
             font-weight: bold;
             line-height: 1.8;
             text-shadow:
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color;
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444;
           }
         }
       }
@@ -1392,17 +1392,44 @@ body {
   font-size: 14px;
   z-index: 5;
 
-  p, li {
-    margin-top: 8px;
-    list-style-type: none;
+  > * {
+    margin-bottom: 12px;
+    :last-child {
+      margin-bottom: 0;
+    }
   }
 
-  .subject {
-    margin-top: 16px;
+  .detail, .uri {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    h4 {
+      margin-right: 8px;
+    }
+  }
+
+  .subject, .object {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    li {
+      margin-top: 8px;
+      list-style-type: none;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
   }
 
   .object {
     color: #a567a7;
+  }
+
+  .detail h4 {
+    font-weight: bold;
+  }
+  :not(.detail) h4 {
+    @extend .legend-label;
   }
 
   .arrow {
@@ -1419,8 +1446,12 @@ body {
     }
 
     &.downward {
-      bottom: -25px;
+      bottom: -35px;
       border-width: 25px 25px 0 25px;
+    }
+
+    &.none {
+      display: none;
     }
   }
 }
