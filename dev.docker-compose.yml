@@ -1,7 +1,7 @@
 version: "3"
 services:
   mysql:
-    container_name: umaka-mysql-dev
+    container_name: mysql-dev
     build:
       context: mysql
     environment:
@@ -14,6 +14,7 @@ services:
     image: redis:5.0-alpine
   api:
     container_name: umaka-api-dev
+    image: api-dev
     build:
       context: server
     depends_on:
@@ -25,6 +26,7 @@ services:
       - /opt/services/umaka_v/firebase/adminsdk.json:/app/firebase-config.json
   nginx:
     container_name: umaka-nginx-dev
+    image: nginx-dev
     build:
       context: node
     ports:
