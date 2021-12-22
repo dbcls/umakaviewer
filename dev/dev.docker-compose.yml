@@ -1,7 +1,7 @@
 version: "3"
 services:
   mysql:
-    container_name: mysql-dev
+    container_name: umaka-mysql-dev
     build:
       context: mysql
     environment:
