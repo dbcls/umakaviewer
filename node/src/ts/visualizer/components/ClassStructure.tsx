@@ -600,6 +600,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         return
       }
       if (domain || range) {
+        focus(0)
         const subject = GraphRepository.findUriNode(domain)
         const object = GraphRepository.findUriNode(range)
         GraphRepository.targetKey = subject ? subject.data.key : null
@@ -630,6 +631,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         }
       }
       if (searchingURI) {
+        focus(0)
         const matchedNodes = search(searchingURI)
         if (matchedNodes.length === 1) {
           dispatch(
