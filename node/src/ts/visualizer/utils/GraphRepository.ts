@@ -480,13 +480,17 @@ class GraphRepository {
     bothLines?.exit().remove()
   }
 
-  updateRightLines(nodes: NodeType[]) {
+  updateRightLines(
+    nodes: NodeType[],
+    handleRightClick: SVGEventHandlerType = () => {}
+  ) {
     const rightLines = this.paths.rightHand?.data(nodes, nodeKeyFn)
     rightLines
       ?.enter()
       .append('path')
       .attr('class', 'arrow-line-base right-hand-line')
       .attr('marker-end', 'url(#arrow-head)')
+      .on('contextmenu', handleRightClick)
     rightLines?.exit().remove()
   }
 

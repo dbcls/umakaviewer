@@ -472,7 +472,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
   )
 
   const showPropertyClass = React.useCallback(
-    (domain: string | null, range: string | null) => {
+    (uri: string | null, domain: string | null, range: string | null) => {
       const domainNodes = domain
         ? GraphRepository.nodes.filter((d) => d.data.uri === domain)
         : []
@@ -493,12 +493,65 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         hasNoMultipleInheritance(domainClassDetail) &&
         hasNoMultipleInheritance(rangeClassDetail)
 
+      const arrowRightClick = (
+        event?: React.MouseEvent<SVGGElement, MouseEvent>,
+        d?: NodeType
+      ) => {
+        if (!event || !d) return
+
+        event.preventDefault()
+
+        const propertyUri = getReferenceURL(uri)!
+        const domainUri = getReferenceURL(domain)!
+        const rangeUri = getReferenceURL(range)!
+
+        const targetElement = event.currentTarget
+        const pathClass = targetElement?.getAttribute('class')
+        const isLeftLine = pathClass?.includes('left-line')
+        const isSelfLine = pathClass?.includes('self-line')
+
+        const createTripe = (): [string, string[], string] => {
+          if (isLeftLine) {
+            return [domainUri, [propertyUri], rangeUri]
+          }
+          if (isSelfLine) {
+            return [domainUri, [propertyUri], rangeUri]
+          }
+          return [domainUri, [propertyUri], rangeUri]
+        }
+
+        const [s, p, o] = createTripe()
+        const query = `
+          SELECT ?sbj ?obj
+          WHERE {
+            ?sbj ${p.map((v) => `<${v}>`).join('|')} ?obj .
+            ?sbj a <${s}> .
+            ?obj a <${o}> .
+          }
+          LIMIT 20
+        `.replace(/^\n|\s+$|^ {10}/gm, '')
+
+        const params = new URLSearchParams()
+        params.append('endpoint', metadata?.endpoint ?? '')
+        params.append('query', query)
+        window.open(
+          `/yasgui?${params.toString()}`,
+          '_brank',
+          'noopener,noreferrer'
+        )
+      }
+
       const obj = rangeNodes.length > 0 ? rangeNodes[0] : null
       if (domain && range && obj !== null && canDrawTriple) {
         if (domain !== range) {
-          GraphRepository.updateRightLines([obj])
+          GraphRepository.updateRightLines([obj], arrowRightClick)
         } else {
-          GraphRepository.updateSelfLines([obj])
+          GraphRepository.updateSelfLines(
+            [obj],
+            undefined,
+            undefined,
+            arrowRightClick
+          )
         }
       }
 
@@ -604,7 +657,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         showLeftHand,
         showingRelation,
         searchingURI,
-        propertyClass: { domain, range },
+        propertyClass: { domain, range, uri: propertyUri },
       } = detailState
 
       GraphRepository.targetKey = focusingCircleKey
@@ -635,7 +688,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       }
       if (domain || range) {
         focus(0)
-        const targetNodes = showPropertyClass(domain, range)
+        const targetNodes = showPropertyClass(propertyUri, domain, range)
         if (targetNodes.length > 0) {
           showCircles(targetNodes, animate, true, true)
           return
