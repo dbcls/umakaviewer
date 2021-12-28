@@ -10,6 +10,7 @@ type ClassRelationProps = {
   relation: ClassRelationType
   selected: boolean
   indexes: [number, number]
+  propertyClass?: string
 }
 
 const ClassRelation: React.FC<ClassRelationProps> = (props) => {
@@ -17,6 +18,7 @@ const ClassRelation: React.FC<ClassRelationProps> = (props) => {
     relation: { subject_class, object_class, object_datatype, triples },
     selected,
     indexes: [index1, index2],
+    propertyClass,
   } = props
   const dispatch = useDispatch()
 
@@ -25,6 +27,7 @@ const ClassRelation: React.FC<ClassRelationProps> = (props) => {
       e.stopPropagation()
       dispatch(
         DetailAction.showPropertyClass(
+          propertyClass ?? null,
           subject_class,
           object_class || object_datatype
         )
@@ -75,6 +78,7 @@ ClassRelation.displayName = 'ClassRelation'
 type ClassRelationsProps = {
   classRelations: ClassRelationType[]
   index: number
+  propertyClass?: string
 }
 
 const selector = ({ property: { showPropertyClassIndex } }: RootState) => ({
@@ -82,7 +86,7 @@ const selector = ({ property: { showPropertyClassIndex } }: RootState) => ({
 })
 
 const ClassRelations: React.FC<ClassRelationsProps> = (props) => {
-  const { classRelations, index } = props
+  const { classRelations, index, propertyClass } = props
   const {
     showPropertyClassIndex: [selectedIndex1, selectedIndex2],
   } = useSelector(selector)
@@ -95,6 +99,7 @@ const ClassRelations: React.FC<ClassRelationsProps> = (props) => {
           relation={relation}
           indexes={[index, key]}
           selected={selectedIndex1 === index && selectedIndex2 === key}
+          propertyClass={propertyClass}
         />
       ))}
     </ul>
