@@ -479,6 +479,29 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       const rangeNodes = range
         ? GraphRepository.nodes.filter((d) => d.data.uri === range)
         : []
+
+      const sbj = domainNodes.length > 0 ? domainNodes[0] : null
+      GraphRepository.targetKey = sbj?.data?.key ?? null
+
+      const domainClassDetail = GraphRepository.classes[domain || '']
+      const rangeClassDetail = GraphRepository.classes[range || '']
+      const hasNoMultipleInheritance = (classDetail: ClassDetail) =>
+        classDetail &&
+        (!classDetail.subClassOf ||
+          (!!classDetail.subClassOf && classDetail.subClassOf.length === 1)) // 親がいるなら多重継承でないものに限る
+      const canDrawTriple =
+        hasNoMultipleInheritance(domainClassDetail) &&
+        hasNoMultipleInheritance(rangeClassDetail)
+
+      const obj = rangeNodes.length > 0 ? rangeNodes[0] : null
+      if (domain && range && obj !== null && canDrawTriple) {
+        if (domain !== range) {
+          GraphRepository.updateRightLines([obj])
+        } else {
+          GraphRepository.updateSelfLines([obj])
+        }
+      }
+
       const focusRootNodes = _.union(
         getVisibleNodes(domainNodes),
         getVisibleNodes(rangeNodes)
@@ -612,29 +635,6 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       }
       if (domain || range) {
         focus(0)
-        const subject = GraphRepository.findUriNode(domain)
-        const object = GraphRepository.findUriNode(range)
-        GraphRepository.targetKey = subject ? subject.data.key : null
-
-        const domainClassDetail = classes[domain || '']
-        const rangeClassDetail = classes[range || '']
-
-        const hasNoMultipleInheritance = (classDetail: ClassDetail) =>
-          classDetail &&
-          (!classDetail.subClassOf ||
-            (!!classDetail.subClassOf && classDetail.subClassOf.length === 1)) // 親がいるなら多重継承でないものに限る
-        const canDrawTriple =
-          hasNoMultipleInheritance(domainClassDetail) &&
-          hasNoMultipleInheritance(rangeClassDetail)
-
-        if (domain && range && object !== undefined && canDrawTriple) {
-          if (domain !== range) {
-            GraphRepository.updateRightLines([object])
-          } else {
-            GraphRepository.updateSelfLines([object])
-          }
-        }
-
         const targetNodes = showPropertyClass(domain, range)
         if (targetNodes.length > 0) {
           showCircles(targetNodes, animate, true, true)
