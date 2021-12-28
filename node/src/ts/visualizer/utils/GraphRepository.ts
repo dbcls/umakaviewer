@@ -494,7 +494,7 @@ class GraphRepository {
     nodes: NodeType[],
     handleMouseOver: SVGEventHandlerType = () => {},
     handleMouseOut: SVGEventHandlerType = () => {},
-    handleDblClick: SVGEventHandlerType = () => {}
+    handleRightClick: SVGEventHandlerType = () => {}
   ) {
     const selfLines = this.paths.self?.data(nodes, nodeKeyFn)
     selfLines
@@ -504,7 +504,7 @@ class GraphRepository {
       .attr('marker-end', 'url(#arrow-head)')
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut)
-      .on('dblclick', handleDblClick)
+      .on('contextmenu', handleRightClick)
     selfLines?.exit().remove()
   }
 
@@ -804,13 +804,13 @@ class GraphRepository {
   addArrowLineEvent(
     handleMouseOver: SVGEventHandlerType,
     handleMouseOut: SVGEventHandlerType,
-    handleDblClick: SVGEventHandlerType
+    handleRightClick: SVGEventHandlerType
   ) {
     this.svg
       ?.selectAll<SVGLineElement, NodeType>('.arrow-line-base')
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut)
-      .on('dblclick', handleDblClick)
+      .on('contextmenu', handleRightClick)
   }
 
   avoidColidedLabel() {
@@ -849,23 +849,32 @@ class GraphRepository {
     })
   }
 
-  showNodes(nodes: NodeType[], handleMouseDownClass: SVGEventHandlerType) {
-    this.showCircleNodes(nodes, handleMouseDownClass)
+  showNodes(
+    nodes: NodeType[],
+    handleClickClass: SVGEventHandlerType,
+    handleRightClickClass: SVGEventHandlerType
+  ) {
+    this.showCircleNodes(nodes, handleClickClass, handleRightClickClass)
     this.updateScale()
-    this.showTextNodes(nodes, handleMouseDownClass)
+    this.showTextNodes(nodes, handleClickClass)
     this.updatePosition()
   }
 
   showCircleNodes(
     nodes: NodeType[],
-    handleMouseDownClass: SVGEventHandlerType
+    handleClickClass: SVGEventHandlerType,
+    handleRightClickClass: SVGEventHandlerType
   ) {
     const circles = this.circles?.data(nodes, nodeKeyFn)
-    circles?.enter().append('svg:circle').on('mousedown', handleMouseDownClass)
+    circles
+      ?.enter()
+      .append('svg:circle')
+      .on('click', handleClickClass)
+      .on('contextmenu', handleRightClickClass)
     circles?.exit().remove()
   }
 
-  showTextNodes(nodes: NodeType[], handleMouseDownClass: SVGEventHandlerType) {
+  showTextNodes(nodes: NodeType[], handleClickClass: SVGEventHandlerType) {
     const { classes, locale } = this
 
     const gtexts = this.gtexts?.data(
@@ -879,7 +888,7 @@ class GraphRepository {
       .attr('transform', (d) => `translate(${this.x(d.x)}, ${this.textY(d)})`)
     const texts = textAndButton
       ?.append('svg:text')
-      .on('mousedown', handleMouseDownClass)
+      .on('click', handleClickClass)
       .attr('y', (d) => (d.data.isLabelOnTop && isIE11 ? '1em' : 0))
     // IE11はdominant-baselineをサポートしない
 
