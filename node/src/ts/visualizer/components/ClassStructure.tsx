@@ -16,6 +16,11 @@ import { getChildrenRecursive } from '../utils/node'
 import { ClassNames } from '../constants/ClassStructure'
 import { TooltipAction } from '../actions/tooltip'
 import { Metadata } from '../types/metadata'
+import {
+  makeQueryWhenRightClickArrow,
+  makeQueryWhenRightClickClass,
+  navigateToYasgui,
+} from '../utils/sparql'
 
 function decideNormalClass(
   d: NodeType,
@@ -152,30 +157,19 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
   const handleRightClickClass = React.useCallback(
     (event?: React.MouseEvent<SVGGElement, MouseEvent>, d?: NodeType) => {
-      // コンテキストメニューは表示しない
-      event?.preventDefault()
-
-      const refUri = d ? getReferenceURL(d.data.uri) : ''
-      if (!refUri || !event) {
+      if (!d || !event) {
         return
       }
 
-      const query = `
-        SELECT ?i
-        WHERE {
-          ?i a <${refUri}> .
-        }
-        LIMIT 20
-      `.replace(/^\n|\s+$|^ {8}/gm, '')
+      // コンテキストメニューは表示しない
+      event?.preventDefault()
 
-      const params = new URLSearchParams()
-      params.append('endpoint', metadata?.endpoint ?? '')
-      params.append('query', query)
-      window.open(
-        `/yasgui?${params.toString()}`,
-        '_brank',
-        'noopener,noreferrer'
-      )
+      const refUri = getReferenceURL(d?.data.uri ?? null)
+      if (refUri) {
+        const endpoint = metadata?.endpoint ?? ''
+        const query = makeQueryWhenRightClickClass(refUri)
+        navigateToYasgui(endpoint, query)
+      }
     },
     [metadata?.endpoint]
   )
@@ -352,44 +346,27 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       ) => {
         if (!event || !d) return
 
+        // コンテキストメニューは表示しない
+        event?.preventDefault()
+
         const focusingUri = getReferenceURL(target.data.uri)!
         const targetUri = getReferenceURL(d.data.uri)!
         const predicateUris = getPredicates(d).map((p) => getReferenceURL(p)!)
 
-        const targetElement = event.currentTarget
-        const pathClass = targetElement?.getAttribute('class')
-        const isLeftLine = pathClass?.includes('left-line')
-        const isSelfLine = pathClass?.includes('self-line')
-
-        const createTripe = (): [string, string[], string] => {
-          if (isLeftLine) {
+        const makeTriple = (): [string, string[], string] => {
+          const pathTypes = event.currentTarget?.classList
+          if (pathTypes?.contains('left-line')) {
             return [targetUri, predicateUris, focusingUri]
           }
-          if (isSelfLine) {
+          if (pathTypes?.contains('self-line')) {
             return [targetUri, predicateUris, targetUri]
           }
           return [focusingUri, predicateUris, targetUri]
         }
 
-        const [sbj, prds, obj] = createTripe()
-        const query = `
-          SELECT ?sbj ?obj
-          WHERE {
-            ?sbj ${prds.map((p) => `<${p}>`).join('|')} ?obj .
-            ?sbj a <${sbj}> .
-            ?obj a <${obj}> .
-          }
-          LIMIT 20
-        `.replace(/^\n|\s+$|^ {10}/gm, '')
-
-        const params = new URLSearchParams()
-        params.append('endpoint', metadata?.endpoint ?? '')
-        params.append('query', query)
-        window.open(
-          `/yasgui?${params.toString()}`,
-          '_brank',
-          'noopener,noreferrer'
-        )
+        const endpoint = metadata?.endpoint ?? ''
+        const query = makeQueryWhenRightClickArrow(...makeTriple())
+        navigateToYasgui(endpoint, query)
       }
 
       GraphRepository.addArrowLineEvent(
@@ -499,46 +476,24 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       ) => {
         if (!event || !d) return
 
+        // コンテキストメニューは表示しない
         event.preventDefault()
 
         const propertyUri = getReferenceURL(uri)!
         const domainUri = getReferenceURL(domain)!
         const rangeUri = getReferenceURL(range)!
 
-        const targetElement = event.currentTarget
-        const pathClass = targetElement?.getAttribute('class')
-        const isLeftLine = pathClass?.includes('left-line')
-        const isSelfLine = pathClass?.includes('self-line')
-
-        const createTripe = (): [string, string[], string] => {
-          if (isLeftLine) {
-            return [domainUri, [propertyUri], rangeUri]
-          }
-          if (isSelfLine) {
-            return [domainUri, [propertyUri], rangeUri]
+        const makeTriple = (): [string, string[], string] => {
+          const pathTypes = event.currentTarget?.classList
+          if (pathTypes?.contains('self-line')) {
+            return [domainUri, [propertyUri], domainUri]
           }
           return [domainUri, [propertyUri], rangeUri]
         }
 
-        const [s, p, o] = createTripe()
-        const query = `
-          SELECT ?sbj ?obj
-          WHERE {
-            ?sbj ${p.map((v) => `<${v}>`).join('|')} ?obj .
-            ?sbj a <${s}> .
-            ?obj a <${o}> .
-          }
-          LIMIT 20
-        `.replace(/^\n|\s+$|^ {10}/gm, '')
-
-        const params = new URLSearchParams()
-        params.append('endpoint', metadata?.endpoint ?? '')
-        params.append('query', query)
-        window.open(
-          `/yasgui?${params.toString()}`,
-          '_brank',
-          'noopener,noreferrer'
-        )
+        const endpoint = metadata?.endpoint ?? ''
+        const query = makeQueryWhenRightClickArrow(...makeTriple())
+        navigateToYasgui(endpoint, query)
       }
 
       const obj = rangeNodes.length > 0 ? rangeNodes[0] : null
