@@ -9,8 +9,11 @@ export const DetailAction = {
     createAction(types.FOCUS_CIRCLE_KEY, { key, uri }),
   focusPropertyClass: (key: number | null, uri: string | null = null) =>
     createAction(types.FOCUS_PROPERTY_CLASS, { key, uri }),
-  showPropertyClass: (domain: string | null, range: string | null) =>
-    createAction(types.SHOW_PROPERTY_CLASS, { domain, range }),
+  showPropertyClass: (
+    uri: string | null,
+    domain: string | null,
+    range: string | null
+  ) => createAction(types.SHOW_PROPERTY_CLASS, { uri, domain, range }),
   showAllAssociatedClasses: () => createAction(types.SHOW_ALL_ASSOCIATED),
   showRightHandSideClasses: () => createAction(types.SHOW_RIGHT_HAND_SIDE),
   showLeftHandSideClasses: () => createAction(types.SHOW_LEFT_HAND_SIDE),

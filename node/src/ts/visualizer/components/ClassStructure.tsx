@@ -16,7 +16,11 @@ import { getChildrenRecursive } from '../utils/node'
 import { ClassNames } from '../constants/ClassStructure'
 import { TooltipAction } from '../actions/tooltip'
 import { Metadata } from '../types/metadata'
-import useDblClickHandler from '../hooks/useDblClickHandler'
+import {
+  makeQueryWhenRightClickArrow,
+  makeQueryWhenRightClickClass,
+  navigateToYasgui,
+} from '../utils/sparql'
 
 function decideNormalClass(
   d: NodeType,
@@ -140,7 +144,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     dispatch(DetailAction.showTree())
   }, [dispatch])
 
-  const handleSingleClickClass = React.useCallback(
+  const handleClickClass = React.useCallback(
     (event?: React.MouseEvent<SVGGElement, MouseEvent>, d?: NodeType) => {
       if (!d || !event || event.defaultPrevented) {
         return
@@ -150,35 +154,24 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     },
     [dispatch]
   )
-  const handleDoubleClickClass = React.useCallback(
+
+  const handleRightClickClass = React.useCallback(
     (event?: React.MouseEvent<SVGGElement, MouseEvent>, d?: NodeType) => {
-      const refUri = d ? getReferenceURL(d.data.uri) : ''
-      if (!refUri || !event) {
+      if (!d || !event) {
         return
       }
 
-      const query = `
-        SELECT ?i
-        WHERE {
-          ?i a <${refUri}> .
-        }
-        LIMIT 20
-      `.replace(/^\n|\s+$|^ {8}/gm, '')
+      // コンテキストメニューは表示しない
+      event?.preventDefault()
 
-      const params = new URLSearchParams()
-      params.append('endpoint', metadata?.endpoint ?? '')
-      params.append('query', query)
-      window.open(
-        `/yasgui?${params.toString()}`,
-        '_brank',
-        'noopener,noreferrer'
-      )
+      const refUri = getReferenceURL(d?.data.uri ?? null)
+      if (refUri) {
+        const endpoint = metadata?.endpoint ?? ''
+        const query = makeQueryWhenRightClickClass(refUri)
+        navigateToYasgui(endpoint, query)
+      }
     },
     [metadata?.endpoint]
-  )
-  const [handleMouseDownClass] = useDblClickHandler(
-    handleDoubleClickClass,
-    handleSingleClickClass
   )
 
   const handleShowTooltip: SVGEventHandlerType = React.useCallback(
@@ -347,56 +340,39 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         GraphRepository.removePopup()
       }
 
-      const arrowDblClick = (
+      const arrowRightClick = (
         event?: React.MouseEvent<SVGGElement, MouseEvent>,
         d?: NodeType
       ) => {
         if (!event || !d) return
 
+        // コンテキストメニューは表示しない
+        event?.preventDefault()
+
         const focusingUri = getReferenceURL(target.data.uri)!
         const targetUri = getReferenceURL(d.data.uri)!
         const predicateUris = getPredicates(d).map((p) => getReferenceURL(p)!)
 
-        const targetElement = event.currentTarget
-        const pathClass = targetElement?.getAttribute('class')
-        const isLeftLine = pathClass?.includes('left-line')
-        const isSelfLine = pathClass?.includes('self-line')
-
-        const createTripe = (): [string, string[], string] => {
-          if (isLeftLine) {
+        const makeTriple = (): [string, string[], string] => {
+          const pathTypes = event.currentTarget?.classList
+          if (pathTypes?.contains('left-hand-line')) {
             return [targetUri, predicateUris, focusingUri]
           }
-          if (isSelfLine) {
+          if (pathTypes?.contains('self-line')) {
             return [targetUri, predicateUris, targetUri]
           }
           return [focusingUri, predicateUris, targetUri]
         }
 
-        const [sbj, prds, obj] = createTripe()
-        const query = `
-          SELECT ?sbj ?obj
-          WHERE {
-            ?sbj ${prds.map((p) => `<${p}>`).join('|')} ?obj .
-            ?sbj a <${sbj}> .
-            ?obj a <${obj}> .
-          }
-          LIMIT 20
-        `.replace(/^\n|\s+$|^ {10}/gm, '')
-
-        const params = new URLSearchParams()
-        params.append('endpoint', metadata?.endpoint ?? '')
-        params.append('query', query)
-        window.open(
-          `/yasgui?${params.toString()}`,
-          '_brank',
-          'noopener,noreferrer'
-        )
+        const endpoint = metadata?.endpoint ?? ''
+        const query = makeQueryWhenRightClickArrow(...makeTriple())
+        navigateToYasgui(endpoint, query)
       }
 
       GraphRepository.addArrowLineEvent(
         arrowMouseover,
         arrowMouseout,
-        arrowDblClick
+        arrowRightClick
       )
 
       const selfPath: NodeType[] = isOneself ? [target] : []
@@ -404,12 +380,16 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         selfPath,
         arrowMouseover,
         arrowMouseout,
-        arrowDblClick
+        arrowRightClick
       )
 
       GraphRepository.avoidColidedLabel()
 
-      GraphRepository.showNodes(visibleNodes, handleMouseDownClass)
+      GraphRepository.showNodes(
+        visibleNodes,
+        handleClickClass,
+        handleRightClickClass
+      )
 
       const decideClass = (d: NodeType) => {
         if (_.includes(both, d.data.uri)) {
@@ -440,7 +420,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
       return [target].concat(rhsNodes, lhsNodes, bothNodes)
     },
-    [classes, handleMouseDownClass, handleClickTreeImg, intl]
+    [classes, handleClickClass, handleClickTreeImg, intl]
   )
 
   const showCircles = React.useCallback(
@@ -469,13 +449,67 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
   )
 
   const showPropertyClass = React.useCallback(
-    (domain: string | null, range: string | null) => {
+    (uri: string | null, domain: string | null, range: string | null) => {
       const domainNodes = domain
         ? GraphRepository.nodes.filter((d) => d.data.uri === domain)
         : []
       const rangeNodes = range
         ? GraphRepository.nodes.filter((d) => d.data.uri === range)
         : []
+
+      const sbj = domainNodes.length > 0 ? domainNodes[0] : null
+      GraphRepository.targetKey = sbj?.data?.key ?? null
+
+      const domainClassDetail = GraphRepository.classes[domain || '']
+      const rangeClassDetail = GraphRepository.classes[range || '']
+      const hasNoMultipleInheritance = (classDetail: ClassDetail) =>
+        classDetail &&
+        (!classDetail.subClassOf ||
+          (!!classDetail.subClassOf && classDetail.subClassOf.length === 1)) // 親がいるなら多重継承でないものに限る
+      const canDrawTriple =
+        hasNoMultipleInheritance(domainClassDetail) &&
+        hasNoMultipleInheritance(rangeClassDetail)
+
+      const arrowRightClick = (
+        event?: React.MouseEvent<SVGGElement, MouseEvent>,
+        d?: NodeType
+      ) => {
+        if (!event || !d) return
+
+        // コンテキストメニューは表示しない
+        event.preventDefault()
+
+        const propertyUri = getReferenceURL(uri)!
+        const domainUri = getReferenceURL(domain)!
+        const rangeUri = getReferenceURL(range)!
+
+        const makeTriple = (): [string, string[], string] => {
+          const pathTypes = event.currentTarget?.classList
+          if (pathTypes?.contains('self-line')) {
+            return [domainUri, [propertyUri], domainUri]
+          }
+          return [domainUri, [propertyUri], rangeUri]
+        }
+
+        const endpoint = metadata?.endpoint ?? ''
+        const query = makeQueryWhenRightClickArrow(...makeTriple())
+        navigateToYasgui(endpoint, query)
+      }
+
+      const obj = rangeNodes.length > 0 ? rangeNodes[0] : null
+      if (domain && range && obj !== null && canDrawTriple) {
+        if (domain !== range) {
+          GraphRepository.updateRightLines([obj], arrowRightClick)
+        } else {
+          GraphRepository.updateSelfLines(
+            [obj],
+            undefined,
+            undefined,
+            arrowRightClick
+          )
+        }
+      }
+
       const focusRootNodes = _.union(
         getVisibleNodes(domainNodes),
         getVisibleNodes(rangeNodes)
@@ -487,7 +521,11 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       const visibleNodesSet = getNodeSet(visibleNodes)
 
       GraphRepository.visibleNodesSet = visibleNodesSet
-      GraphRepository.showNodes(visibleNodes, handleMouseDownClass)
+      GraphRepository.showNodes(
+        visibleNodes,
+        handleClickClass,
+        handleRightClickClass
+      )
       GraphRepository.avoidColidedLabel()
 
       let decideClass
@@ -527,7 +565,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       GraphRepository.addClass(visibleNodes, decideClass)
       return _.union(domainNodes, rangeNodes, focusRootNodes)
     },
-    [handleMouseDownClass]
+    [handleClickClass]
   )
 
   const search = React.useCallback(
@@ -543,7 +581,11 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       const visibleNodesSet = getNodeSet(visibleNodes)
 
       GraphRepository.visibleNodesSet = visibleNodesSet
-      GraphRepository.showNodes(visibleNodes, handleMouseDownClass)
+      GraphRepository.showNodes(
+        visibleNodes,
+        handleClickClass,
+        handleRightClickClass
+      )
       GraphRepository.avoidColidedLabel()
 
       const decideClass = (d: NodeType) => {
@@ -556,7 +598,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       GraphRepository.addClass(visibleNodes, decideClass)
       return matchedNodes
     },
-    [handleMouseDownClass]
+    [handleClickClass]
   )
 
   const detail = useSelector(selector)
@@ -570,7 +612,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         showLeftHand,
         showingRelation,
         searchingURI,
-        propertyClass: { domain, range },
+        propertyClass: { domain, range, uri: propertyUri },
       } = detailState
 
       GraphRepository.targetKey = focusingCircleKey
@@ -601,30 +643,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       }
       if (domain || range) {
         focus(0)
-        const subject = GraphRepository.findUriNode(domain)
-        const object = GraphRepository.findUriNode(range)
-        GraphRepository.targetKey = subject ? subject.data.key : null
-
-        const domainClassDetail = classes[domain || '']
-        const rangeClassDetail = classes[range || '']
-
-        const hasNoMultipleInheritance = (classDetail: ClassDetail) =>
-          classDetail &&
-          (!classDetail.subClassOf ||
-            (!!classDetail.subClassOf && classDetail.subClassOf.length === 1)) // 親がいるなら多重継承でないものに限る
-        const canDrawTriple =
-          hasNoMultipleInheritance(domainClassDetail) &&
-          hasNoMultipleInheritance(rangeClassDetail)
-
-        if (domain && range && object !== undefined && canDrawTriple) {
-          if (domain !== range) {
-            GraphRepository.updateRightLines([object])
-          } else {
-            GraphRepository.updateSelfLines([object])
-          }
-        }
-
-        const targetNodes = showPropertyClass(domain, range)
+        const targetNodes = showPropertyClass(propertyUri, domain, range)
         if (targetNodes.length > 0) {
           showCircles(targetNodes, animate, true, true)
           return
