@@ -51,7 +51,11 @@ const Property: React.FC<PropertyProps> = (props) => {
       <span className="triple-count">{triples}</span>
       {class_relations.length > 0 && <span className="open-toggle" />}
       {isOpen && (
-        <ClassRelations index={index} classRelations={class_relations} />
+        <ClassRelations
+          index={index}
+          classRelations={class_relations}
+          propertyClass={uri}
+        />
       )}
     </li>
   )
