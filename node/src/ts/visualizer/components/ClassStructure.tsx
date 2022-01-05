@@ -355,7 +355,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
         const makeTriple = (): [string, string[], string] => {
           const pathTypes = event.currentTarget?.classList
-          if (pathTypes?.contains('left-line')) {
+          if (pathTypes?.contains('left-hand-line')) {
             return [targetUri, predicateUris, focusingUri]
           }
           if (pathTypes?.contains('self-line')) {
