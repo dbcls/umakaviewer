@@ -32,5 +32,5 @@ export const navigateToYasgui = (endpoint: string, query: string) => {
   params.append('endpoint', endpoint)
   params.append('query', query)
 
-  window.open(`/yasgui?${params.toString()}`, '_brank', 'noopener,noreferrer')
+  window.location.href = `/yasgui?${params.toString()}`
 }
