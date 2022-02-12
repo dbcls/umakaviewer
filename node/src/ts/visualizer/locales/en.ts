@@ -36,7 +36,6 @@ const messages = {
   'legend.class.parent': 'Parent class',
   'propertyList.hideableWrapper.target': 'Property',
   'propertyList.title': 'Properties in the dataset',
-  'propertyList.legend.label': 'Legend',
   'propertyList.legend.text': 'Property',
   'propertyList.legend.tripleCount': 'Triple count',
   'searchBox.input.placeholder.search': 'Search',
