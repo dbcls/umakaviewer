@@ -39,11 +39,6 @@ const PropertyList: React.FC<PropertyListProps> = (props) => {
         </h2>
         <ul className="legend">
           <li>
-            <span className="legend-label">
-              <FormattedMessage id="propertyList.legend.label" />
-            </span>
-          </li>
-          <li>
             <span className="text">
               <FormattedMessage id="propertyList.legend.text" />
             </span>

@@ -35,7 +35,6 @@ const messages = {
   'legend.class.parent': '親クラス',
   'propertyList.hideableWrapper.target': 'プロパティ',
   'propertyList.title': 'データセット内プロパティ',
-  'propertyList.legend.label': '凡例',
   'propertyList.legend.text': 'プロパティ名',
   'propertyList.legend.tripleCount': 'トリプルの数',
   'searchBox.input.placeholder.search': '検索する',
