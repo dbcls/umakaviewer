@@ -1,0 +1,33 @@
+version: "3"
+services:
+  mysql:
+    container_name: umaka-mysql-dev
+    build:
+      context: ../mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_USER: umaka_v
+      MYSQL_DATABASE: dbcls_production
+      MYSQL_PASSWORD: glnyUnLiybsaE968Z7
+  redis:
+    container_name: umaka-redis-dev
+    image: redis:5.0-alpine
+  api:
+    container_name: umaka-api-dev
+    image: api-dev
+    build:
+      context: ../server
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - /opt/services/umaka_v/firebase/adminsdk.json:/app/firebase-config.json
+  nginx:
+    container_name: umaka-nginx-dev
+    image: nginx-dev
+    build:
+      context: ../node
+    ports:
+      - 10080:80
+    depends_on:
+      - api
