@@ -10,11 +10,9 @@ const INDEX_FILE = 'html/index.html'
 
 
 module.exports = (env, args) => {
-  let API_ENDPOINT
   let FIREBASE_CONFIG
   switch (args.mode) {
   case 'development':
-    API_ENDPOINT = 'http://127.0.0.1:5000/api/v1'
     FIREBASE_CONFIG = {
       apiKey: "AIzaSyB3GMmRd9JWGVvDlEtgpemtYZPo-WRkNpc",
       authDomain: "fabled-alchemy-246207.firebaseapp.com",
@@ -26,7 +24,6 @@ module.exports = (env, args) => {
     }
     break
   case 'production':
-    API_ENDPOINT = 'https://umaka-viewer.dbcls.jp/api/v1'
     FIREBASE_CONFIG = {
       apiKey: "AIzaSyBNTb8DHaHbx32oifMkM_zKTGL4oI1QUNY",
       authDomain: "dbcls-ead06.firebaseapp.com",
@@ -38,7 +35,6 @@ module.exports = (env, args) => {
     }
     break
   default:
-    API_ENDPOINT = 'http://127.0.0.1:5000/api/v1'
     FIREBASE_CONFIG = {
       apiKey: "",
       authDomain: "",
@@ -132,7 +128,6 @@ module.exports = (env, args) => {
         ignoreOrder: false,
       }),
       new webpack.DefinePlugin({
-        API_ENDPOINT: JSON.stringify(API_ENDPOINT),
         FIREBASE_CONFIG: JSON.stringify(FIREBASE_CONFIG),
       }),
     ],
