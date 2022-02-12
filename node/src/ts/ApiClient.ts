@@ -4,8 +4,7 @@ import firebase from 'firebase'
 import { Url, PUBLIC_DATA_SET_SIZE_PER_PAGE } from './constants'
 import { PublicDataSetParams } from './actions/data-set-list'
 import { DataSetParams } from './actions/admin'
-
-declare const API_ENDPOINT: string
+import { getApiEndpoint } from './utils'
 
 class ApiClient {
   user: firebase.User | null
@@ -14,7 +13,7 @@ class ApiClient {
 
   constructor() {
     this.api = axios.create({
-      baseURL: API_ENDPOINT,
+      baseURL: getApiEndpoint(),
     })
   }
 
