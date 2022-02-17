@@ -7,6 +7,7 @@ from firebase_admin import auth as firebase_auth
 from google.auth.exceptions import TransportError
 
 from dbcls import app
+from dbcls.api.resources.proxy import Proxy
 from dbcls.models import User, UserRole, UserRoleTypes
 from dbcls.api.resources.signup import SignUp
 from dbcls.api.resources.authenticate import Authenticate
@@ -55,6 +56,7 @@ api_v1.add_resource(Healthy, '/healthy', endpoint='healthy')
 api_v1.add_resource(SignUp, '/signup', endpoint='signup')
 api_v1.add_resource(Authenticate, '/auth', endpoint='auth')
 api_v1.add_resource(DataSetList, '/data_sets')
+api_v1.add_resource(Proxy, '/proxy', endpoint='proxy')
 api_v1.add_resource(DataSetDetail, '/data_sets/<int:id>')
 api_v1.add_resource(DataSetGenerator, '/data_sets/generate')
 api_v1.add_resource(DataSetGenerateProcessStatus, '/data_sets/generate/<task_id>')
@@ -66,7 +68,7 @@ api_v1.add_resource(MyCustomToken, '/me/custom_token')
 
 NOT_NEED_AUTHORIZATION_ENDPOINTS = [
     f'{api_v1_bp.name}.{endpoint}'
-    for endpoint in ('healthy', 'signup', 'auth', 'public_data_sets', 'visualize')
+    for endpoint in ('healthy', 'signup', 'auth', 'public_data_sets', 'visualize', 'proxy')
 ]
 
 
