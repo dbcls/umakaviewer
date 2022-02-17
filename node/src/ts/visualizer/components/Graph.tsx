@@ -50,7 +50,7 @@ const ContextMenu: React.VFC = () => {
           }
         }}
       >
-        YASGUIで見る
+        SPARQL検索
       </Item>
     </Menu>
   )

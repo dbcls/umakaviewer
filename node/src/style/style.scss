@@ -142,11 +142,6 @@ html {
   padding: 0 4px;
 }
 
-.arrow-line-base {
-  stroke: #666;
-  stroke-width: 4;
-  fill: none;
-}
 .arrow-line {
   stroke: #666;
   stroke-width: 3;
@@ -632,6 +627,21 @@ body {
           }
         }
       }
+      g#lines {
+        path {
+          stroke: #666;
+          stroke-width: 4;
+          fill: none;
+        }
+      }
+      g#lines-nodes {
+        circle {
+          r: 8;
+          stroke: #666;
+          fill: #666;
+        }
+      }
+
     }
 
     figure {
