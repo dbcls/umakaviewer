@@ -10,7 +10,9 @@
   <body>
     <div id="yasgui"></div>
     <script>
-      const yasgui = new Yasgui(document.getElementById("yasgui"));
+      const yasgui = new Yasgui(document.getElementById("yasgui"), {
+        corsProxy: "/api/v1/proxy"
+      });
     </script>
   </body>
 </html>
