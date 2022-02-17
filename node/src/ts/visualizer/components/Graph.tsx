@@ -1,6 +1,8 @@
 import * as d3 from 'd3'
 import React, { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Menu, Item, ItemParams } from 'react-contexify'
+
 import _ from 'lodash'
 import { UiAction } from '../actions/ui'
 import { Classes } from '../types/class'
@@ -11,11 +13,12 @@ import { createNodeStructure } from '../utils/node'
 import { NodeType } from '../utils/GraphRepository'
 import Legend from './Legend'
 import Breadcrumbs from './Breadcrumbs'
-import ClassStructure from './ClassStructure'
+import ClassStructure, { CIRCLE_CONTEXT_MENU_ID } from './ClassStructure'
 import { Tree } from './Tree'
 import LoadingSpinner from './LoadingSpinner'
 import Filter from './Filter'
 import { Metadata } from '../types/metadata'
+import { navigateToYasgui } from '../utils/sparql'
 
 type GraphProps = {
   classes: Classes
@@ -33,6 +36,25 @@ const selector = ({
   svgHeight,
   showTree,
 })
+
+const ContextMenu: React.VFC = () => {
+  return (
+    <Menu id={CIRCLE_CONTEXT_MENU_ID}>
+      <Item
+        onClick={(
+          e: ItemParams<{ endpoint: string; query: string; uri: string }>
+        ) => {
+          if (e.props) {
+            const { endpoint, query } = e.props
+            navigateToYasgui(endpoint, query)
+          }
+        }}
+      >
+        YASGUIで見る
+      </Item>
+    </Menu>
+  )
+}
 
 const calcPosition = (node: NodeType, circleDiameter: number) => {
   const newNode: NodeType = node
@@ -161,6 +183,7 @@ const Graph: React.FC<GraphProps> = (props) => {
         containerEl={containerRef.current}
         loadElSelector="circle.root"
       />
+      <ContextMenu />
     </div>
   )
 }
