@@ -299,6 +299,21 @@ class GraphRepository {
     }
   }
 
+  get linesNodes() {
+    const nodes = this.svg?.select('g#lines-nodes')
+    return {
+      same: nodes?.selectAll<SVGPathElement, NodeType>('circle.same-line'),
+      rightHand: nodes?.selectAll<SVGPathElement, NodeType>(
+        'circle.right-hand-line'
+      ),
+      leftHand: nodes?.selectAll<SVGPathElement, NodeType>(
+        'circle.left-hand-line'
+      ),
+      both: nodes?.selectAll<SVGPathElement, NodeType>('circle.both-line'),
+      self: nodes?.selectAll<SVGPathElement, NodeType>('circle.self-line'),
+    }
+  }
+
   get texts() {
     const texts = this.svg?.select('g#texts')
     return texts?.selectAll<SVGTextElement, NodeType>('text')
@@ -448,7 +463,7 @@ class GraphRepository {
     lhsNodes: NodeType[],
     bothNodes: NodeType[]
   ) {
-    const { paths } = this
+    const { paths, linesNodes } = this
 
     const sameLines = paths.same?.data(sameNodes, nodeKeyFn)
     sameLines?.enter().append('path').attr('class', 'same-line')
@@ -458,7 +473,7 @@ class GraphRepository {
     rightLines
       ?.enter()
       .append('path')
-      .attr('class', 'arrow-line-base right-hand-line')
+      .attr('class', 'right-hand-line')
       .attr('marker-end', 'url(#arrow-head)')
     rightLines?.exit().remove()
 
@@ -466,7 +481,7 @@ class GraphRepository {
     leftLines
       ?.enter()
       .append('path')
-      .attr('class', 'arrow-line-base left-hand-line')
+      .attr('class', 'left-hand-line')
       .attr('marker-end', 'url(#arrow-head)')
     leftLines?.exit().remove()
 
@@ -474,10 +489,35 @@ class GraphRepository {
     bothLines
       ?.enter()
       .append('path')
-      .attr('class', 'arrow-line-base both-line')
+      .attr('class', 'both-line')
       .attr('marker-start', 'url(#arrow-head)')
       .attr('marker-end', 'url(#arrow-head)')
     bothLines?.exit().remove()
+
+    const samePoints = linesNodes.same?.data(sameNodes, nodeKeyFn)
+    samePoints?.enter().append('circle').attr('class', 'same-line')
+    samePoints?.exit().remove()
+
+    const rightPoints = linesNodes.rightHand?.data(rhsNodes, nodeKeyFn)
+    rightPoints
+      ?.enter()
+      .append('circle')
+      .attr('class', 'arrow-line-base right-hand-line')
+    rightPoints?.exit().remove()
+
+    const leftPoints = linesNodes.leftHand?.data(lhsNodes, nodeKeyFn)
+    leftPoints
+      ?.enter()
+      .append('circle')
+      .attr('class', 'arrow-line-base left-hand-line')
+    leftPoints?.exit().remove()
+
+    const bothPoints = linesNodes.both?.data(bothNodes, nodeKeyFn)
+    bothPoints
+      ?.enter()
+      .append('circle')
+      .attr('class', 'arrow-line-base both-line')
+    bothPoints?.exit().remove()
   }
 
   updateRightLines(
@@ -488,7 +528,7 @@ class GraphRepository {
     rightLines
       ?.enter()
       .append('path')
-      .attr('class', 'arrow-line-base right-hand-line')
+      .attr('class', 'right-hand-line')
       .attr('marker-end', 'url(#arrow-head)')
       .on('contextmenu', handleRightClick)
     rightLines?.exit().remove()
@@ -504,12 +544,19 @@ class GraphRepository {
     selfLines
       ?.enter()
       .append('path')
-      .attr('class', 'arrow-line-base self-line')
+      .attr('class', 'self-line')
       .attr('marker-end', 'url(#arrow-head)')
+    selfLines?.exit().remove()
+
+    const selfPoints = this.linesNodes.self?.data(nodes, nodeKeyFn)
+    selfPoints
+      ?.enter()
+      .append('circle')
+      .attr('class', 'arrow-line-base self-line')
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut)
       .on('contextmenu', handleRightClick)
-    selfLines?.exit().remove()
+    selfPoints?.exit().remove()
   }
 
   removeTreeImg() {
@@ -704,27 +751,13 @@ class GraphRepository {
     const f = this.targetNode
     if (!f) return
 
-    // lines
-    // const { paths } = this
-    const makeArrowNode = (x: number, y: number) => {
-      const r = 3.5
-      const moveToStart = `M${x - r},${y}`
-      const drawUppperHalf = `A${r},${r} 0,1,0 ${x + r},${y}`
-      const drawBottomHalf = `A${r},${r} 0,1,0 ${x - r},${y}`
-      const moveToOrigin = `M${x},${y}`
-      return `${moveToStart} ${drawUppperHalf} ${drawBottomHalf} ${moveToOrigin}`
-    }
-
     const makeArrowLineToCenter = (from: NodeType, to: NodeType) => {
       // 中心から中心を指す
       const fromX = this.x(from.x)
       const fromY = this.y(from.y)
       const toX = this.x(to.x)
       const toY = this.y(to.y)
-      const midX = (fromX + toX) / 2
-      const midY = (fromY + toY) / 2
-      const drawNode = makeArrowNode(midX, midY)
-      return `M${fromX},${fromY} ${midX},${midY} ${drawNode} ${toX},${toY}`
+      return `M${fromX},${fromY} ${toX},${toY}`
     }
 
     const makeArrowLineToSide = (
@@ -741,10 +774,7 @@ class GraphRepository {
       const cutTo = (dist - to.r) / dist
       const toX = this.x((to.x - from.x) * cutTo + from.x)
       const toY = this.y((to.y - from.y) * cutTo + from.y)
-      const midX = (fromX + toX) / 2
-      const midY = (fromY + toY) / 2
-      const drawNode = makeArrowNode(midX, midY)
-      return `M${fromX},${fromY} ${midX},${midY} ${drawNode} ${toX},${toY}`
+      return `M${fromX},${fromY} ${toX},${toY}`
     }
 
     const minSpaceBetweenCircles = (10 / scale) * 2
@@ -794,15 +824,133 @@ class GraphRepository {
 
       const moveToStart = `M${fromX},${fromY}`
       const drawUppperHalf = `A${lineR},${lineR} 0,0,0 ${lineMid[0]},${lineMid[1]}`
-      const drawNode = makeArrowNode(lineMid[0], lineMid[1])
       const drawBottomHalf = `A${lineR},${lineR} 0,0,0 ${toX},${toY}`
 
-      return `${moveToStart} ${drawUppperHalf} ${drawNode} ${drawBottomHalf}`
+      return `${moveToStart} ${drawUppperHalf} ${drawBottomHalf}`
     }
 
     ctx.paths.self.attr('d', (d) => {
       return makeArrowLineToSelf(d)
     })
+
+    // 矢印の中点
+    const getMidPointCenterToCenter = (
+      from: NodeType,
+      to: NodeType,
+      xy: 'x' | 'y'
+    ) => {
+      // 中心から中心を指す
+      const fromX = this.x(from.x)
+      const fromY = this.y(from.y)
+      const toX = this.x(to.x)
+      const toY = this.y(to.y)
+      if (xy === 'x') {
+        const midX = (fromX + toX) / 2
+        return midX
+      }
+      const midY = (fromY + toY) / 2
+      return midY
+    }
+
+    const getMidPontSideToSide = (
+      from: NodeType,
+      to: NodeType,
+      xy: 'x' | 'y',
+      calculatedDistance?: number
+    ) => {
+      const dist = calculatedDistance ?? distance(from.x, from.y, to.x, to.y)
+
+      // 辺から辺を指す
+      const cutFrom = (dist - from.r) / dist
+      const fromX = this.x((from.x - to.x) * cutFrom + to.x)
+      const fromY = this.y((from.y - to.y) * cutFrom + to.y)
+      const cutTo = (dist - to.r) / dist
+      const toX = this.x((to.x - from.x) * cutTo + from.x)
+      const toY = this.y((to.y - from.y) * cutTo + from.y)
+      if (xy === 'x') {
+        const midX = (fromX + toX) / 2
+        return midX
+      }
+      const midY = (fromY + toY) / 2
+      return midY
+    }
+
+    const getMidPoint = (from: NodeType, to: NodeType, xy: 'x' | 'y') => {
+      const dist = distance(from.x, from.y, to.x, to.y)
+
+      // 小数点精度の問題か何かでまれに誤って判定されることがあったので余白を設ける
+      const shouldPointToCenter = dist < from.r + to.r + minSpaceBetweenCircles
+      if (shouldPointToCenter) {
+        return getMidPointCenterToCenter(from, to, xy)
+      }
+
+      return getMidPontSideToSide(from, to, xy, dist)
+    }
+
+    ctx.linesNodes.rightHand
+      .attr('cx', (d) => {
+        return getMidPoint(f, d, 'x')
+      })
+      .attr('cy', (d) => {
+        return getMidPoint(f, d, 'y')
+      })
+    ctx.linesNodes.leftHand
+      .attr('cx', (d) => {
+        d.data.pointToCenter = true
+        return getMidPoint(f, d, 'x')
+      })
+      .attr('cy', (d) => {
+        d.data.pointToCenter = true
+        return getMidPoint(f, d, 'y')
+      })
+
+    ctx.linesNodes.both
+      .attr('cx', (d) => {
+        d.data.pointToCenter = true
+        return getMidPoint(f, d, 'x')
+      })
+      .attr('cy', (d) => {
+        d.data.pointToCenter = true
+        return getMidPoint(f, d, 'y')
+      })
+
+    ctx.linesNodes.same
+      .attr('cx', (d) => {
+        return getMidPontSideToSide(f, d, 'x')
+      })
+      .attr('cy', (d) => {
+        return getMidPontSideToSide(f, d, 'y')
+      })
+
+    const getMidPointToSelf = (node: NodeType, xy: 'x' | 'y') => {
+      // 4時から11時の方向を指す
+      const nodeR = node.r * 1.02
+      const fourOclock = Math.PI / 6
+      const fromX = this.x(node.x + nodeR * Math.cos(fourOclock))
+      const fromY = this.y(node.y + nodeR * Math.sin(fourOclock))
+      const elevenOclock = (-Math.PI * 4) / 6
+      const toX = this.x(node.x + nodeR * Math.cos(elevenOclock))
+      const toY = this.y(node.y + nodeR * Math.sin(elevenOclock))
+
+      // 節を描画するために矢印の中点を求める
+      const lineR = this.r(node.r * 1.1)
+      const lineC = calcCenterFromPoints(fromX, fromY, toX, toY, lineR)[0]
+      const angle = calcCenterAngleFromPoints(lineR, fromX, fromY, toX, toY)
+      const theta = angle / 2 + Math.PI
+      const lineMid = rotateCoordinate(fromX, fromY, lineC[0], lineC[1], theta)
+      if (xy === 'x') {
+        return lineMid[0]
+      }
+      return lineMid[1]
+    }
+
+    ctx.linesNodes.self
+      .attr('cx', (d) => {
+        return getMidPointToSelf(d, 'x')
+      })
+      .attr('cy', (d) => {
+        return getMidPointToSelf(d, 'y')
+      })
   }
 
   addArrowLineEvent(

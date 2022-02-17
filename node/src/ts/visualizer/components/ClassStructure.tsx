@@ -319,19 +319,9 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         if (!event || !d) return
 
         const targetElement = event.currentTarget
-        const isSelfLine = !!targetElement
-          ?.getAttribute('class')
-          ?.includes('self-line')
-        const [x, y] = isSelfLine
-          ? [GraphRepository.x(d.x), GraphRepository.y(d.y)]
-          : targetElement
-              ?.getAttribute('d')
-              ?.split(' ')[1]
-              .split(',')
-              .map((v) => Number(v)) ?? [0, 0]
-
+        const x = Number(targetElement.getAttribute('cx')) + 10
+        const y = Number(targetElement.getAttribute('cy')) + 10
         const predicates = getPredicates(d)
-
         const predicateMessage = intl.formatMessage({
           id: 'classStructure.text.predicate',
         })
@@ -791,6 +781,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         </defs>
         <g id="circles" />
         <g id="lines" />
+        <g id="lines-nodes" />
         <g id="texts" />
       </g>
     </>
