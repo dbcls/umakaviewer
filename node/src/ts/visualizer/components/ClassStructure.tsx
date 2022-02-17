@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import React, { useRef } from 'react'
 import { useIntl } from 'react-intl'
+import { useContextMenu } from 'react-contexify'
 import { useDispatch, useSelector } from 'react-redux'
 import { DetailAction } from '../actions/detail'
 import { RootState } from '../reducers'
@@ -12,15 +13,15 @@ import GraphRepository, {
   SVGEventHandlerType,
 } from '../utils/GraphRepository'
 import { getChildrenRecursive } from '../utils/node'
-
 import { ClassNames } from '../constants/ClassStructure'
 import { TooltipAction } from '../actions/tooltip'
 import { Metadata } from '../types/metadata'
 import {
   makeQueryWhenRightClickArrow,
   makeQueryWhenRightClickClass,
-  navigateToYasgui,
 } from '../utils/sparql'
+
+export const CIRCLE_CONTEXT_MENU_ID = 'circle-context-menu-id'
 
 function decideNormalClass(
   d: NodeType,
@@ -140,6 +141,9 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
   const dispatch = useDispatch()
   const intl = useIntl()
 
+  const { show } = useContextMenu({
+    id: CIRCLE_CONTEXT_MENU_ID,
+  })
   const handleClickTreeImg: SVGEventHandlerType = React.useCallback(() => {
     dispatch(DetailAction.showTree())
   }, [dispatch])
@@ -168,7 +172,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       if (refUri) {
         const endpoint = metadata?.endpoint ?? ''
         const query = makeQueryWhenRightClickClass(refUri)
-        navigateToYasgui(endpoint, query)
+        show(event, { props: { endpoint, query } })
       }
     },
     [metadata?.endpoint]
@@ -366,7 +370,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
         const endpoint = metadata?.endpoint ?? ''
         const query = makeQueryWhenRightClickArrow(...makeTriple())
-        navigateToYasgui(endpoint, query)
+        show(event, { props: { endpoint, query } })
       }
 
       GraphRepository.addArrowLineEvent(
@@ -493,7 +497,7 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
 
         const endpoint = metadata?.endpoint ?? ''
         const query = makeQueryWhenRightClickArrow(...makeTriple())
-        navigateToYasgui(endpoint, query)
+        show(event, { props: { endpoint, query } })
       }
 
       const obj = rangeNodes.length > 0 ? rangeNodes[0] : null
@@ -764,8 +768,8 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
     width,
   ])
 
-  const baseElement = React.useMemo(
-    () => (
+  return (
+    <>
       <g id="components">
         <defs>
           <filter id="shadow" width="150%" height="150%" />
@@ -789,11 +793,8 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         <g id="lines" />
         <g id="texts" />
       </g>
-    ),
-    []
+    </>
   )
-
-  return baseElement
 }
 
 ClassStructure.displayName = 'ClassStructure'
