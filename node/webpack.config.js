@@ -129,6 +129,7 @@ module.exports = (env, args) => {
       }),
       new webpack.DefinePlugin({
         FIREBASE_CONFIG: JSON.stringify(FIREBASE_CONFIG),
+        process:  JSON.stringify({env: 'process/browser'}) ,
       }),
     ],
   }

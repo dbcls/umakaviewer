@@ -28,6 +28,21 @@ export default class SVGElementsAccessor {
     }
   }
 
+  get linesNodes() {
+    const nodes = this.ctx?.select('g#lines-nodes')
+    return {
+      same: nodes?.selectAll<SVGPathElement, NodeType>('circle.same-line'),
+      rightHand: nodes?.selectAll<SVGPathElement, NodeType>(
+        'circle.right-hand-line'
+      ),
+      leftHand: nodes?.selectAll<SVGPathElement, NodeType>(
+        'circle.left-hand-line'
+      ),
+      both: nodes?.selectAll<SVGPathElement, NodeType>('circle.both-line'),
+      self: nodes?.selectAll<SVGPathElement, NodeType>('circle.self-line'),
+    }
+  }
+
   get texts() {
     const texts = this.ctx.selectAll('g#texts > g')
     return texts?.selectAll<SVGTextElement, NodeType>('text')

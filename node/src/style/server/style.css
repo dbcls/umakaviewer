@@ -2,6 +2,7 @@
 @import "_mixin.css";
 @import "_common.css";
 @import "~sanitize.css/lib/sanitize.scss";
+@import "~react-contexify/scss/main.scss";
 
 /*login*/
 @import "_login.css";

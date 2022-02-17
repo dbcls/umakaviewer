@@ -27,13 +27,15 @@ export default function property(
 ): PropertyState {
   switch (action.type) {
     case types.SHOW_PROPERTY: {
-      const newState = { ...state }
-      newState.openPropertyIndexes[action.payload.index] = true
+      const openPropertyIndexes = [...state.openPropertyIndexes]
+      openPropertyIndexes[action.payload.index] = true
+      const newState = { ...state, ...{ openPropertyIndexes } }
       return newState
     }
     case types.CLOSE_PROPERTY: {
-      const newState = { ...state }
-      newState.openPropertyIndexes[action.payload.index] = false
+      const openPropertyIndexes = [...state.openPropertyIndexes]
+      openPropertyIndexes[action.payload.index] = false
+      const newState = { ...state, ...{ openPropertyIndexes } }
       return newState
     }
     case types.SELECT_PROERTY_CLASS:

@@ -15,7 +15,7 @@ export const useDBCLSFooter = () => {
       }, 200)
     }
     return elm
-}, [resetToken])
+  }, [resetToken])
 
   useEffect(() => {
     if (!footerElement) {
@@ -32,5 +32,7 @@ export const useDBCLSFooter = () => {
       footerElement.style.display = 'block'
     }
   }, [location.pathname, footerElement])
-  return {footerElement, copyElement}
+  return { footerElement, copyElement }
 }
+
+export default useDBCLSFooter
