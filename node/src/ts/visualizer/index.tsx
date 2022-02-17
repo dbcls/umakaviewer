@@ -17,6 +17,7 @@ import {
 } from 'react-redux'
 import _ from 'lodash'
 import { useHistory } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
 import { getLocaleMessages, getLocaleShortString, useQuery } from './utils'
 import { Structure } from './types/structure'
 import { Metadata } from './types/metadata'
@@ -216,6 +217,7 @@ const App: React.FC<AppProps> = (props) => {
         <Prefix prefixes={prefixes} />
       </div>
       <Tooltip classes={classes} />
+      <ReactTooltip place="bottom" />
     </div>
   )
 }
