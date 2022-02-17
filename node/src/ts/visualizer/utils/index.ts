@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom'
 import locales from '../locales'
 import { Classes } from '../types/class'
 
-const omitUri = (uri: string) => {
+export const omitUri = (uri: string) => {
   // Do not allow endwith '#' or '/' because fragment or path will be empty.
   const uriWithoutEndDelim = uri.replace(/[#,/]$/, '')
 
