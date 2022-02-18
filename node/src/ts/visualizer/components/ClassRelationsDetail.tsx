@@ -1,7 +1,8 @@
 import React, { useCallback, useMemo } from 'react'
 import { useIntl } from 'react-intl'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { DetailAction } from '../actions/detail'
+import { RootState } from '../reducers'
 import { Classes } from '../types/class'
 import { getPreferredLabel } from '../utils'
 import GraphRepository from '../utils/GraphRepository'
@@ -14,6 +15,10 @@ type ClassRelationsDetailProps = {
   showLeftHand: boolean
   showRightHand: boolean
 }
+
+const selector = ({ detail: { showingRelation } }: RootState) => ({
+  showingRelation,
+})
 
 const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
   const {
@@ -30,6 +35,7 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
     classes,
     focusingURI,
   ])
+  const { showingRelation } = useSelector(selector)
 
   const getPreferredTriple = useCallback(
     (triple: string[]) => {
@@ -125,6 +131,12 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
                     type="button"
                     title={getPreferredTriple(triple)}
                     onClick={relationClass}
+                    style={{
+                      backgroundColor:
+                        showingRelation === rhs
+                          ? 'rgba(170, 170, 170, 0.5)'
+                          : undefined,
+                    }}
                   >
                     <span className="focusing">
                       {`<${triple[0]}>`}
@@ -152,6 +164,7 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
       intl,
       showRightHand,
       getPreferredTriple,
+      showingRelation,
     ]
   )
 
@@ -182,6 +195,12 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
                     type="button"
                     title={getPreferredTriple(triple)}
                     onClick={relationClass}
+                    style={{
+                      backgroundColor:
+                        showingRelation === lhs
+                          ? 'rgba(170, 170, 170, 0.5)'
+                          : undefined,
+                    }}
                   >
                     <span className="subject">
                       {`<${triple[0]}>`}
@@ -209,6 +228,7 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
       intl,
       showLeftHand,
       getPreferredTriple,
+      showingRelation,
     ]
   )
   if (!classDetail) {
