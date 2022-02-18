@@ -7,7 +7,7 @@ export interface FilterState {
 }
 
 const initialState: FilterState = {
-  lowerLimitOfClassEntities: 0,
+  lowerLimitOfClassEntities: 1,
   showingConditions: false,
 }
 

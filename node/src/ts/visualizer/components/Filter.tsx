@@ -16,11 +16,11 @@ const Filter: React.FC = () => {
   const query = useQuery()
 
   const defaultEntitiesLimit = useMemo(() => {
-    const limit = Number(query.get('lower_limit'))
+    const limit = Number(query.get('lower_limit')) || 1
     if (Number.isInteger(limit)) {
       return limit
     }
-    return 0
+    return 1
   }, [])
 
   const handleClick = useCallback(() => {
