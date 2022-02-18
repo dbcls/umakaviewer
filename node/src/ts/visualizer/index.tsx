@@ -171,7 +171,7 @@ const App: React.FC<AppProps> = (props) => {
       return
     }
 
-    if (lowerLimitOfClassEntities === 0) {
+    if (lowerLimitOfClassEntities <= 1) {
       history.push({
         pathname: history.location.pathname,
       })
