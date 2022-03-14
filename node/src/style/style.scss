@@ -82,12 +82,12 @@ $breadcrumbs-height: 47px;
   }
 }
 
-div:after,
-ul:after {
-  content: "";
-  display: block;
-  clear: both;
-}
+// div:after,
+// ul:after {
+//   content: "";
+//   display: block;
+//   clear: both;
+// }
 
 html {
   height: 100%;
@@ -142,11 +142,6 @@ html {
   padding: 0 4px;
 }
 
-.arrow-line-base {
-  stroke: #666;
-  stroke-width: 4;
-  fill: none;
-}
 .arrow-line {
   stroke: #666;
   stroke-width: 3;
@@ -246,7 +241,10 @@ body {
           line-height: 16px;
           list-style-type: none;
           padding: 0 0 16px 16px;
-
+          justify-content: space-between;
+          align-items: center;
+          padding-right: 12px;
+          font-weight: bold;
           .text {
             display: inline-block;
             font-size: 14px;
@@ -258,10 +256,6 @@ body {
             width: auto;
           }
 
-          li:last-child {
-            margin-left: auto;
-            margin-right: 40px;
-          }
         }
       }
 
@@ -320,6 +314,7 @@ body {
                   display: inline-block;
                   width: 18px;
                   height: 18px;
+                  line-height: 18px;
                   text-align: center;
                   border-radius: 3px;
                   color: white;
@@ -620,18 +615,33 @@ body {
           height: 20px;
           overflow: hidden;
           tspan {
-            fill: #444;
+            fill: $white-color;
             font-size: 18px;
             font-weight: bold;
             line-height: 1.8;
             text-shadow:
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-              0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color;
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444;
           }
         }
       }
+      g#lines {
+        path {
+          stroke: #666;
+          stroke-width: 4;
+          fill: none;
+        }
+      }
+      g#lines-nodes {
+        circle {
+          r: 8;
+          stroke: #666;
+          fill: #666;
+        }
+      }
+
     }
 
     figure {
@@ -1392,17 +1402,44 @@ body {
   font-size: 14px;
   z-index: 5;
 
-  p, li {
-    margin-top: 8px;
-    list-style-type: none;
+  > * {
+    margin-bottom: 12px;
+    :last-child {
+      margin-bottom: 0;
+    }
   }
 
-  .subject {
-    margin-top: 16px;
+  .detail, .uri {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    h4 {
+      margin-right: 8px;
+    }
+  }
+
+  .subject, .object {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    li {
+      margin-top: 8px;
+      list-style-type: none;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
   }
 
   .object {
     color: #a567a7;
+  }
+
+  .detail h4 {
+    font-weight: bold;
+  }
+  :not(.detail) h4 {
+    @extend .legend-label;
   }
 
   .arrow {
@@ -1419,8 +1456,12 @@ body {
     }
 
     &.downward {
-      bottom: -25px;
+      bottom: -35px;
       border-width: 25px 25px 0 25px;
+    }
+
+    &.none {
+      display: none;
     }
   }
 }

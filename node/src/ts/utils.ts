@@ -23,4 +23,10 @@ export const getWrapperClassName = () => {
   }
 }
 
+export const getApiEndpoint = () => {
+  const { origin } = window.location
+  const pathname = '/api/v1'
+  return `${origin}${pathname}`
+}
+
 export default getWrapperClassName

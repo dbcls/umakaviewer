@@ -1,6 +1,8 @@
 import * as d3 from 'd3'
 import React, { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Menu, Item, ItemParams } from 'react-contexify'
+
 import _ from 'lodash'
 import { UiAction } from '../actions/ui'
 import { Classes } from '../types/class'
@@ -11,14 +13,18 @@ import { createNodeStructure } from '../utils/node'
 import { NodeType } from '../utils/GraphRepository'
 import Legend from './Legend'
 import Breadcrumbs from './Breadcrumbs'
-import ClassStructure from './ClassStructure'
+import ClassStructure, { CIRCLE_CONTEXT_MENU_ID } from './ClassStructure'
 import { Tree } from './Tree'
 import LoadingSpinner from './LoadingSpinner'
 import Filter from './Filter'
+import { Metadata } from '../types/metadata'
+import { navigateToYasgui } from '../utils/sparql'
 
 type GraphProps = {
   classes: Classes
   structure: Structure[]
+  metadata: Metadata | null
+  getReferenceURL: (uri: string | null) => string | null
 }
 
 const selector = ({
@@ -30,6 +36,25 @@ const selector = ({
   svgHeight,
   showTree,
 })
+
+const ContextMenu: React.VFC = () => {
+  return (
+    <Menu id={CIRCLE_CONTEXT_MENU_ID}>
+      <Item
+        onClick={(
+          e: ItemParams<{ endpoint: string; query: string; uri: string }>
+        ) => {
+          if (e.props) {
+            const { endpoint, query } = e.props
+            navigateToYasgui(endpoint, query)
+          }
+        }}
+      >
+        SPARQL検索
+      </Item>
+    </Menu>
+  )
+}
 
 const calcPosition = (node: NodeType, circleDiameter: number) => {
   const newNode: NodeType = node
@@ -92,7 +117,7 @@ const avoidStackedCircle = (
 }
 
 const Graph: React.FC<GraphProps> = (props) => {
-  const { classes, structure } = props
+  const { classes, structure, metadata, getReferenceURL } = props
   const { circleDiameter, svgWidth, svgHeight, showTree } = useSelector(
     selector
   )
@@ -114,13 +139,13 @@ const Graph: React.FC<GraphProps> = (props) => {
 
   React.useEffect(() => {
     if (circleDiameter && structure.length > 0 && classes && structure) {
-      const diameter = circleDiameter || 0
+      const diameter = circleDiameter || 1
       const pack = (data: NodeStructure) => {
         return d3.pack<NodeStructure>().size([diameter, diameter])(
           d3
             .hierarchy(data)
-            .sum((d) => classes[d.uri]?.entities || 1)
-            .sort((a, b) => (a.value || 1) - (b.value || 1))
+            .sum((d) => classes[d.uri]?.entities || 0.5) // entityが1かfalsyかで差をつける
+            .sort((a, b) => (a.value ?? 0) - (b.value ?? 0))
         )
       }
       const root: NodeStructure = createNodeStructure(structure)
@@ -144,9 +169,11 @@ const Graph: React.FC<GraphProps> = (props) => {
           <ClassStructure
             nodes={sortedNodes}
             classes={classes}
+            metadata={metadata}
             circleDiameter={circleDiameter}
             width={svgWidth}
             height={svgHeight}
+            getReferenceURL={getReferenceURL}
           />
         )}
       </svg>
@@ -156,6 +183,7 @@ const Graph: React.FC<GraphProps> = (props) => {
         containerEl={containerRef.current}
         loadElSelector="circle.root"
       />
+      <ContextMenu />
     </div>
   )
 }

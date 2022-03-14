@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { FormattedMessage, useIntl } from 'react-intl'
 import { useDispatch, useSelector } from 'react-redux'
+import ReactTooltip from 'react-tooltip'
 import { UiAction } from '../actions/ui'
 import { RootState } from '../reducers'
 import { Property as PropertyType } from '../types/property'
@@ -11,15 +12,23 @@ type PropertyListProps = {
   properties: PropertyType[]
 }
 
-const selector = ({ ui: { propertyPaneVisibility } }: RootState) => ({
+const selector = ({
+  ui: { propertyPaneVisibility },
+  property: { openPropertyIndexes },
+}: RootState) => ({
   propertyPaneVisibility,
+  openPropertyIndexes,
 })
 
 const PropertyList: React.FC<PropertyListProps> = (props) => {
   const { properties } = props
-  const { propertyPaneVisibility } = useSelector(selector)
+  const { propertyPaneVisibility, openPropertyIndexes } = useSelector(selector)
   const dispatch = useDispatch()
   const intl = useIntl()
+
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [properties, openPropertyIndexes])
 
   const handleToggle = useCallback(() => {
     dispatch(UiAction.hidePropertyPane())
@@ -38,11 +47,6 @@ const PropertyList: React.FC<PropertyListProps> = (props) => {
           <FormattedMessage id="propertyList.title" />
         </h2>
         <ul className="legend">
-          <li>
-            <span className="legend-label">
-              <FormattedMessage id="propertyList.legend.label" />
-            </span>
-          </li>
           <li>
             <span className="text">
               <FormattedMessage id="propertyList.legend.text" />

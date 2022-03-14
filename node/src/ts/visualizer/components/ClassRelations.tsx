@@ -1,15 +1,17 @@
 /* eslint-disable camelcase */
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { DetailAction } from '../actions/detail'
 import { PropertyAction } from '../actions/property'
 import { RootState } from '../reducers'
 import { ClassRelation as ClassRelationType } from '../types/property'
+import { omitUri } from '../utils'
 
 type ClassRelationProps = {
   relation: ClassRelationType
   selected: boolean
   indexes: [number, number]
+  propertyClass?: string
 }
 
 const ClassRelation: React.FC<ClassRelationProps> = (props) => {
@@ -17,6 +19,7 @@ const ClassRelation: React.FC<ClassRelationProps> = (props) => {
     relation: { subject_class, object_class, object_datatype, triples },
     selected,
     indexes: [index1, index2],
+    propertyClass,
   } = props
   const dispatch = useDispatch()
 
@@ -25,6 +28,7 @@ const ClassRelation: React.FC<ClassRelationProps> = (props) => {
       e.stopPropagation()
       dispatch(
         DetailAction.showPropertyClass(
+          propertyClass ?? null,
           subject_class,
           object_class || object_datatype
         )
@@ -40,27 +44,59 @@ const ClassRelation: React.FC<ClassRelationProps> = (props) => {
   const className = selected ? 'selected' : ''
   const literalClassName = object_datatype ? 'range-literal' : ''
 
+  const subjectTip = useMemo(() => {
+    if (!subject_class) {
+      return undefined
+    }
+    return subject_class !== omitUri(subject_class) ? subject_class : undefined
+  }, [subject_class])
+
+  const objectTip = useMemo(() => {
+    if (object_class) {
+      return object_class !== omitUri(object_class) ? object_class : undefined
+    }
+    if (object_datatype) {
+      return object_datatype !== omitUri(object_datatype)
+        ? object_datatype
+        : undefined
+    }
+    return undefined
+  }, [object_class])
+
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <li className={className} onClick={handleClick} onKeyDown={() => false}>
       <span className="hook">└</span>
       <p className="relation-classes">
         {subject_class && (
-          <span className="classes">
+          <span
+            className="classes"
+            style={{
+              marginBottom: '8px',
+            }}
+          >
             <span className="icon subject">S</span>
-            <span className={`text ${domainClassName}`}>
-              {subject_class || 'resource'}
+            <span data-tip={subjectTip} className={`text ${domainClassName}`}>
+              {subject_class ? omitUri(subject_class) : 'resource'}
             </span>
           </span>
         )}
-        {subject_class && object_class && <span className="margin" />}
         {(object_class || object_datatype) && (
           <span className="classes">
             <span className="icon object">O</span>
             <span
               className={['text', rangeClassName, literalClassName].join(' ')}
+              data-tip={objectTip}
             >
-              {object_class || object_datatype || 'resource'}
+              {(() => {
+                if (object_class) {
+                  return omitUri(object_class)
+                }
+                if (object_datatype) {
+                  return omitUri(object_datatype)
+                }
+                return 'resource'
+              })()}
             </span>
           </span>
         )}
@@ -75,6 +111,7 @@ ClassRelation.displayName = 'ClassRelation'
 type ClassRelationsProps = {
   classRelations: ClassRelationType[]
   index: number
+  propertyClass?: string
 }
 
 const selector = ({ property: { showPropertyClassIndex } }: RootState) => ({
@@ -82,7 +119,7 @@ const selector = ({ property: { showPropertyClassIndex } }: RootState) => ({
 })
 
 const ClassRelations: React.FC<ClassRelationsProps> = (props) => {
-  const { classRelations, index } = props
+  const { classRelations, index, propertyClass } = props
   const {
     showPropertyClassIndex: [selectedIndex1, selectedIndex2],
   } = useSelector(selector)
@@ -95,6 +132,7 @@ const ClassRelations: React.FC<ClassRelationsProps> = (props) => {
           relation={relation}
           indexes={[index, key]}
           selected={selectedIndex1 === index && selectedIndex2 === key}
+          propertyClass={propertyClass}
         />
       ))}
     </ul>

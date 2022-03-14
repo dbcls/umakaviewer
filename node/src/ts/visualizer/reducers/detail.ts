@@ -6,6 +6,7 @@ export interface DetailState {
   focusingCircleKey: number | null
   showParentClassesURI: string | null
   propertyClass: {
+    uri: string | null
     domain: string | null
     range: string | null
   }
@@ -21,7 +22,7 @@ const initialState: DetailState = {
   focusingURI: null,
   focusingCircleKey: null,
   showParentClassesURI: null,
-  propertyClass: { domain: null, range: null },
+  propertyClass: { uri: null, domain: null, range: null },
   showRightHand: false,
   showLeftHand: false,
   showingRelation: null,
@@ -40,7 +41,7 @@ export default function detail(
         ...state,
         focusingURI: action.payload.uri,
         showParentClassesURI: action.payload.uri,
-        propertyClass: { domain: null, range: null },
+        propertyClass: { uri: null, domain: null, range: null },
         searchingURI: null,
       }
     case types.FOCUS_CIRCLE_KEY:
@@ -48,7 +49,7 @@ export default function detail(
         ...state,
         focusingCircleKey: action.payload.key,
         focusingURI: action.payload.uri,
-        propertyClass: { domain: null, range: null },
+        propertyClass: { uri: null, domain: null, range: null },
         showRightHand: false,
         showLeftHand: false,
         showingRelation: null,
@@ -68,6 +69,7 @@ export default function detail(
         showRightHand: false,
         showLeftHand: false,
         propertyClass: {
+          uri: action.payload.uri,
           domain: action.payload.domain,
           range: action.payload.range,
         },
@@ -182,10 +184,7 @@ export default function detail(
         focusingURI: null,
         searchingURI: action.payload.uri,
         showTree: false,
-        propertyClass: {
-          domain: null,
-          range: null,
-        },
+        propertyClass: { uri: null, domain: null, range: null },
       }
     default:
       return state

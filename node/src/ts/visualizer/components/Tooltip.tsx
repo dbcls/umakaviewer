@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { useIntl } from 'react-intl'
 import { RootState } from '../reducers'
 import { Classes } from '../types/class'
 import SubjectDetail from './SubjectDetail'
+import { getPreferredLabel } from '../utils'
 
 type TooltipProps = {
   classes: Classes
@@ -13,6 +15,8 @@ const selector = ({ tooltip: { pos, uri } }: RootState) => ({
   uri,
 })
 
+type ArrowType = 'upward' | 'downward' | 'none'
+
 const Tooltip: React.FC<TooltipProps> = (props) => {
   const { classes } = props
   const { pos, uri } = useSelector(selector)
@@ -21,7 +25,7 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
     x: 0,
     y: 0,
     visible: false,
-    isOnBottom: false,
+    arrowType: 'none' as ArrowType,
   })
 
   const mounted = useRef(false)
@@ -30,51 +34,91 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
   useEffect(() => {
     if (mounted.current) {
       const { uri: oldUri } = oldTooltipStateRef.current
-
-      if (uri !== oldUri) {
-        setState({ ...state, visible: false })
-
-        if (uri && !state.visible) {
-          const tooltip = tooltipRef.current?.getBoundingClientRect()
-
-          if (tooltip && pos) {
-            const onBottom = pos.bottom < tooltip.height
-            const arrowSize = 25
-
-            setState({
-              x: (pos.left + pos.right - tooltip.width) / 2,
-              y: onBottom
-                ? pos.bottom + arrowSize
-                : pos.top - tooltip.height - arrowSize,
-              visible: true,
-              isOnBottom: onBottom,
-            })
-          }
-        }
+      if (uri === oldUri) {
+        return
       }
 
+      setState({ ...state, visible: false })
       oldTooltipStateRef.current = { uri }
+
+      const tooltip = tooltipRef.current?.getBoundingClientRect()
+      const boundary = document
+        .getElementById('classes-structure')
+        ?.getBoundingClientRect()
+      if (!uri || !tooltip || !pos || !boundary) {
+        return
+      }
+
+      const arrowSize = 25
+      const [width, height] = [tooltip.width, tooltip.height + arrowSize]
+
+      const canPlaceOnTop = boundary.top <= pos.top - height
+      const canPlaceOnBottom = pos.bottom + height <= boundary.bottom
+
+      const x = (pos.left + pos.right - width) / 2
+      const outOfLeftBoundary = x < boundary.left
+      const outOfRightBoundary = boundary.right < x + width
+
+      if (
+        (canPlaceOnTop || canPlaceOnBottom) &&
+        !outOfLeftBoundary &&
+        !outOfRightBoundary
+      ) {
+        setState({
+          x,
+          y: canPlaceOnTop ? pos.top - height : pos.bottom + arrowSize,
+          visible: true,
+          arrowType: canPlaceOnTop ? 'downward' : 'upward',
+        })
+      } else {
+        const margin = 16
+        setState({
+          x: boundary.left + margin,
+          y: boundary.bottom - (tooltip.height + margin),
+          visible: true,
+          arrowType: 'none',
+        })
+      }
     } else {
       mounted.current = true
     }
   }, [classes, pos, uri])
 
-  return (
-    <div
-      ref={tooltipRef}
-      id="tooltip"
-      style={{
-        top: state.y,
-        left: state.x,
-        visibility: state.visible ? 'visible' : 'hidden',
-      }}
-    >
-      <h4>URI</h4>
-      <p>{uri}</p>
-      <SubjectDetail classes={classes} uri={uri} />
-      <div className={`arrow ${state.isOnBottom ? 'upward' : 'downward'}`} />
-    </div>
-  )
+  const intl = useIntl()
+  const { x, y, visible, arrowType } = state
+  const tooltipElement = useMemo(() => {
+    if (!uri) {
+      return null
+    }
+
+    const detail = classes[uri]
+    const entities = detail?.entities
+    const preferredLabel = getPreferredLabel(uri, classes, intl.locale)
+    return (
+      <div
+        ref={tooltipRef}
+        id="tooltip"
+        style={{
+          top: y,
+          left: x,
+          visibility: visible ? 'visible' : 'hidden',
+        }}
+      >
+        <div className="detail">
+          <h4>{preferredLabel}</h4>
+          <p>{entities !== undefined ? `(${entities} entities)` : null}</p>
+        </div>
+        <div className="uri">
+          <h4>URI</h4>
+          <p>{uri}</p>
+        </div>
+        <SubjectDetail classes={classes} uri={uri} />
+        <div className={`arrow ${arrowType}`} />
+      </div>
+    )
+  }, [uri, intl.locale, classes, x, y, visible, arrowType])
+
+  return tooltipElement
 }
 
 export default Tooltip

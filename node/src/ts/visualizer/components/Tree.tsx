@@ -232,12 +232,12 @@ export const Tree: React.FC<TreeProps> = (props) => {
     return treeNodes.concat(
       multipleInheritanceNodes.map<NodeType>((superClass, i) => ({
         ...superClass,
-        depth: focusingNode.parent?.depth || 0,
+        depth: focusingNode.parent?.depth ?? 0,
         data: {
           ...superClass.data,
           isMultipleInheritanceSource: true,
           oldTreeY: superClass.data.treeY,
-          treeY: (focusingNode.data?.treeY || 0) + (Margin.Y / 2) * (i + 1),
+          treeY: (focusingNode.data?.treeY ?? 0) + (Margin.Y / 2) * (i + 1),
         },
       }))
     )
@@ -343,7 +343,7 @@ export const Tree: React.FC<TreeProps> = (props) => {
         const rect = element.firstChild?.parentElement?.getBoundingClientRect()
         return rect ? rect[prop] : 0
       }
-      return _.max(_.map(children, (child) => getGSize(child, prop))) || 0
+      return _.max(_.map(children, (child) => getGSize(child, prop))) ?? 0
     },
     []
   )
@@ -370,7 +370,7 @@ export const Tree: React.FC<TreeProps> = (props) => {
   const treeNodesRef = React.useRef<NodeType[]>([])
   const oldTreeNodesRef = React.useRef<NodeType[]>([])
   React.useEffect(() => {
-    TreeRepository.setFocusingNodes(focusingCircleKey || 0)
+    TreeRepository.setFocusingNodes(focusingCircleKey ?? 0)
 
     TreeRepository.setSvg()
     TreeRepository.setFilters()
@@ -402,7 +402,7 @@ export const Tree: React.FC<TreeProps> = (props) => {
 
       let nextState: TreeState = state
       if (focusingURI !== prevFocusingURI) {
-        TreeRepository.setFocusingNodes(focusingCircleKey || 0)
+        TreeRepository.setFocusingNodes(focusingCircleKey ?? 0)
 
         const { hiddenUris } = state
         const newHiddenUris = hiddenUris.filter((uri) => uri !== focusingURI)

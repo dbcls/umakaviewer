@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { PropertyAction } from '../actions/property'
 import { RootState } from '../reducers'
 import { Property as PropertyType } from '../types/property'
 import ClassRelations from './ClassRelations'
+import { omitUri } from '../utils'
 
 type PropertyProps = {
   property: PropertyType
@@ -40,6 +41,10 @@ const Property: React.FC<PropertyProps> = (props) => {
   const open = isOpen ? 'open' : ''
   const className = [refered, open].join(' ')
 
+  const isOmittingUri = useMemo(() => {
+    return omitUri(uri) !== uri
+  }, [uri])
+
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <li
@@ -47,11 +52,17 @@ const Property: React.FC<PropertyProps> = (props) => {
       onClick={class_relations.length ? handleClick : undefined}
       onKeyDown={() => false}
     >
-      <span className="property">{uri}</span>
+      <span className="property" data-tip={isOmittingUri ? uri : undefined}>
+        {omitUri(uri)}
+      </span>
       <span className="triple-count">{triples}</span>
       {class_relations.length > 0 && <span className="open-toggle" />}
       {isOpen && (
-        <ClassRelations index={index} classRelations={class_relations} />
+        <ClassRelations
+          index={index}
+          classRelations={class_relations}
+          propertyClass={uri}
+        />
       )}
     </li>
   )
