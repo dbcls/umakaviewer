@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import React, { useRef } from 'react'
-import { useIntl } from 'react-intl'
+import { IntlShape, useIntl } from 'react-intl'
 import { useContextMenu } from 'react-contexify'
 import { useDispatch, useSelector } from 'react-redux'
 import { DetailAction } from '../actions/detail'
@@ -114,6 +114,30 @@ function getNodeSet(nodes: NodeType[]) {
     o[node.data.key] = true // eslint-disable-line no-param-reassign
     return o
   }, {})
+}
+
+function makeArrowMouseover(
+  intl: IntlShape,
+  getUris: (d: NodeType) => string[]
+) {
+  return (event?: React.MouseEvent<SVGGElement, MouseEvent>, d?: NodeType) => {
+    if (!event || !d) return
+
+    const targetElement = event.currentTarget
+    const x = Number(targetElement.getAttribute('cx')) + 10
+    const y = Number(targetElement.getAttribute('cy')) + 10
+
+    const predicateMessage = intl.formatMessage({
+      id: 'classStructure.text.predicate',
+    })
+    GraphRepository.addPopup(x, y, getUris(d), predicateMessage)
+
+    GraphRepository.updatePosition()
+  }
+}
+
+function arrowMouseout() {
+  GraphRepository.removePopup()
 }
 
 type ClassStructureProps = {
@@ -312,28 +336,9 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
         return [...rhsProps, ...lhsProps]
       }
 
-      function arrowMouseover(
-        event?: React.MouseEvent<SVGGElement, MouseEvent>,
-        d?: NodeType
-      ) {
-        if (!event || !d) return
-
-        const targetElement = event.currentTarget
-        const x = Number(targetElement.getAttribute('cx')) + 10
-        const y = Number(targetElement.getAttribute('cy')) + 10
-        const predicates = getPredicates(d)
-        const predicateMessage = intl.formatMessage({
-          id: 'classStructure.text.predicate',
-        })
-        GraphRepository.addPopup(x, y, predicates, predicateMessage)
-
-        GraphRepository.updatePosition()
-      }
-
-      const arrowMouseout = () => {
-        GraphRepository.removePopup()
-      }
-
+      const arrowMouseover = makeArrowMouseover(intl, (d) => {
+        return getPredicates(d)
+      })
       const arrowRightClick = (
         event?: React.MouseEvent<SVGGElement, MouseEvent>,
         d?: NodeType
@@ -364,7 +369,9 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       }
 
       GraphRepository.addArrowLineEvent(
-        arrowMouseover,
+        makeArrowMouseover(intl, (d) => {
+          return getPredicates(d)
+        }),
         arrowMouseout,
         arrowRightClick
       )
@@ -491,14 +498,20 @@ const ClassStructure: React.FC<ClassStructureProps> = (props) => {
       }
 
       const obj = rangeNodes.length > 0 ? rangeNodes[0] : null
+      const arrowMouseover = makeArrowMouseover(intl, () => [uri || ''])
       if (domain && range && obj !== null && canDrawTriple) {
         if (domain !== range) {
-          GraphRepository.updateRightLines([obj], arrowRightClick)
+          GraphRepository.updateRightLines(
+            [obj],
+            arrowMouseover,
+            arrowMouseout,
+            arrowRightClick
+          )
         } else {
           GraphRepository.updateSelfLines(
             [obj],
-            undefined,
-            undefined,
+            arrowMouseover,
+            arrowMouseout,
             arrowRightClick
           )
         }

@@ -522,6 +522,8 @@ class GraphRepository {
 
   updateRightLines(
     nodes: NodeType[],
+    handleMouseOver: SVGEventHandlerType = () => {},
+    handleMouseOut: SVGEventHandlerType = () => {},
     handleRightClick: SVGEventHandlerType = () => {}
   ) {
     const rightLines = this.paths.rightHand?.data(nodes, nodeKeyFn)
@@ -530,8 +532,17 @@ class GraphRepository {
       .append('path')
       .attr('class', 'right-hand-line')
       .attr('marker-end', 'url(#arrow-head)')
-      .on('contextmenu', handleRightClick)
     rightLines?.exit().remove()
+
+    const rightPoints = this.linesNodes.rightHand?.data(nodes, nodeKeyFn)
+    rightPoints
+      ?.enter()
+      .append('circle')
+      .attr('class', 'arrow-line-base right-hand-line')
+      .on('contextmenu', handleRightClick)
+      .on('mouseover', handleMouseOver)
+      .on('mouseout', handleMouseOut)
+    rightPoints?.exit().remove()
   }
 
   updateSelfLines(
