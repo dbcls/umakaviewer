@@ -894,6 +894,7 @@ class GraphRepository {
       .attr('cy', (d) => {
         return getMidPoint(f, d, 'y')
       })
+      .attr('r', 8)
     ctx.linesNodes.leftHand
       .attr('cx', (d) => {
         d.data.pointToCenter = true
@@ -903,6 +904,7 @@ class GraphRepository {
         d.data.pointToCenter = true
         return getMidPoint(f, d, 'y')
       })
+      .attr('r', 8)
 
     ctx.linesNodes.both
       .attr('cx', (d) => {
@@ -913,6 +915,7 @@ class GraphRepository {
         d.data.pointToCenter = true
         return getMidPoint(f, d, 'y')
       })
+      .attr('r', 8)
 
     ctx.linesNodes.same
       .attr('cx', (d) => {
@@ -921,6 +924,7 @@ class GraphRepository {
       .attr('cy', (d) => {
         return getMidPontSideToSide(f, d, 'y')
       })
+      .attr('r', 8)
 
     const getMidPointToSelf = (node: NodeType, xy: 'x' | 'y') => {
       // 4時から11時の方向を指す
@@ -951,6 +955,7 @@ class GraphRepository {
       .attr('cy', (d) => {
         return getMidPointToSelf(d, 'y')
       })
+      .attr('r', 8)
   }
 
   addArrowLineEvent(

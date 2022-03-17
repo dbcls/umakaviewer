@@ -19,7 +19,8 @@ $breadcrumbs-height: 47px;
   }
 }
 
-@keyframes show-properties {  // animation-direction: reverse を使うと再発火できない...
+@keyframes show-properties {
+  // animation-direction: reverse を使うと再発火できない...
   from {
     margin-left: -280px;
   }
@@ -49,7 +50,8 @@ $breadcrumbs-height: 47px;
   }
 }
 
-.visible, .hidden {
+.visible,
+.hidden {
   animation-timing-function: linear;
   animation-duration: 0.2s;
   animation-fill-mode: forwards;
@@ -59,9 +61,9 @@ $breadcrumbs-height: 47px;
   font-size: 14px;
   z-index: 4;
   position: fixed;
-  color: #1984B4;
+  color: #1984b4;
   background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid #1984B4;
+  border: 1px solid #1984b4;
   padding: 5px 5px 2px 5px;
   display: inline-block;
   height: 30px;
@@ -105,7 +107,7 @@ html {
   div {
     padding: 16px;
     display: inline-block;
-    background-color: rgba(0, 0, 0, .7);
+    background-color: rgba(0, 0, 0, 0.7);
   }
   h1 {
     color: white;
@@ -125,7 +127,7 @@ html {
 .open-toggle {
   display: inline-block;
   vertical-align: middle;
-  background-image: url("../images/nav_icon-arrow.png");
+  background-image: url('../images/nav_icon-arrow.png');
   min-width: 12px;
   height: 8px;
 }
@@ -154,7 +156,7 @@ html {
 }
 
 body {
-  font-family: "Hiragino Kaku Gothic ProN","メイリオ", sans-serif;
+  font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
   font-size: 14px;
   color: #444;
   height: 100%;
@@ -185,7 +187,7 @@ body {
   width: 20px;
   height: 20px;
   min-height: 0;
-  background-image: url("../images/icon-hanrei-arrow.png");
+  background-image: url('../images/icon-hanrei-arrow.png');
 }
 
 #content::after {
@@ -200,9 +202,9 @@ body {
   height: calc(100% - #{$header-height} - #{$dbcls-footer-height});
   // min-height: 750px + $header-height + $dbcls-footer-height;
   position: absolute;
-  -moz-box-sizing:border-box;
-  -webkit-box-sizing:border-box;
-  box-sizing:border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
   #main {
     overflow: hidden;
     height: 100%;
@@ -255,7 +257,6 @@ body {
           .triple-count {
             width: auto;
           }
-
         }
       }
 
@@ -281,7 +282,7 @@ body {
           .class-relations {
             list-style: none;
             li.selected {
-              background-color: #FFF176;
+              background-color: #fff176;
             }
             li {
               padding-left: 32px;
@@ -358,7 +359,7 @@ body {
           }
         }
         .refered {
-          background-color: #FFF176;
+          background-color: #fff176;
         }
       }
     }
@@ -388,7 +389,8 @@ body {
         overflow-y: hidden;
         white-space: nowrap;
 
-        span, button {
+        span,
+        button {
           margin-right: 6px;
         }
 
@@ -432,7 +434,7 @@ body {
         }
 
         .filter-conditions {
-          input[type="number"] {
+          input[type='number'] {
             border: 1px solid #adb0bb;
             width: 48px;
             height: 24px;
@@ -444,7 +446,7 @@ body {
             pointer-events: auto;
             text-align: right;
 
-            -moz-appearance:textfield;
+            -moz-appearance: textfield;
             &::-webkit-inner-spin-button,
             &::-webkit-outer-spin-button {
               -webkit-appearance: none;
@@ -481,7 +483,7 @@ body {
         stroke: $focusing-color;
       }
       circle.leaf {
-        fill: #008E94;
+        fill: #008e94;
       }
       circle.hidden-children {
         fill: #007db2;
@@ -543,17 +545,19 @@ body {
       text {
         text-anchor: middle;
         font: 14px sans-serif;
-        text-shadow: 1px 1px 0 #294d5d, -1px 1px 0 #294d5d, 1px -1px 0 #294d5d, -1px -1px 0 #294d5d;
+        text-shadow: 1px 1px 0 #294d5d, -1px 1px 0 #294d5d, 1px -1px 0 #294d5d,
+          -1px -1px 0 #294d5d;
         tspan {
           fill: white;
         }
       }
       text.focusing {
-        text-shadow:
-          0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-          0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-          0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
-          0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color;
+        text-shadow: 0 0 2px $white-color, 0 0 2px $white-color,
+          0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
+          0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
+          0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
+          0 0 2px $white-color, 0 0 2px $white-color, 0 0 2px $white-color,
+          0 0 2px $white-color, 0 0 2px $white-color;
         tspan {
           font-size: 18px;
           font-weight: bold;
@@ -619,8 +623,7 @@ body {
             font-size: 18px;
             font-weight: bold;
             line-height: 1.8;
-            text-shadow:
-              0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
+            text-shadow: 0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
               0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
               0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444,
               0 0 2px #444, 0 0 2px #444, 0 0 2px #444, 0 0 2px #444;
@@ -636,17 +639,17 @@ body {
       }
       g#lines-nodes {
         circle {
-          r: 8;
           stroke: #666;
           fill: #666;
         }
       }
-
     }
 
     figure {
       width: calc(100% - #{$tree-figure-margin} * 2);
-      height: calc(100% - (#{$tree-figure-margin} * 3 + #{$breadcrumbs-height}));
+      height: calc(
+        100% - (#{$tree-figure-margin} * 3 + #{$breadcrumbs-height})
+      );
       position: absolute;
       top: calc(#{$tree-figure-margin} * 2 + #{$breadcrumbs-height});
       left: $tree-figure-margin;
@@ -695,7 +698,6 @@ body {
           }
         }
 
-
         foreignObject {
           font-size: 12px;
           line-height: 1.4;
@@ -723,7 +725,8 @@ body {
         }
 
         circle {
-          &.leaf, &.hidden-children {
+          &.leaf,
+          &.hidden-children {
             stroke: #666;
             stroke-width: 1px;
           }
@@ -765,7 +768,8 @@ body {
           }
         }
 
-        g.focusing, g.parent {
+        g.focusing,
+        g.parent {
           polygon {
             fill: $focusing-color;
           }
@@ -780,16 +784,19 @@ body {
         }
 
         g.focusing {
-          circle.hidden-children, circle.leaf {
+          circle.hidden-children,
+          circle.leaf {
             stroke: $focusing-color;
           }
 
-          circle.hidden-children, circle.leaf {
+          circle.hidden-children,
+          circle.leaf {
             fill: #fff;
             stroke-width: 2px;
           }
 
-          text, p {
+          text,
+          p {
             font-weight: bold;
           }
         }
@@ -806,7 +813,7 @@ body {
             font-weight: bold;
 
             tspan {
-              dominant-baseline: text-before-edge;  // Safariだとtextにつけたdominant-baselineがtspanに継承されない...
+              dominant-baseline: text-before-edge; // Safariだとtextにつけたdominant-baselineがtspanに継承されない...
 
               &:first-child {
                 fill: #8f8f8f;
@@ -866,12 +873,12 @@ body {
           margin-right: auto;
           padding: 4px;
 
-            .focused-icon {
-              height: 20px;
-              margin-right: 8px;
-              width: 20px;
-              background-image: url('../images/icon-location.png');
-            }
+          .focused-icon {
+            height: 20px;
+            margin-right: 8px;
+            width: 20px;
+            background-image: url('../images/icon-location.png');
+          }
         }
 
         .parent {
@@ -880,13 +887,13 @@ body {
           margin: 0 16px;
 
           .legend {
-              background-color: rgba(255, 79, 32, 0.5);
-              display: inline-block;
-              height: 20px;
-              margin-right: 8px;
-              width: 20px;
-              border-radius: 6px;
-              border-radius: 10px;
+            background-color: rgba(255, 79, 32, 0.5);
+            display: inline-block;
+            height: 20px;
+            margin-right: 8px;
+            width: 20px;
+            border-radius: 6px;
+            border-radius: 10px;
 
             &:after {
               border: 1px solid #666;
@@ -907,12 +914,12 @@ body {
           margin: 0 16px;
 
           .legend {
-              border: 2px solid $focusing-color;
-              border-radius: 6px;
-              display: inline-block;
-              height: 12px;
-              margin-right: 8px;
-              width: 12px;
+            border: 2px solid $focusing-color;
+            border-radius: 6px;
+            display: inline-block;
+            height: 12px;
+            margin-right: 8px;
+            width: 12px;
           }
         }
       }
@@ -938,7 +945,7 @@ body {
         right: 16px;
       }
 
-      .section>a {
+      .section > a {
         color: #444;
         font-size: 13px;
         text-decoration: underline;
@@ -970,7 +977,8 @@ body {
           margin-top: 0;
           color: $domain-color;
         }
-        a, button {
+        a,
+        button {
           color: $domain-color;
         }
       }
@@ -984,7 +992,8 @@ body {
           margin-top: 0;
           color: $range-color;
         }
-        a, button {
+        a,
+        button {
           color: $range-color;
         }
       }
@@ -998,7 +1007,8 @@ body {
           margin-top: 0;
           color: $domain-range-color;
         }
-        a, button {
+        a,
+        button {
           color: $domain-range-color;
         }
       }
@@ -1075,7 +1085,8 @@ body {
           font-size: 13px;
           line-height: 13px;
 
-          a,button.object {
+          a,
+          button.object {
             text-decoration: underline;
             color: #a567a7;
             cursor: pointer;
@@ -1117,7 +1128,7 @@ body {
       right: 24px;
       height: 100%;
       width: 406px;
-      pointer-events : none;
+      pointer-events: none;
       #legend.close {
         width: 103px;
         height: 54px;
@@ -1161,19 +1172,19 @@ body {
 
         &.highlight li {
           &:nth-of-type(1) .visual {
-            background-image: url("../images/icon-hanrei-circle01.png");
+            background-image: url('../images/icon-hanrei-circle01.png');
           }
 
           &:nth-of-type(2) .visual {
-            background-image: url("../images/icon-hanrei-circle02.png");
+            background-image: url('../images/icon-hanrei-circle02.png');
           }
 
           &:nth-of-type(3) .visual {
-            background-image: url("../images/icon-hanrei-circle03.png");
+            background-image: url('../images/icon-hanrei-circle03.png');
           }
 
           &:nth-of-type(4) .visual {
-            background-image: url("../images/icon-hanrei-circle04.png");
+            background-image: url('../images/icon-hanrei-circle04.png');
           }
         }
 
@@ -1190,7 +1201,7 @@ body {
           }
 
           &:nth-of-type(2) .visual {
-            background-color: #008E94;
+            background-color: #008e94;
           }
 
           &:nth-of-type(3) .visual {
@@ -1209,7 +1220,6 @@ body {
     }
   }
 }
-
 
 #header-right {
   height: 100%;
@@ -1241,14 +1251,15 @@ body {
     }
 
     input::selection {
-      color: #444;  // http://ichiy.hatenablog.com/entry/2014/07/22/120151
+      color: #444; // http://ichiy.hatenablog.com/entry/2014/07/22/120151
     }
 
     img {
-      margin-left: calc(-12px - 10px);  // 画像のwidthを引く
+      margin-left: calc(-12px - 10px); // 画像のwidthを引く
     }
 
-    input, img {
+    input,
+    img {
       z-index: 1;
       position: relative;
     }
@@ -1297,7 +1308,7 @@ body {
           }
 
           * {
-            display: inline-block;  // URIが長い場合に正しく改行するため
+            display: inline-block; // URIが長い場合に正しく改行するため
           }
 
           dt {
@@ -1306,13 +1317,14 @@ body {
           }
 
           dd {
-            & > span :first-of-type {  // Reactが勝手に作るspanにはmarginを適用しない
+            & > span :first-of-type {
+              // Reactが勝手に作るspanにはmarginを適用しない
               margin-right: 8px;
             }
 
             .triple-count {
               color: inherit;
-              margin-left: 0px;  // 改行が入った場合に余計なmarginを設けないため
+              margin-left: 0px; // 改行が入った場合に余計なmarginを設けないため
               background-image: url('../images/icon-classcount.png');
             }
           }
@@ -1335,12 +1347,12 @@ body {
       &:after {
         display: inline-block;
         top: 24px;
-        right:16px;
-        content: " ";
+        right: 16px;
+        content: ' ';
         width: 12px;
         height: 8px;
         margin: 0 0 0 8px;
-        background: url("../images/header__icon-prefix.png") no-repeat;
+        background: url('../images/header__icon-prefix.png') no-repeat;
         background-size: 12px auto;
       }
     }
@@ -1349,18 +1361,18 @@ body {
     }
     .prefix--link__list {
       overflow: scroll;
-      box-shadow: 0px 2px 2px rgba(0,0,0,0.35);
+      box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.35);
       max-height: 100%;
       display: none;
       position: absolute;
-      top:30px;
+      top: 30px;
       right: 16px;
       z-index: 10;
       dl {
         position: relative;
         width: 384px;
         padding: 16px;
-        top:0;
+        top: 0;
         background: #fff;
         color: #444;
         font-size: 13px;
@@ -1378,7 +1390,7 @@ body {
           bottom: 100%;
           right: 30px;
           border: solid transparent;
-          content: " ";
+          content: ' ';
           height: 0;
           width: 0;
           z-index: 10;
@@ -1409,7 +1421,8 @@ body {
     }
   }
 
-  .detail, .uri {
+  .detail,
+  .uri {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -1418,7 +1431,8 @@ body {
     }
   }
 
-  .subject, .object {
+  .subject,
+  .object {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -1478,4 +1492,4 @@ body {
 //   }
 // }
 
-@import "top.scss";
+@import 'top.scss';
