@@ -6,6 +6,7 @@ ExecStart=/home/umaka_v/repos/umakaviewer/deploy/run.sh start
 ExecStop=/home/umaka_v/repos/umakaviewer/deploy/run.sh stop
 ExecReload=/home/umaka_v/repos/umakaviewer/deploy/run.sh restart
 Restart=always
+RestartSec=60s
 User=umaka_v
 Group=umaka_v
 Type=simple
