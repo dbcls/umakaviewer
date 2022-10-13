@@ -12,7 +12,7 @@ rebuild() {
 
 start() {
     cd $HOME/repos/umakaviewer
-    docker-compose -p umakaviewer up -d
+    docker-compose -p umakaviewer up -d --remove-orphans
 }
 
 stop() {
