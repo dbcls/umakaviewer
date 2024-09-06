@@ -6,6 +6,7 @@ const messages = {
   'detail.class.object': 'Object Class',
   'detail.class.selecting': 'Selected Class',
   'detail.no.selecting.classes': 'No classes currently selected.',
+  'detail.no.object': 'None',
   'focusClassDetail.class.selecting': 'Selected Class',
   'classRelationsDetail.class.relates': 'Related Classes',
   'classRelationsDetail.class.relates.of': 'Class relating to {target}',

@@ -6,6 +6,7 @@ const messages = {
   'detail.class.object': '目的語のクラス',
   'detail.class.selecting': '選択中のクラス',
   'detail.no.selecting.classes': '現在選択しているクラスはありません。',
+  'detail.no.object': 'なし',
   'focusClassDetail.class.selecting': '選択中のクラス',
   'classRelationsDetail.class.relates': '関連するクラス',
   'classRelationsDetail.class.relates.of': '{target}の関連するクラス',
