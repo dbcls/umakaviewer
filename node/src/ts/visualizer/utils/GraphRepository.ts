@@ -341,11 +341,15 @@ class GraphRepository {
   }
 
   x(x: number) {
-    return (this.XLinear?.(x) ?? 0) + this.coordinate[0]
+    const ret = (this.XLinear?.(x) ?? 0) + this.coordinate[0]
+    if (isNaN(ret)) return this.coordinate[0]
+    return ret
   }
 
   y(y: number) {
-    return (this.YLinear?.(y) ?? 0) + this.coordinate[1]
+    const ret = (this.YLinear?.(y) ?? 0) + this.coordinate[1]
+    if (isNaN(ret)) return this.coordinate[1]
+    return ret
   }
 
   textY(d: NodeType) {
