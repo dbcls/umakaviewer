@@ -3,6 +3,8 @@ import locales from '../locales'
 import { Classes } from '../types/class'
 
 export const omitUri = (uri: string) => {
+  if (!uri) return uri
+
   // Do not allow endwith '#' or '/' because fragment or path will be empty.
   const uriWithoutEndDelim = uri.replace(/[#,/]$/, '')
 

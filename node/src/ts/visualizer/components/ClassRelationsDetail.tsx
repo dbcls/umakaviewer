@@ -44,7 +44,9 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
       }
       const subject = getPreferredLabel(triple[0], classes, intl.locale)
       const predicate = getPreferredLabel(triple[1], classes, intl.locale)
-      const object = getPreferredLabel(triple[2], classes, intl.locale)
+      const object =
+        getPreferredLabel(triple[2], classes, intl.locale) ??
+        intl.formatMessage({ id: 'detail.no.object' })
       return `<${subject}><${predicate}><${object}>`
     },
     [classes, intl.locale]
@@ -124,7 +126,11 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
                 e.preventDefault()
                 dispatch(DetailAction.showRelation(rhs))
               }
-              const triple = [focusingURI || '', rhs[0], rhs[1]]
+              const triple = [
+                focusingURI || '',
+                rhs[0],
+                rhs[1] ?? intl.formatMessage({ id: 'detail.no.object' }),
+              ]
               return (
                 <li key={`component-classrelationdetail-list-rhs-${index}`}>
                   <button
@@ -143,7 +149,7 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
                       &nbsp;
                     </span>
                     <span>{`<${triple[1]}>`}</span>
-                    <span className="object">
+                    <span className={rhs[1] ? 'object' : 'no-object'}>
                       &nbsp;
                       {`<${triple[2]}>`}
                     </span>
