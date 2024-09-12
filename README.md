@@ -5,8 +5,8 @@
 
 ## Requirement
 * Docker
-* Python 3.6.11
-  * poetry 1.1.3 
+* Python 3.7
+  * poetry 1.5.1
 * Node.js 12.18.4
 * MySQL 8.0.22
 
@@ -25,6 +25,7 @@ $ yarn install
 
 3. Install packages of Python
 ```
+$ export APP_ENV=development
 $ cd server
 $ make bootstrap
 ```
