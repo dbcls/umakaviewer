@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { DetailAction } from '../actions/detail'
 import { RootState } from '../reducers'
 import { Classes } from '../types/class'
-import { getPreferredLabel } from '../utils'
 import { flattenParents } from '../utils/node'
 import GraphRepository from '../utils/GraphRepository'
+import { getPreferredLabel } from '../utils/label'
 
 type BreadcrumbsProps = {
   classes: Classes
@@ -56,7 +56,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = (props) => {
             }}
             onKeyDown={() => false}
           >
-            {getPreferredLabel(breadcrumb.data.uri, classes, intl.locale)}
+            {getPreferredLabel(breadcrumb.data.uri, intl.locale, classes)}
           </button>,
           <span key={i}>&gt;</span>,
         ]

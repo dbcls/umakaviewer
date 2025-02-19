@@ -1,11 +1,13 @@
 /* eslint-disable camelcase */
 import React, { useCallback, useMemo } from 'react'
+import { useIntl } from 'react-intl'
 import { useDispatch, useSelector } from 'react-redux'
 import { DetailAction } from '../actions/detail'
 import { PropertyAction } from '../actions/property'
 import { RootState } from '../reducers'
 import { ClassRelation as ClassRelationType } from '../types/property'
 import { omitUri } from '../utils'
+import { getPreferredLabel } from '../utils/label'
 
 type ClassRelationProps = {
   relation: ClassRelationType
@@ -22,6 +24,7 @@ const ClassRelation: React.FC<ClassRelationProps> = (props) => {
     propertyClass,
   } = props
   const dispatch = useDispatch()
+  const intl = useIntl()
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
@@ -77,7 +80,9 @@ const ClassRelation: React.FC<ClassRelationProps> = (props) => {
           >
             <span className="icon subject">S</span>
             <span data-tip={subjectTip} className={`text ${domainClassName}`}>
-              {subject_class ? omitUri(subject_class) : 'resource'}
+              {subject_class
+                ? getPreferredLabel(subject_class, intl.locale)
+                : 'resource'}
             </span>
           </span>
         )}
@@ -90,10 +95,10 @@ const ClassRelation: React.FC<ClassRelationProps> = (props) => {
             >
               {(() => {
                 if (object_class) {
-                  return omitUri(object_class)
+                  return getPreferredLabel(object_class, intl.locale)
                 }
                 if (object_datatype) {
-                  return omitUri(object_datatype)
+                  return getPreferredLabel(object_datatype, intl.locale)
                 }
                 return 'resource'
               })()}

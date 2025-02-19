@@ -20,6 +20,7 @@ import {
   makeQueryWhenRightClickArrow,
   makeQueryWhenRightClickClass,
 } from '../utils/sparql'
+import { getPreferredLabel } from '../utils/label'
 
 export const CIRCLE_CONTEXT_MENU_ID = 'circle-context-menu-id'
 
@@ -130,7 +131,10 @@ function makeArrowMouseover(
     const predicateMessage = intl.formatMessage({
       id: 'classStructure.text.predicate',
     })
-    GraphRepository.addPopup(x, y, getUris(d), predicateMessage)
+    const predicateLabels = getUris(d).map((uri) =>
+      getPreferredLabel(uri, intl.locale)
+    )
+    GraphRepository.addPopup(x, y, predicateLabels, predicateMessage)
 
     GraphRepository.updatePosition()
   }

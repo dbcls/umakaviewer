@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { Classes } from './class'
+import { Labels } from './label'
 import { Metadata } from './metadata'
 import { Prefixes } from './prefix'
 import { Property } from './property'
@@ -21,6 +22,7 @@ export type AppState = {
   classes: Classes
   properties: Property[]
   prefixes: Prefixes
+  labels: Labels
 }
 
 export type Content = {
@@ -29,4 +31,5 @@ export type Content = {
   properties: Property[]
   prefixes: Prefixes
   meta_data: Metadata
+  labels: Labels
 }

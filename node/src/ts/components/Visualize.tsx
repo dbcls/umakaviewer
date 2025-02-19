@@ -28,6 +28,7 @@ const Visualize = (props: Props) => {
       endpoint: '',
       crawl_date: '',
     },
+    labels: {},
   })
 
   React.useEffect(() => {
