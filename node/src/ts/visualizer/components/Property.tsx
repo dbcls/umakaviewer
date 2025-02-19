@@ -1,11 +1,13 @@
 /* eslint-disable camelcase */
 import React, { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useIntl } from 'react-intl'
 import { PropertyAction } from '../actions/property'
 import { RootState } from '../reducers'
 import { Property as PropertyType } from '../types/property'
 import ClassRelations from './ClassRelations'
 import { omitUri } from '../utils'
+import { getPreferredLabel } from '../utils/label'
 
 type PropertyProps = {
   property: PropertyType
@@ -26,6 +28,7 @@ const Property: React.FC<PropertyProps> = (props) => {
   } = props
   const { openPropertyIndexes, referenceProperties } = useSelector(selector)
   const dispatch = useDispatch()
+  const intl = useIntl()
 
   const handleClick = useCallback(() => {
     if (openPropertyIndexes[index]) {
@@ -53,7 +56,7 @@ const Property: React.FC<PropertyProps> = (props) => {
       onKeyDown={() => false}
     >
       <span className="property" data-tip={isOmittingUri ? uri : undefined}>
-        {omitUri(uri)}
+        {getPreferredLabel(uri, intl.locale)}
       </span>
       <span className="triple-count">{triples}</span>
       {class_relations.length > 0 && <span className="open-toggle" />}

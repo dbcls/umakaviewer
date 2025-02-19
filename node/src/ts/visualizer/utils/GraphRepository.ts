@@ -18,8 +18,9 @@ import {
   getNodeUris,
   nodeKeyFn,
 } from './node'
-import { getPreferredLabel, isIE11 } from '.'
+import { isIE11 } from '.'
 import SVGElementsAccessor from './SVGElementsAccessor'
+import { getPreferredLabel } from './label'
 
 export type Point = { x: number; y: number }
 
@@ -342,13 +343,13 @@ class GraphRepository {
 
   x(x: number) {
     const ret = (this.XLinear?.(x) ?? 0) + this.coordinate[0]
-    if (isNaN(ret)) return this.coordinate[0]
+    if (Number.isNaN(ret)) return this.coordinate[0]
     return ret
   }
 
   y(y: number) {
     const ret = (this.YLinear?.(y) ?? 0) + this.coordinate[1]
-    if (isNaN(ret)) return this.coordinate[1]
+    if (Number.isNaN(ret)) return this.coordinate[1]
     return ret
   }
 
@@ -1066,7 +1067,7 @@ class GraphRepository {
 
     texts
       ?.append('tspan')
-      .text((d) => getPreferredLabel(d.data.uri, classes, locale))
+      .text((d) => getPreferredLabel(d.data.uri, locale, classes))
       .attr('x', 0)
       .each((d, i, g) => {
         textBeforeEdgePolyfill(g[i], d.data.isLabelOnTop)

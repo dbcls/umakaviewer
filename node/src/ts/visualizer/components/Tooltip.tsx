@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 import { RootState } from '../reducers'
 import { Classes } from '../types/class'
 import SubjectDetail from './SubjectDetail'
-import { getPreferredLabel } from '../utils'
+import { getPreferredLabel } from '../utils/label'
 
 type TooltipProps = {
   classes: Classes
@@ -93,7 +93,7 @@ const Tooltip: React.FC<TooltipProps> = (props) => {
 
     const detail = classes[uri]
     const entities = detail?.entities
-    const preferredLabel = getPreferredLabel(uri, classes, intl.locale)
+    const preferredLabel = getPreferredLabel(uri, intl.locale, classes)
     return (
       <div
         ref={tooltipRef}

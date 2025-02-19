@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { DetailAction } from '../actions/detail'
 import { RootState } from '../reducers'
 import { Classes } from '../types/class'
-import { getPreferredLabel } from '../utils'
 import GraphRepository from '../utils/GraphRepository'
+import { getPreferredLabel } from '../utils/label'
 
 type ClassRelationsDetailProps = {
   title: string
@@ -42,10 +42,10 @@ const ClassRelationsDetail: React.FC<ClassRelationsDetailProps> = (props) => {
       if (triple.length < 3) {
         return '<><><>'
       }
-      const subject = getPreferredLabel(triple[0], classes, intl.locale)
-      const predicate = getPreferredLabel(triple[1], classes, intl.locale)
+      const subject = getPreferredLabel(triple[0], intl.locale, classes)
+      const predicate = getPreferredLabel(triple[1], intl.locale, classes)
       const object =
-        getPreferredLabel(triple[2], classes, intl.locale) ??
+        getPreferredLabel(triple[2], intl.locale, classes) ??
         intl.formatMessage({ id: 'detail.no.object' })
       return `<${subject}><${predicate}><${object}>`
     },

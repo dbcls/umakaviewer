@@ -13,7 +13,7 @@ import {
 import { Classes } from '../types/class'
 import { TreeState } from '../components/Tree'
 import { NodeType, SVGEventHandlerType } from './GraphRepository'
-import { getPreferredLabel, isIE11 } from '.'
+import { isIE11 } from '.'
 import {
   calcDepthDiff,
   getNodeUris,
@@ -22,6 +22,7 @@ import {
   isLinealChildren,
   getLinealAscendantNodes,
 } from './node'
+import { getPreferredLabel } from './label'
 
 export const shouldShowDisplayButton = (
   node: NodeType,
@@ -710,7 +711,7 @@ class TreeRepository {
       .attr('class', 'top')
       .append('xhtml')
       .append('p')
-      .text((d) => getPreferredLabel(d.data.uri, classes, intl.locale))
+      .text((d) => getPreferredLabel(d.data.uri, intl.locale, classes))
       .each((d, i, g) => {
         if (!d) return // prevention: unused parameter error(datum)
         const textSize = g[i]?.getBoundingClientRect()

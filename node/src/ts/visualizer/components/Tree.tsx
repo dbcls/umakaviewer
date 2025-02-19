@@ -16,9 +16,9 @@ import TreeRepository, {
   shouldShowDisplayButton,
 } from '../utils/TreeRepository'
 import { RootState } from '../reducers'
-import { getPreferredLabel } from '../utils'
 import { DetailAction } from '../actions/detail'
 import { DEFAULT_MAX_DEPTH, Depth, Margin } from '../constants/Tree'
+import { getPreferredLabel } from '../utils/label'
 
 type TreeProps = {
   nodes: NodeType[]
@@ -468,7 +468,7 @@ export const Tree: React.FC<TreeProps> = (props) => {
   )
 
   const preferredLabel = React.useMemo(
-    () => getPreferredLabel(focusingURI || '', classes, intl.locale),
+    () => getPreferredLabel(focusingURI || '', intl.locale, classes),
     [classes, focusingURI, intl.locale]
   )
   const baseElement = React.useMemo(

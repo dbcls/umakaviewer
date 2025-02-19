@@ -2,6 +2,7 @@ import _ from 'lodash'
 import { SearchActionType } from '../actions/search'
 import * as types from '../constants/ActionTypes'
 import { Classes } from '../types/class'
+import { getLabels } from '../utils/label'
 
 export type Candidate = {
   language: string | null
@@ -28,6 +29,7 @@ export default function search(
 ): SearchState {
   switch (action.type) {
     case types.UPDATE_QUERY: {
+      const labels = getLabels()
       const getCandidates = (query: string, classes: Classes): Candidate[] => {
         // MeSH等でマッチしたクラスが多すぎると検索窓の描画が重くなるため文字数制限
         const getByteSize = (str: string) =>
@@ -40,12 +42,15 @@ export default function search(
           str.toLowerCase().includes(searchStr.toLowerCase())
         const candidates = Object.keys(classes)
           .map((key) => ({ uri: key, cls: classes[key] }))
-          .filter(
-            ({ uri, cls }) =>
+          .filter(({ uri, cls }) => {
+            const jaLabel = labels?.[uri]?.ja ?? cls.label?.ja
+            const enLabel = labels?.[uri]?.en ?? cls.label?.en
+            return (
               isIncludesString(uri, query) ||
-              (cls.label?.ja && isIncludesString(cls.label.ja, query)) ||
-              (cls.label?.en && isIncludesString(cls.label.en, query))
-          )
+              (jaLabel && isIncludesString(jaLabel, query)) ||
+              (enLabel && isIncludesString(enLabel, query))
+            )
+          })
           .map(({ uri, cls }) => {
             const candidate: Candidate = {
               language: null,
@@ -54,18 +59,26 @@ export default function search(
               uri,
             }
 
-            if (cls.label?.ja) {
-              const preferdLabel = { language: 'ja', label: cls.label.ja }
+            const jaLabel = labels?.[uri]?.ja ?? cls.label?.ja
+            const enLabel = labels?.[uri]?.en ?? cls.label?.en
+            if (jaLabel) {
+              const preferredLabel = {
+                language: 'ja',
+                label: jaLabel,
+              }
               return {
                 ...candidate,
-                ...preferdLabel,
+                ...preferredLabel,
               }
             }
-            if (cls.label?.en) {
-              const preferdLabel = { language: 'en', label: cls.label.en }
+            if (enLabel) {
+              const preferredLabel = {
+                language: 'en',
+                label: enLabel,
+              }
               return {
                 ...candidate,
-                ...preferdLabel,
+                ...preferredLabel,
               }
             }
             return candidate

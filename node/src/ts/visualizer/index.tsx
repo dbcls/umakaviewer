@@ -36,12 +36,14 @@ import { RootState } from './reducers'
 import { FilterAction } from './actions/filter'
 import { flattenStructure } from './utils/node'
 import { AppState, Content } from './types'
+import { setLabels } from './utils/label'
 
 const initialAppState: AppState = {
   structure: [],
   classes: {},
   properties: [],
   prefixes: {},
+  labels: {},
 }
 
 const filterStateDestructive = (
@@ -137,6 +139,7 @@ const App: React.FC<AppProps> = (props) => {
       classes: content.classes,
       properties: content.properties,
       prefixes: content.prefixes,
+      labels: content.labels,
     }
 
     if (isEmptyState(nextState) || !isEmptyState(rawState)) {
@@ -201,7 +204,8 @@ const App: React.FC<AppProps> = (props) => {
     setState(nextState)
   }, [rawState, lowerLimitOfClassEntities])
 
-  const { structure, classes, properties, prefixes } = state
+  const { structure, classes, properties, prefixes, labels } = state
+  setLabels(labels)
   return (
     <div id="main">
       <PropertyList properties={properties} />

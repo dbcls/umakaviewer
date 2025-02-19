@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl'
 import { useDispatch } from 'react-redux'
 import { SearchAction } from '../actions/search'
 import { Classes } from '../types/class'
-import { getPreferredLabel } from '../utils'
+import { getLabels, getPreferredLabel } from '../utils/label'
 
 type SubjectDetailProps = {
   classes: Classes
@@ -14,24 +14,29 @@ const SubjectDetail: React.FC<SubjectDetailProps> = (props) => {
   const { classes, uri } = props
   const dispatch = useDispatch()
   const intl = useIntl()
+  const labels = getLabels()
 
   const classDetail = useMemo(() => {
     return classes[uri || '']
   }, [classes, uri])
 
+  const label = useMemo(() => {
+    return labels?.[uri || ''] ?? classDetail?.label
+  }, [classes, uri])
+
   return (
     <>
-      {classDetail?.label && (
+      {label && (
         <div className="subject">
           <h4>rdfs:label</h4>
           <ul>
-            {Object.keys(classDetail.label)
+            {Object.keys(label)
               .sort()
               .reverse()
               .map((lang, idx) => (
                 <li key={`component-subjectdetail-list-label-${idx}`}>
                   →&nbsp;
-                  <span className="object">{classDetail.label?.[lang]}</span>
+                  <span className="object">{label[lang]}</span>
                 </li>
               ))}
           </ul>
@@ -51,7 +56,7 @@ const SubjectDetail: React.FC<SubjectDetailProps> = (props) => {
                   <button
                     type="button"
                     className="object"
-                    title={getPreferredLabel(superClass, classes, intl.locale)}
+                    title={getPreferredLabel(superClass, intl.locale, classes)}
                     onClick={handleClick}
                   >
                     {superClass}

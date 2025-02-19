@@ -1,6 +1,4 @@
-type Label = {
-  [key: string]: string // key: language, value: class
-}
+import { Label } from './label'
 
 export type ClassDetail = {
   entities?: number

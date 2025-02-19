@@ -1,6 +1,5 @@
 import { useLocation } from 'react-router-dom'
 import locales from '../locales'
-import { Classes } from '../types/class'
 
 export const omitUri = (uri: string) => {
   if (!uri) return uri
@@ -20,20 +19,6 @@ export const omitUri = (uri: string) => {
   }
 
   return uri
-}
-
-export const getPreferredLabel = (
-  uri: string,
-  classes: Classes,
-  locale: string
-): string => {
-  const labels = classes[uri]?.label
-  if (!labels) {
-    return omitUri(uri)
-  }
-
-  const label = labels[locale] ?? labels.en ?? labels[''] ?? undefined
-  return label ?? omitUri(uri)
 }
 
 export const getLocaleShortString = (): string => {
