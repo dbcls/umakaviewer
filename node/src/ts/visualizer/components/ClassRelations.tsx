@@ -6,7 +6,6 @@ import { DetailAction } from '../actions/detail'
 import { PropertyAction } from '../actions/property'
 import { RootState } from '../reducers'
 import { ClassRelation as ClassRelationType } from '../types/property'
-import { omitUri } from '../utils'
 import { getPreferredLabel } from '../utils/label'
 
 type ClassRelationProps = {
@@ -51,15 +50,19 @@ const ClassRelation: React.FC<ClassRelationProps> = (props) => {
     if (!subject_class) {
       return undefined
     }
-    return subject_class !== omitUri(subject_class) ? subject_class : undefined
+    return subject_class !== getPreferredLabel(subject_class, intl.locale)
+      ? subject_class
+      : undefined
   }, [subject_class])
 
   const objectTip = useMemo(() => {
     if (object_class) {
-      return object_class !== omitUri(object_class) ? object_class : undefined
+      return object_class !== getPreferredLabel(object_class, intl.locale)
+        ? object_class
+        : undefined
     }
     if (object_datatype) {
-      return object_datatype !== omitUri(object_datatype)
+      return object_datatype !== getPreferredLabel(object_datatype, intl.locale)
         ? object_datatype
         : undefined
     }
