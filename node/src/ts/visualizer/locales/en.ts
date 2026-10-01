@@ -55,6 +55,7 @@ const messages = {
   'filter.show.more.than.specified.entities.prefix':
     'Show classes that have more than',
   'filter.show.more.than.specified.entities.suffix': 'entities',
+  'filter.log.scale': 'Size circles by log of entity count',
 }
 
 export default messages

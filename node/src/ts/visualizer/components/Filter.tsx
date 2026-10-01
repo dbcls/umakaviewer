@@ -6,11 +6,12 @@ import { FilterAction } from '../actions/filter'
 import { RootState } from '../reducers'
 import { useQuery } from '../utils'
 
-const selector = ({ filter: { showingConditions } }: RootState) => ({
+const selector = ({ filter: { showingConditions, logScale } }: RootState) => ({
   showingConditions,
+  logScale,
 })
 const Filter: React.FC = () => {
-  const { showingConditions } = useSelector(selector)
+  const { showingConditions, logScale } = useSelector(selector)
   const dispatch = useDispatch()
   const intl = useIntl()
   const query = useQuery()
@@ -25,6 +26,12 @@ const Filter: React.FC = () => {
 
   const handleClick = useCallback(() => {
     dispatch(FilterAction.showConditions())
+  }, [])
+
+  const handleToggleLogScale = useCallback(() => {
+    dispatch(FilterAction.toggleLogScale())
+    // 円の並び順（key）が変わるため、フォーカスをルートに戻す
+    dispatch(DetailAction.focusCircle(0, ''))
   }, [])
 
   const handleKeyPress = useCallback(
@@ -75,11 +82,25 @@ const Filter: React.FC = () => {
                 })}
               </span>
             </li>
+            <li>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  role="switch"
+                  checked={logScale}
+                  onChange={handleToggleLogScale}
+                />
+                <span className="toggle-switch__track" aria-hidden="true" />
+                <span className="toggle-switch__label">
+                  {intl.formatMessage({ id: 'filter.log.scale' })}
+                </span>
+              </label>
+            </li>
           </ul>
         </div>
       </div>
     )
-  }, [intl])
+  }, [intl, logScale, handleToggleLogScale])
 
   const noShowingConditionsEl = useMemo(() => {
     return (

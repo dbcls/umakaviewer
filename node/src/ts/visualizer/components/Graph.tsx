@@ -30,12 +30,23 @@ type GraphProps = {
 const selector = ({
   ui: { circleDiameter, svgWidth, svgHeight },
   detail: { showTree },
+  filter: { logScale },
 }: RootState) => ({
   circleDiameter,
   svgWidth,
   svgHeight,
   showTree,
+  logScale,
 })
+
+// 円の面積の元になる値。entities が未定義のクラスは 0.5 とし、
+// entities が 1 のクラスと区別する（log 表示時も 1 + log10(1) = 1 > 0.5）。
+const circleValue = (entities: number | undefined, logScale: boolean) => {
+  if (!entities) {
+    return 0.5
+  }
+  return logScale ? 1 + Math.log10(entities) : entities
+}
 
 const ContextMenu: React.VFC = () => {
   return (
@@ -118,9 +129,13 @@ const avoidStackedCircle = (
 
 const Graph: React.FC<GraphProps> = (props) => {
   const { classes, structure, metadata, getReferenceURL } = props
-  const { circleDiameter, svgWidth, svgHeight, showTree } = useSelector(
-    selector
-  )
+  const {
+    circleDiameter,
+    svgWidth,
+    svgHeight,
+    showTree,
+    logScale,
+  } = useSelector(selector)
   const [rootNode, setRootNode] = React.useState<NodeType | null>(null)
   const [sortedNodes, setSortedNodes] = React.useState<NodeType[]>([])
   const dispatch = useDispatch()
@@ -144,17 +159,16 @@ const Graph: React.FC<GraphProps> = (props) => {
         return d3.pack<NodeStructure>().size([diameter, diameter])(
           d3
             .hierarchy(data)
-            .sum((d) => classes[d.uri]?.entities || 0.5) // entityが1かfalsyかで差をつける
+            .sum((d) => circleValue(classes[d.uri]?.entities, logScale))
             .sort((a, b) => (a.value ?? 0) - (b.value ?? 0))
         )
       }
       const root: NodeStructure = createNodeStructure(structure)
-      const node = pack(root)
-      setRootNode(node)
+      setRootNode(pack(root))
       const nodes = avoidStackedCircle(pack(root), circleDiameter)
       setSortedNodes(nodes)
     }
-  }, [circleDiameter, classes, setRootNode, structure])
+  }, [circleDiameter, classes, setRootNode, structure, logScale])
 
   const containerRef = useRef(null)
   return (
