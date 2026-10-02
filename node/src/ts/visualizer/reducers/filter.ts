@@ -4,11 +4,13 @@ import * as types from '../constants/ActionTypes'
 export interface FilterState {
   lowerLimitOfClassEntities: number
   showingConditions: boolean
+  logScale: boolean
 }
 
 const initialState: FilterState = {
   lowerLimitOfClassEntities: 1,
   showingConditions: false,
+  logScale: false,
 }
 
 export default function legend(
@@ -25,6 +27,11 @@ export default function legend(
       return {
         ...state,
         showingConditions: !state.showingConditions,
+      }
+    case types.TOGGLE_LOG_SCALE:
+      return {
+        ...state,
+        logScale: !state.logScale,
       }
     default:
       return state

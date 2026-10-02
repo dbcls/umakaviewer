@@ -31,3 +31,4 @@ export const RESIZE = 'RESIZE'
 
 export const FILTER_CLASSES = 'FILTER_CLASSES'
 export const SHOW_CONDITIONS = 'SHOW_CONDITIONS'
+export const TOGGLE_LOG_SCALE = 'TOGGLE_LOG_SCALE'

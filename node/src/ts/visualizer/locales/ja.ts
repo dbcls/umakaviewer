@@ -53,6 +53,7 @@ const messages = {
   'filter.show.more.than.specified.entities.prefix': ' ',
   'filter.show.more.than.specified.entities.suffix':
     '個以上のエンティティ数を持つクラスを表示',
+  'filter.log.scale': '円の大きさをエンティティ数の対数で表示',
 }
 
 export default messages
