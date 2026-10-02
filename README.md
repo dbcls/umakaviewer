@@ -7,7 +7,7 @@
 * Docker (Docker Desktop on macOS)
 * Python 3.8 (same as `server/Dockerfile`)
   * Poetry
-  * Python 3.10.21 is also known to work for local development on recent macOS (see notes below)
+  * On Apple Silicon, Python 3.10 is recommended for local development (see notes below)
 * Node.js 12
   * Node.js 12.22.12 x86_64 is known to work on Apple Silicon via Rosetta 2
   * Yarn 1.22.x
@@ -39,14 +39,17 @@ $ make bootstrap
 > **Note for recent macOS (Apple Silicon)**
 >
 > Some locked dependencies are old and are incompatible with recent Python
-> versions. In particular, `grpcio` 1.43.0 cannot be installed normally with
-> Python 3.14.
+> versions. In particular, `grpcio` 1.43.0 provides prebuilt macOS wheels only
+> up to Python 3.10 (`cp36`-`cp39` for x86_64 only, `cp310` as `universal2`).
+> With Python 3.11 or later it falls back to a source build, which fails on
+> recent macOS / Xcode.
 >
 > Two configurations have been confirmed to work.
 >
-> **Option A: Python 3.10.21 with pyenv**
+> **Option A (recommended): Python 3.10 with pyenv**
 >
-> Python 3.10.21 can install the locked dependencies successfully:
+> Python 3.10 runs natively on arm64 and installs the `universal2` wheel of
+> `grpcio`, so neither Rosetta nor a source build is needed:
 >
 > ```sh
 > $ pyenv install 3.10.21
@@ -71,18 +74,13 @@ $ make bootstrap
 > $ APP_ENV=development poetry run alembic upgrade head
 > ```
 >
-> Accordingly, `server/Makefile` can use:
->
-> ```make
-> bootstrap:
->         poetry install --no-root
->         APP_ENV=development poetry run alembic upgrade head
-> ```
+> `make bootstrap` already runs `poetry install --no-root`.
 >
 > **Option B: Python 3.8 x86_64 with uv and Rosetta**
 >
-> If Python 3.8 is required to match `server/Dockerfile`, a prebuilt x86_64
-> Python can be used:
+> To match `server/Dockerfile` (Python 3.8) exactly, use a prebuilt x86_64
+> Python, for which a prebuilt `grpcio` wheel is available. (Building Python 3.8
+> with pyenv may fail on recent macOS.)
 >
 > ```sh
 > $ softwareupdate --install-rosetta --agree-to-license   # if not installed yet
@@ -168,10 +166,12 @@ $ yarn install --frozen-lockfile
 >
 > The native `grpc` module pulled in by the Firebase SDK cannot be built
 > normally with recent Node.js versions. Since it is not needed for the
-> browser bundle, another workaround is to skip install scripts:
+> browser bundle, the frontend can still be built with recent Node.js
+> (confirmed with Node.js 20 and 22) by combining two workarounds:
 >
 > ```sh
 > $ yarn install --ignore-scripts
+> $ NODE_OPTIONS=--openssl-legacy-provider yarn build
 > ```
 >
 > Using Node.js 12.22.12 x64 is preferable when reproducing the original
@@ -275,10 +275,11 @@ $ yarn build
 >
 > and use Node.js 12.22.12 x64 as described above.
 >
-> `NODE_OPTIONS=--openssl-legacy-provider` can work around the OpenSSL error
-> with newer Node.js versions, but it does not solve the separate compatibility
-> problem with the old native `grpc` dependency. Therefore Node.js 12.22.12
-> x64 is the recommended environment for reproducing this legacy frontend.
+> `NODE_OPTIONS=--openssl-legacy-provider` works around this OpenSSL error,
+> but the old native `grpc` dependency additionally requires
+> `yarn install --ignore-scripts` (see "Alternative for recent Node.js versions"
+> above). Node.js 12.22.12 x64 remains the recommended environment for
+> reproducing this legacy frontend without these workarounds.
 
 4. Go to "http://localhost" in your browser
 
