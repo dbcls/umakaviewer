@@ -1,5 +1,5 @@
 bootstrap:
-	poetry install
+	poetry install --no-root
 	APP_ENV=development poetry run alembic upgrade head
 
 run-development:

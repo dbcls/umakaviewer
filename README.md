@@ -7,34 +7,84 @@
 * Docker (Docker Desktop on macOS)
 * Python 3.8 (same as `server/Dockerfile`)
   * Poetry
-* Node.js (tested with 12 and 20; see notes below for Node.js 17+)
+  * Python 3.10.21 is also known to work for local development on recent macOS (see notes below)
+* Node.js 12
+  * Node.js 12.22.12 x86_64 is known to work on Apple Silicon via Rosetta 2
+  * Yarn 1.22.x
 * MySQL 8.0 and Redis (provided by `docker/docker-compose.yml`)
 
 ## Installation
 
 1. Clone repository and update submodule
-```
+
+```sh
 $ git clone https://github.com/dbcls/umakaviewer.git
 $ cd umakaviewer
 $ git submodule update --init
 ```
 
 2. Start MySQL and Redis (required by the migration in the next step)
-```
+
+```sh
 $ docker compose -f docker/docker-compose.yml up -d dbcls_mysql dbcls_redis
 ```
 
 3. Install packages of Python and run migrations
-```
+
+```sh
 $ cd server
 $ make bootstrap
 ```
 
 > **Note for recent macOS (Apple Silicon)**
-> Some locked dependencies (e.g. `grpcio` 1.43.0) do not build on Python 3.12 or on
-> arm64, and building Python 3.8 with pyenv may fail on recent macOS.
-> A workaround is to use a prebuilt x86_64 Python 3.8 (via Rosetta) with [uv](https://docs.astral.sh/uv/):
+>
+> Some locked dependencies are old and are incompatible with recent Python
+> versions. In particular, `grpcio` 1.43.0 cannot be installed normally with
+> Python 3.14.
+>
+> Two configurations have been confirmed to work.
+>
+> **Option A: Python 3.10.21 with pyenv**
+>
+> Python 3.10.21 can install the locked dependencies successfully:
+>
+> ```sh
+> $ pyenv install 3.10.21
+> $ cd server
+> $ pyenv local 3.10.21
+> $ python --version
+> Python 3.10.21
 > ```
+>
+> This project uses Poetry primarily for dependency management rather than as
+> an installable Python package. If Poetry reports:
+>
+> ```text
+> Error: The current project could not be installed:
+> No file/folder found for package server
+> ```
+>
+> install the dependencies without installing the project itself:
+>
+> ```sh
+> $ poetry install --no-root
+> $ APP_ENV=development poetry run alembic upgrade head
+> ```
+>
+> Accordingly, `server/Makefile` can use:
+>
+> ```make
+> bootstrap:
+>         poetry install --no-root
+>         APP_ENV=development poetry run alembic upgrade head
+> ```
+>
+> **Option B: Python 3.8 x86_64 with uv and Rosetta**
+>
+> If Python 3.8 is required to match `server/Dockerfile`, a prebuilt x86_64
+> Python can be used:
+>
+> ```sh
 > $ softwareupdate --install-rosetta --agree-to-license   # if not installed yet
 > $ cd server
 > $ uv python install cpython-3.8-macos-x86_64
@@ -44,20 +94,88 @@ $ make bootstrap
 > $ uv pip install --python .venv -r /tmp/umaka-req.txt
 > $ APP_ENV=development poetry run alembic upgrade head
 > ```
+>
 > Poetry uses `server/.venv` automatically once it exists.
 
 4. Install packages of Node.js
-```
+
+```sh
 $ cd node
-$ yarn install
+$ yarn install --frozen-lockfile
 ```
 
-> **Note for Node.js 16+**
-> The native `grpc` module pulled in by the Firebase SDK cannot be built on recent Node.js.
-> It is not needed for the browser bundle, so skip install scripts:
+> **Recommended setup on Apple Silicon: Node.js 12 x86_64 with Rosetta**
+>
+> The dependency tree contains the old native `grpc` 1.23.3 module through
+> Firebase/Firestore. Recent Node.js versions are not compatible with this
+> dependency. A confirmed working configuration on Apple Silicon is:
+>
+> ```text
+> Node.js 12.22.12
+> architecture: x64
+> Yarn 1.22.22
 > ```
+>
+> Install Rosetta 2 if necessary:
+>
+> ```sh
+> $ softwareupdate --install-rosetta --agree-to-license
+> ```
+>
+> Install and configure `nvm`, then start an x86_64 shell:
+>
+> ```sh
+> $ arch -x86_64 zsh
+> ```
+>
+> If `nvm` is not available in the new shell, load it explicitly:
+>
+> ```sh
+> $ export NVM_DIR="$HOME/.nvm"
+> $ [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+> ```
+>
+> Then install/select Node.js 12.22.12:
+>
+> ```sh
+> $ nvm install 12.22.12
+> $ nvm use 12.22.12
+> $ node --version
+> v12.22.12
+> $ node -p 'process.arch'
+> x64
+> ```
+>
+> Install the dependencies:
+>
+> ```sh
+> $ cd node
+> $ yarn install --frozen-lockfile
+> ```
+>
+> `node -p 'process.arch'` must report `x64`. Node.js 12 predates native
+> Apple Silicon support.
+>
+> To make `nvm` available in newly opened zsh sessions, add the following to
+> `~/.zshrc`:
+>
+> ```sh
+> export NVM_DIR="$HOME/.nvm"
+> [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+> ```
+>
+> **Alternative for recent Node.js versions**
+>
+> The native `grpc` module pulled in by the Firebase SDK cannot be built
+> normally with recent Node.js versions. Since it is not needed for the
+> browser bundle, another workaround is to skip install scripts:
+>
+> ```sh
 > $ yarn install --ignore-scripts
 > ```
+>
+> Using Node.js 12.22.12 x64 is preferable when reproducing the original
+> dependency environment without suppressing package installation scripts.
 
 ## Firebase setup for local development
 
@@ -81,7 +199,8 @@ The local database starts empty, so **sign up** first; afterwards you can log in
 ## Start Servers at localhost
 
 1. Start Docker containers (MySQL, Redis and nginx)
-```
+
+```sh
 $ docker compose -f docker/docker-compose.yml up -d
 ```
 
@@ -91,30 +210,83 @@ $ docker compose -f docker/docker-compose.yml up -d
 > If it is running, stop it with `docker compose down` at the repository root.
 
 2. Start Flask
-```
-(another session)
+
+Use a native arm64 shell for the Python/Flask server on Apple Silicon:
+
+```sh
+$ arch
+arm64
 $ cd server
 $ make run-development
 ```
 
+> **Note for Apple Silicon**
+>
+> Do not run the Flask development server from the Rosetta/x86_64 shell used
+> for Node.js 12. On recent macOS, an x86_64 process may fail when invoking
+> the arm64-only Command Line Tools, for example:
+>
+> ```text
+> xcrun: error: unable to load libxcrun
+> ... missing compatible architecture ... need 'x86_64'
+> ```
+>
+> Exit the Rosetta shell before starting the backend:
+>
+> ```sh
+> $ exit
+> $ arch
+> arm64
+> ```
+
 3. Build Webpack
-```
+
+On Apple Silicon, use the Node.js 12.22.12 x64 environment described above:
+
+```sh
+$ arch -x86_64 zsh
+$ export NVM_DIR="$HOME/.nvm"
+$ [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+$ nvm use 12.22.12
+$ node --version
+v12.22.12
+$ node -p 'process.arch'
+x64
 $ cd node
 $ yarn build
 ```
 
 > **Note for Node.js 17+**
-> webpack 5.16 uses a hash function that OpenSSL 3 disables by default. Run:
+>
+> If `yarn build` is accidentally run with a recent Node.js version, webpack
+> 5.16 may fail with:
+>
+> ```text
+> Error: error:0308010C:digital envelope routines::unsupported
+> code: 'ERR_OSSL_EVP_UNSUPPORTED'
 > ```
-> $ NODE_OPTIONS=--openssl-legacy-provider yarn build
+>
+> For this project, first check:
+>
+> ```sh
+> $ node --version
+> $ node -p 'process.arch'
 > ```
+>
+> and use Node.js 12.22.12 x64 as described above.
+>
+> `NODE_OPTIONS=--openssl-legacy-provider` can work around the OpenSSL error
+> with newer Node.js versions, but it does not solve the separate compatibility
+> problem with the old native `grpc` dependency. Therefore Node.js 12.22.12
+> x64 is the recommended environment for reproducing this legacy frontend.
 
 4. Go to "http://localhost" in your browser
 
 ## Testing in a local environment
 
 1. Create database and user in MySQL
-```
+
+```sh
 $ mysqladmin create dbcls_test -u root -h127.0.0.1 -P3308 --default-character-set=utf8mb4
 $ mysql -u root -h127.0.0.1 -P3308
 mysql> CREATE USER 'dbcls_tester'@'127.0.0.1' IDENTIFIED BY 'rjIHxE8qQT';
@@ -124,7 +296,8 @@ $ APP_ENV=test poetry run alembic -n test upgrade head
 ```
 
 2. Run tests
-```
+
+```sh
 $ cd server
 $ APP_ENV=test poetry run pytest tests
 ```
